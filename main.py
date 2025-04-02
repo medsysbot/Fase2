@@ -1,23 +1,37 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from fastapi.staticfiles import StaticFiles
-from utils import generate_pdf
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# Permitir CORS para pruebas desde Postman u otras apps
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-class MedicalData(BaseModel):
+# Modelo de receta médica
+class Prescription(BaseModel):
     patient_name: str
     diagnosis: str
     notes: str
 
+# Endpoint para crear receta médica
+@app.post("/prescriptions")
+async def create_prescription(prescription: Prescription):
+    return {
+        "status": "success",
+        "data": {
+            "patient": prescription.patient_name,
+            "diagnosis": prescription.diagnosis,
+            "notes": prescription.notes
+        }
+    }
+
+# Endpoint base de prueba (opcional)
 @app.get("/")
 async def root():
-    return {"status": "OK"}
-
-@app.post("/generate")
-async def create_record(data: MedicalData):
-    pdf_path = generate_pdf(data)
-    pdf_url = f"https://web-production.up.railway.app/static/{pdf_path}"
-    return {"pdf": pdf_url}
+    return {"message": "MEDSYS API activa"}

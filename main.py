@@ -41,19 +41,26 @@ async def root():
 # Cargar modelo Whisper (una vez al iniciar)
 whisper_model = whisper.load_model("base")
 
+import tempfile
+
 @app.post("/transcribe-audio")
 async def transcribe_audio(file: UploadFile = File(...)):
     try:
-        with tempfile.NamedTemporaryFile(delete=False) as tmp:
-            tmp.write(await file.read())
+        contents = await file.read()
+        
+        # Guardar archivo temporal sin autodelete
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
+            tmp.write(contents)
             tmp_path = tmp.name
 
+        # Transcribir
         result = whisper_model.transcribe(tmp_path)
 
         return {
             "status": "success",
             "transcription": result["text"]
         }
+
     except Exception as e:
         return {
             "status": "error",

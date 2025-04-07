@@ -45,14 +45,14 @@ async def generar_pdf_receta(data: RecetaModel):
         pdf.set_font("Arial", "B", 16)
         pdf.cell(200, 10, txt="MEDSYS – RECETA MÉDICA", ln=True, align="C")
 
-        # Datos del paciente
+        # Cuerpo
         pdf.set_text_color(0, 0, 0)
         pdf.set_font("Arial", "", 12)
         pdf.ln(20)
         pdf.cell(0, 10, f"Nombre del Paciente: {data.nombre}", ln=True)
         pdf.cell(0, 10, f"DNI: {data.dni}", ln=True)
-        pdf.cell(0, 10, f"Fecha: {data.fecha}", ln=True)
         pdf.cell(0, 10, f"Diagnóstico: {data.diagnostico}", ln=True)
+        pdf.cell(0, 10, f"Fecha: {data.fecha}", ln=True)
         pdf.ln(10)
         pdf.multi_cell(0, 10, f"Medicamentos Indicados: {data.medicamentos}")
 
@@ -62,7 +62,6 @@ async def generar_pdf_receta(data: RecetaModel):
         pdf.output(output_path)
 
         return {"status": "success", "message": "Receta médica generada correctamente"}
-
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
@@ -84,5 +83,6 @@ async def transcribe_audio(file: UploadFile = File(...)):
         }
     except Exception as e:
         return {
-            "status": "error", "message": str(e)
+            "status": "error",
+            "message": str(e)
         }

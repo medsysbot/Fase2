@@ -1,7 +1,7 @@
 FROM python:3.10-slim
 
 # Instalar dependencias del sistema, incluyendo ffmpeg
-RUN apt-get update && apt-get install -y ffmpeg git && apt-get clean
+RUN apt-get update && apt-get install -y ffmpeg git && apt-get clea
 
 # Crear directorio de trabajo
 WORKDIR /app

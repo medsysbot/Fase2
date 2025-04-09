@@ -3,6 +3,7 @@ from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fpdf import FPDF
+import sqlite3
 import os
 
 app = FastAPI()
@@ -64,191 +65,40 @@ async def turnos(request: Request):
 async def busqueda(request: Request):
     return templates.TemplateResponse("busqueda.html", {"request": request})
 
-# ---------------- Historia Clínica Completa ----------------
-@app.post("/generar-pdf-historia-completa")
-async def generar_pdf_historia_completa(
+# ---------------- Registro de Pacientes con Base de Datos ----------------
+@app.post("/registrar-paciente")
+async def registrar_paciente(
     nombre: str = Form(...),
     fecha_nacimiento: str = Form(...),
-    edad: str = Form(...),
-    sexo: str = Form(...),
     dni: str = Form(...),
-    domicilio: str = Form(...),
+    direccion: str = Form(...),
     telefono: str = Form(...),
-    correo: str = Form(...),
     obra_social: str = Form(...),
-    afiliado: str = Form(...),
-    personales: str = Form(...),
-    familiares: str = Form(...),
-    habitos: str = Form(...),
-    cronicas: str = Form(...),
-    cirugias: str = Form(...),
-    medicacion: str = Form(...),
-    estudios: str = Form(...),
-    motivo: str = Form(...),
-    diagnostico: str = Form(...),
-    tratamiento: str = Form(...),
-    instrucciones: str = Form(...),
-    proxima: str = Form(...),
-    profesional: str = Form(...)
+    sexo: str = Form(...),
+    contacto_emergencia: str = Form(...)
 ):
     try:
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", size=12)
-        pdf.cell(0, 10, "Historia Clinica Completa - MedSys", ln=True)
-        pdf.ln(5)
+        conn = sqlite3.connect("static/doc/medsys.db")
+        cursor = conn.cursor()
 
-        campos = {
-            "Nombre del Paciente": nombre,
-            "Fecha de Nacimiento": fecha_nacimiento,
-            "Edad": edad,
-            "Sexo": sexo,
-            "DNI": dni,
-            "Domicilio": domicilio,
-            "Teléfono": telefono,
-            "Correo Electrónico": correo,
-            "Obra Social / Prepaga": obra_social,
-            "Número de Afiliado": afiliado,
-            "Antecedentes Personales": personales,
-            "Antecedentes Familiares": familiares,
-            "Hábitos": habitos,
-            "Enfermedades Crónicas": cronicas,
-            "Cirugías y Hospitalizaciones": cirugias,
-            "Medicación Actual": medicacion,
-            "Estudios Complementarios": estudios,
-            "Motivo de Consulta": motivo,
-            "Diagnóstico Actual": diagnostico,
-            "Tratamiento Indicado": tratamiento,
-            "Instrucciones / Recomendaciones": instrucciones,
-            "Fecha de Próxima Consulta": proxima,
-            "Profesional": profesional
-        }
+        cursor.execute("""
+            INSERT INTO pacientes (
+                nombre, fecha_nacimiento, dni, direccion, telefono, obra_social, sexo, contacto_emergencia
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            nombre,
+            fecha_nacimiento,
+            dni,
+            direccion,
+            telefono,
+            obra_social,
+            sexo,
+            contacto_emergencia
+        ))
 
-        for campo, valor in campos.items():
-            pdf.multi_cell(0, 10, f"{campo}: {valor}")
-            pdf.ln(1)
+        conn.commit()
+        conn.close()
 
-        output_path = "static/doc/historia-clinica-completa-generada.pdf"
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
-        pdf.output(output_path)
-        return {"status": "success", "archivo": output_path}
+        return {"status": "success", "message": "Paciente registrado correctamente"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
-
-@app.get("/ver-historia-completa")
-async def ver_historia_completa():
-    return FileResponse("static/doc/historia-clinica-completa-generada.pdf", media_type="application/pdf")
-
-# ---------------- Historia Clínica Resumida ----------------
-@app.post("/generar-pdf-historia-resumen")
-async def generar_pdf_historia_resumen(
-    nombre: str = Form(...),
-    dni: str = Form(...),
-    fecha: str = Form(...),
-    motivo: str = Form(...),
-    diagnostico: str = Form(...),
-    tratamiento: str = Form(...),
-    profesional: str = Form(...)
-):
-    try:
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", size=12)
-        pdf.cell(0, 10, "Historia Clínica Resumida – MedSys", ln=True)
-        pdf.ln(5)
-
-        campos = {
-            "Nombre del Paciente": nombre,
-            "DNI": dni,
-            "Fecha": fecha,
-            "Motivo de Consulta": motivo,
-            "Diagnóstico": diagnostico,
-            "Tratamiento": tratamiento,
-            "Profesional": profesional
-        }
-
-        for campo, valor in campos.items():
-            pdf.multi_cell(0, 10, f"{campo}: {valor}")
-            pdf.ln(1)
-
-        output_path = "static/doc/historia-resumen-generada.pdf"
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
-        pdf.output(output_path)
-        return {"status": "success", "archivo": output_path}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
-
-@app.get("/ver-historia-resumen")
-async def ver_historia_resumen():
-    return FileResponse("static/doc/historia-resumen-generada.pdf", media_type="application/pdf")
-
-# ---------------- Evolución Diaria ----------------
-@app.post("/generar-pdf-evolucion")
-async def generar_pdf_evolucion(nombre: str = Form(...), dni: str = Form(...), fecha: str = Form(...), evolucion: str = Form(...)):
-    try:
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", size=12)
-        pdf.cell(0, 10, f"Nombre del Paciente: {nombre}", ln=True)
-        pdf.cell(0, 10, f"DNI: {dni}", ln=True)
-        pdf.cell(0, 10, f"Fecha: {fecha}", ln=True)
-        pdf.ln(10)
-        pdf.multi_cell(0, 10, f"Evolución Clínica:\n{evolucion}")
-
-        output_path = "static/doc/historia-evolucion-generada.pdf"
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
-        pdf.output(output_path)
-        return {"status": "success", "archivo": output_path}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
-
-@app.get("/ver-evolucion")
-async def ver_evolucion():
-    return FileResponse("static/doc/historia-evolucion-generada.pdf", media_type="application/pdf")
-
-# ---------------- Receta Médica ----------------
-@app.post("/generar-pdf-receta")
-async def generar_pdf_receta(nombre: str = Form(...), dni: str = Form(...), fecha: str = Form(...), medicamentos: str = Form(...)):
-    try:
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", size=12)
-        pdf.cell(0, 10, f"Nombre del Paciente: {nombre}", ln=True)
-        pdf.cell(0, 10, f"DNI: {dni}", ln=True)
-        pdf.cell(0, 10, f"Fecha: {fecha}", ln=True)
-        pdf.ln(10)
-        pdf.multi_cell(0, 10, f"Medicamentos indicados:\n{medicamentos}")
-
-        output_path = "static/doc/receta-medica-generada.pdf"
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
-        pdf.output(output_path)
-        return {"status": "success", "archivo": output_path}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
-
-@app.get("/ver-receta")
-async def ver_receta():
-    return FileResponse("static/doc/receta-medica-generada.pdf", media_type="application/pdf")
-
-# ---------------- Indicaciones Médicas ----------------
-@app.post("/generar-pdf-indicaciones")
-async def generar_pdf_indicaciones(nombre: str = Form(...), fecha: str = Form(...), indicaciones: str = Form(...)):
-    try:
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", size=12)
-        pdf.cell(0, 10, f"Nombre del Paciente: {nombre}", ln=True)
-        pdf.cell(0, 10, f"Fecha: {fecha}", ln=True)
-        pdf.ln(10)
-        pdf.multi_cell(0, 10, f"Indicaciones Médicas:\n{indicaciones}")
-
-        output_path = "static/doc/indicaciones-medicas-generado.pdf"
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
-        pdf.output(output_path)
-        return {"status": "success", "archivo": output_path}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
-
-@app.get("/ver-indicaciones")
-async def ver_indicaciones():
-    return FileResponse("static/doc/indicaciones-medicas-generado.pdf", media_type="application/pdf")

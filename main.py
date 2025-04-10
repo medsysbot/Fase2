@@ -51,7 +51,7 @@ def rol_requerido(roles_permitidos):
 # ---------------- Ruta base ----------------
 @app.get("/")
 async def root():
-    return RedirectResponse(url="/splash")
+    return RedirectResponse(url="/splash_screen")
 
 # ---------------- Ruta para verificación de BD ----------------
 @app.get("/check-db")

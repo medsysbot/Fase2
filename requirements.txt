@@ -3,3 +3,4 @@ uvicorn
 pydantic
 openai-whisper
 python-multipart
+fpdf

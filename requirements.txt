@@ -1,9 +1,7 @@
 fastapi
 uvicorn
-fpdf
+fpdf==1.7.2
 jinja2
 python-multipart
 pydantic
 openai-whisper
-
-

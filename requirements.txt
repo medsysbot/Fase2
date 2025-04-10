@@ -1,6 +1,9 @@
 fastapi
 uvicorn
+fpdf
+jinja2
+python-multipart
 pydantic
 openai-whisper
-python-multipart
-fpdf
+
+

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Request, Form, UploadFile, File, HTTPException
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
@@ -41,6 +41,19 @@ class MedSysPDF(FPDF):
 async def root():
     return {"message": "MedSys Backend funcionando correctamente"}
 
+# ---------------- Ruta para verificación de BD ----------------
+@app.get("/check-db")
+async def check_db():
+    try:
+        conn = sqlite3.connect("static/doc/medsys.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+        tablas = cursor.fetchall()
+        conn.close()
+        return {"status": "success", "tablas": tablas}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 # ---------------- Rutas HTML (Frontend) ----------------
 @app.get("/index", response_class=HTMLResponse)
 async def index(request: Request):
@@ -82,80 +95,48 @@ async def turnos(request: Request):
 async def busqueda(request: Request):
     return templates.TemplateResponse("busqueda.html", {"request": request})
 
-# ---------------- Registro de Pacientes con Base de Datos ----------------
-@app.post("/registrar-paciente")
-async def registrar_paciente(
-    nombre: str = Form(...),
-    fecha_nacimiento: str = Form(...),
+@app.get("/estudios", response_class=HTMLResponse)
+async def estudios(request: Request):
+    return templates.TemplateResponse("estudios.html", {"request": request})
+
+# ---------------- Lógica para turnos ----------------
+@app.post("/registrar-turno")
+async def registrar_turno(
+    nombre_completo: str = Form(...),
     dni: str = Form(...),
-    direccion: str = Form(...),
     telefono: str = Form(...),
-    obra_social: str = Form(...),
-    sexo: str = Form(...),
-    contacto_emergencia: str = Form(...)
+    fecha_turno: str = Form(...)
 ):
     try:
         conn = sqlite3.connect("static/doc/medsys.db")
         cursor = conn.cursor()
 
         cursor.execute("""
-            INSERT INTO pacientes (
-                nombre, fecha_nacimiento, dni, direccion, telefono, obra_social, sexo, contacto_emergencia
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO turnos (nombre_completo, dni, telefono, fecha_turno)
+            VALUES (?, ?, ?, ?)
         """, (
-            nombre,
-            fecha_nacimiento,
+            nombre_completo,
             dni,
-            direccion,
             telefono,
-            obra_social,
-            sexo,
-            contacto_emergencia
+            fecha_turno
         ))
 
         conn.commit()
         conn.close()
 
-        return {"status": "success", "message": "Paciente registrado correctamente"}
+        return {"status": "success", "message": "Turno registrado correctamente"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
-# ---------------- Guardar en historial clínico al generar PDF ----------------
-
-def guardar_en_historial(nombre, dni, fecha, tipo_documento, detalle, archivo_pdf):
-    conn = sqlite3.connect("static/doc/medsys.db")
-    cursor = conn.cursor()
-    cursor.execute("""
-        INSERT INTO historial (nombre, dni, fecha, tipo_documento, detalle, archivo_pdf)
-        VALUES (?, ?, ?, ?, ?, ?)
-    """, (nombre, dni, fecha, tipo_documento, detalle, archivo_pdf))
-    conn.commit()
-    conn.close()
-
-@app.post("/generar-pdf-receta")
-async def generar_pdf_receta(nombre: str = Form(...), dni: str = Form(...), fecha: str = Form(...), medicamentos: str = Form(...)):
+# ---------------- Consultar turnos registrados ----------------
+@app.get("/consultar-turnos")
+async def consultar_turnos():
     try:
-        pdf = MedSysPDF()
-        pdf.add_page()
-        campos = {
-            "Nombre del Paciente": nombre,
-            "DNI": dni,
-            "Fecha": fecha,
-            "Medicamentos indicados": medicamentos
-        }
-        pdf.cuerpo(campos)
-
-        filename = f"receta_{dni}_{fecha}.pdf"
-        output_path = f"static/doc/{filename}"
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
-        pdf.output(output_path)
-
-        guardar_en_historial(nombre, dni, fecha, "Receta Médica", medicamentos, filename)
-
-        return {"status": "success", "archivo": output_path}
+        conn = sqlite3.connect("static/doc/medsys.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM turnos ORDER BY fecha_turno DESC")
+        resultados = cursor.fetchall()
+        conn.close()
+        return {"status": "success", "turnos": resultados}
     except Exception as e:
         return {"status": "error", "message": str(e)}
-
-@app.get("/ver-receta")
-async def ver_receta():
-    return FileResponse("static/doc/receta-medica-generada.pdf", media_type="application/pdf")

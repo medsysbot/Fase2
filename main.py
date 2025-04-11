@@ -76,45 +76,42 @@ async def check_db():
 async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-@app.get("/registro", response_class=HTMLResponse, dependencies=[rol_requerido(["secretaria", "director")])
+@app.get("/registro", response_class=HTMLResponse, dependencies=[rol_requerido(["secretaria", "director"])] )  # corregido paréntesis y corchete
 async def registro(request: Request):
     return templates.TemplateResponse("registro.html", {"request": request})
 
-@app.get("/historia", response_class=HTMLResponse, dependencies=[rol_requerido(["medico", "director")])
+@app.get("/historia", response_class=HTMLResponse, dependencies=[rol_requerido(["medico", "director"])] )  # corregido paréntesis y corchete
 async def historia(request: Request):
     return templates.TemplateResponse("historia.html", {"request": request})
 
-@app.get("/historia-completa", response_class=HTMLResponse, dependencies=[rol_requerido(["medico", "director")])
+@app.get("/historia-completa", response_class=HTMLResponse, dependencies=[rol_requerido(["medico", "director"])] )  # corregido paréntesis y corchete
 async def historia_completa(request: Request):
     return templates.TemplateResponse("historia-clinica-completa.html", {"request": request})
 
-@app.get("/historia-resumen", response_class=HTMLResponse, dependencies=[rol_requerido(["medico", "director")])
+@app.get("/historia-resumen", response_class=HTMLResponse, dependencies=[rol_requerido(["medico", "director"])] )  # corregido paréntesis y corchete
 async def historia_resumen(request: Request):
     return templates.TemplateResponse("historia-resumen.html", {"request": request})
 
-@app.get("/historia-evolucion", response_class=HTMLResponse, dependencies=[rol_requerido(["medico", "director")])
+@app.get("/historia-evolucion", response_class=HTMLResponse, dependencies=[rol_requerido(["medico", "director"])] )  # corregido paréntesis y corchete
 async def historia_evolucion(request: Request):
     return templates.TemplateResponse("evolucion.html", {"request": request})
 
-@app.get("/receta", response_class=HTMLResponse, dependencies=[rol_requerido(["medico", "director")])
+@app.get("/receta", response_class=HTMLResponse, dependencies=[rol_requerido(["medico", "director"])] )  # corregido paréntesis y corchete
 async def receta(request: Request):
     return templates.TemplateResponse("receta.html", {"request": request})
 
-@app.get("/indicaciones", response_class=HTMLResponse, dependencies=[rol_requerido(["medico", "director")])
+@app.get("/indicaciones", response_class=HTMLResponse, dependencies=[rol_requerido(["medico", "director"])] )  # corregido paréntesis y corchete
 async def indicaciones(request: Request):
     return templates.TemplateResponse("indicaciones.html", {"request": request})
 
-@app.get("/turnos", response_class=HTMLResponse, dependencies=[rol_requerido(["secretaria", "director")])
+@app.get("/turnos", response_class=HTMLResponse, dependencies=[rol_requerido(["secretaria", "director"])] )  # corregido paréntesis y corchete
 async def turnos(request: Request):
     return templates.TemplateResponse("turnos.html", {"request": request})
 
-@app.get("/busqueda", response_class=HTMLResponse, dependencies=[rol_requerido(["secretaria", "director")])
+@app.get("/busqueda", response_class=HTMLResponse, dependencies=[rol_requerido(["secretaria", "director"])] )  # corregido paréntesis y corchete
 async def busqueda(request: Request):
     return templates.TemplateResponse("busqueda.html", {"request": request})
 
-@app.get("/estudios", response_class=HTMLResponse, dependencies=[rol_requerido(["director")])
+@app.get("/estudios", response_class=HTMLResponse, dependencies=[rol_requerido(["director"])] )  # corregido paréntesis y corchete
 async def estudios(request: Request):
     return templates.TemplateResponse("estudios.html", {"request": request})
-
-        
-

@@ -38,7 +38,6 @@ class MedSysPDF(FPDF):
 
 # ---------------- Verificación por Rol (Simulada) ----------------
 def get_rol(request: Request):
-    # En el futuro esto se obtendrá de una sesión o token
     return request.query_params.get("rol", "invitado")
 
 def rol_requerido(roles_permitidos):
@@ -53,7 +52,7 @@ def rol_requerido(roles_permitidos):
 async def root():
     return RedirectResponse(url="/splash")
 
-# ---------------- Ruta para verificación de BD ----------------
+# ---------------- Verificación de BD ----------------
 @app.get("/check-db")
 async def check_db():
     try:
@@ -66,7 +65,7 @@ async def check_db():
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
-# ---------------- Rutas HTML (Frontend) ----------------
+# ---------------- Rutas HTML ----------------
 @app.get("/index", response_class=HTMLResponse)
 async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
@@ -110,4 +109,3 @@ async def busqueda(request: Request):
 @app.get("/estudios", response_class=HTMLResponse, dependencies=[rol_requerido(["director"])])
 async def estudios(request: Request):
     return templates.TemplateResponse("estudios.html", {"request": request})
-

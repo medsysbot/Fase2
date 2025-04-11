@@ -6,6 +6,12 @@ from fpdf import FPDF
 import sqlite3
 import os
 
+# ---------------- Configuración del entorno ----------------
+DEBUG = os.getenv("DEBUG", "false").lower() == "true"
+if DEBUG:
+    print("✅ MedSys se está ejecutando en modo DESARROLLO")
+
+# ---------------- Inicialización de la app ----------------
 app = FastAPI()
 
 # ---------------- CORS ----------------
@@ -52,7 +58,7 @@ def rol_requerido(roles_permitidos):
 async def root():
     return RedirectResponse(url="/splash")
 
-# ---------------- Verificación de BD ----------------
+# ---------------- Ruta para verificación de BD ----------------
 @app.get("/check-db")
 async def check_db():
     try:
@@ -65,47 +71,50 @@ async def check_db():
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
-# ---------------- Rutas HTML ----------------
+# ---------------- Rutas HTML (Frontend) ----------------
 @app.get("/index", response_class=HTMLResponse)
 async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-@app.get("/registro", response_class=HTMLResponse, dependencies=[rol_requerido(["secretaria", "director"])])
+@app.get("/registro", response_class=HTMLResponse, dependencies=[rol_requerido(["secretaria", "director")])
 async def registro(request: Request):
     return templates.TemplateResponse("registro.html", {"request": request})
 
-@app.get("/historia", response_class=HTMLResponse, dependencies=[rol_requerido(["medico", "director"])])
+@app.get("/historia", response_class=HTMLResponse, dependencies=[rol_requerido(["medico", "director")])
 async def historia(request: Request):
     return templates.TemplateResponse("historia.html", {"request": request})
 
-@app.get("/historia-completa", response_class=HTMLResponse, dependencies=[rol_requerido(["medico", "director"])])
+@app.get("/historia-completa", response_class=HTMLResponse, dependencies=[rol_requerido(["medico", "director")])
 async def historia_completa(request: Request):
     return templates.TemplateResponse("historia-clinica-completa.html", {"request": request})
 
-@app.get("/historia-resumen", response_class=HTMLResponse, dependencies=[rol_requerido(["medico", "director"])])
+@app.get("/historia-resumen", response_class=HTMLResponse, dependencies=[rol_requerido(["medico", "director")])
 async def historia_resumen(request: Request):
     return templates.TemplateResponse("historia-resumen.html", {"request": request})
 
-@app.get("/historia-evolucion", response_class=HTMLResponse, dependencies=[rol_requerido(["medico", "director"])])
+@app.get("/historia-evolucion", response_class=HTMLResponse, dependencies=[rol_requerido(["medico", "director")])
 async def historia_evolucion(request: Request):
     return templates.TemplateResponse("evolucion.html", {"request": request})
 
-@app.get("/receta", response_class=HTMLResponse, dependencies=[rol_requerido(["medico", "director"])])
+@app.get("/receta", response_class=HTMLResponse, dependencies=[rol_requerido(["medico", "director")])
 async def receta(request: Request):
     return templates.TemplateResponse("receta.html", {"request": request})
 
-@app.get("/indicaciones", response_class=HTMLResponse, dependencies=[rol_requerido(["medico", "director"])])
+@app.get("/indicaciones", response_class=HTMLResponse, dependencies=[rol_requerido(["medico", "director")])
 async def indicaciones(request: Request):
     return templates.TemplateResponse("indicaciones.html", {"request": request})
 
-@app.get("/turnos", response_class=HTMLResponse, dependencies=[rol_requerido(["secretaria", "director"])])
+@app.get("/turnos", response_class=HTMLResponse, dependencies=[rol_requerido(["secretaria", "director")])
 async def turnos(request: Request):
     return templates.TemplateResponse("turnos.html", {"request": request})
 
-@app.get("/busqueda", response_class=HTMLResponse, dependencies=[rol_requerido(["secretaria", "director"])])
+@app.get("/busqueda", response_class=HTMLResponse, dependencies=[rol_requerido(["secretaria", "director")])
 async def busqueda(request: Request):
     return templates.TemplateResponse("busqueda.html", {"request": request})
 
-@app.get("/estudios", response_class=HTMLResponse, dependencies=[rol_requerido(["director"])])
+@app.get("/estudios", response_class=HTMLResponse, dependencies=[rol_requerido(["director")])
 async def estudios(request: Request):
     return templates.TemplateResponse("estudios.html", {"request": request})
+
+        
+

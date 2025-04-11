@@ -1,0 +1,11 @@
+version: '3.9'
+
+services:
+  backend:
+    environment:
+      - DEBUG=true
+    volumes:
+      - ./templates:/app/templates
+      - ./static:/app/static
+      - ./main.py:/app/main.py
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload

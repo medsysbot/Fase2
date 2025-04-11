@@ -2,7 +2,8 @@ version: '3.9'
 
 services:
   backend:
-    build: .
+    build:
+      context: .
     container_name: medsys_backend
     ports:
       - "8000:8000"
@@ -11,7 +12,8 @@ services:
       - static_data:/app/static
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     environment:
-      - PYTHONUNBUFFERED=1
+      PYTHONUNBUFFERED: 1
+    restart: unless-stopped
 
 volumes:
   static_data:

@@ -1,0 +1,191 @@
+/* styles.css - MEDISYS BACKEND RESPONSIVE */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #083a51;
+  color: white;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  padding: 20px;
+}
+
+.logo-grande {
+  width: 120px;
+  height: auto;
+  margin: 30px auto 10px;
+  display: block;
+}
+
+h1, h2 {
+  color: white;
+  margin: 20px 0;
+}
+
+h1.titulo {
+  font-style: italic;
+  font-weight: 600;
+  font-size: 28px;
+  margin: 10px 0 25px;
+  text-align: center;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 0 15px;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+label {
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: white;
+  display: block;
+  margin-bottom: 5px;
+}
+
+input, select, textarea {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: black;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 100%;
+  height: 36px;
+  box-sizing: border-box;
+}
+
+textarea {
+  height: auto;
+  resize: vertical;
+}
+
+.resultado-seccion {
+  margin: 20px 0;
+  padding: 0 15px;
+  border-radius: 10px;
+}
+
+.resultado-titulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #09394f;
+  padding: 10px;
+  font-weight: bold;
+  font-size: 1.2rem;
+  border-radius: 10px;
+}
+
+.resultado-titulo img {
+  width: 24px;
+  height: 24px;
+}
+
+.resultado-contenido {
+  background-color: white;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  color: black;
+  height: 36px;
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
+}
+
+.botones-flotantes {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  z-index: 999;
+}
+
+.botones-flotantes button,
+.botones-flotantes a {
+  background-color: #4A90E2;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  transition: transform 0.2s;
+}
+
+.botones-flotantes button:hover,
+.botones-flotantes a:hover {
+  transform: scale(1.1);
+}
+
+.botones-flotantes img {
+  width: 30px;
+  height: 30px;
+}
+
+.menu-principal {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  padding: 0 15px;
+}
+
+.menu-principal a {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background-color: #1976d2;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.2rem;
+  padding: 15px 20px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 360px;
+  transition: background-color 0.3s;
+}
+
+.menu-principal a:hover {
+  background-color: #2196f3;
+}
+
+.menu-principal img {
+  width: 28px;
+  height: 28px;
+  margin-right: 15px;
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
+  color: white;
+  font-size: 0.9rem;
+  margin-top: 40px;
+}

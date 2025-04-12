@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MEDISYS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;0,600;1,600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #083C4A;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+      animation: fadeout 1s ease-in-out forwards;
+      animation-delay: 2.5s;
+    }
+
+    .logo-splash {
+      width: 220px;
+      margin-bottom: 20px;
+      animation: fadein 1.5s ease-in-out;
+    }
+
+    .eslogan {
+      font-size: 20px;
+      font-style: italic;
+      font-weight: 600;
+      animation: fadein 1.5s ease-in-out;
+    }
+
+    @keyframes fadein {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes fadeout {
+      to { opacity: 0; }
+    }
+  </style>
+  <script>
+    setTimeout(() => {
+      window.location.href = "/index";
+    }, 3500);
+  </script>
+</head>
+<body>
+  <img src="/static/icons/logo-medsys.png" alt="Logo MEDISYS" class="logo-splash">
+  <div class="eslogan">Salud inteligente para un mundo real.</div>
+</body>
+</html>

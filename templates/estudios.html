@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estudios Médicos</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <style>
+    body {
+      background-color: #083a51;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    input[type="file"] {
+      margin-bottom: 10px;
+    }
+    button, a {
+      margin: 5px;
+      padding: 10px 20px;
+      background-color: #0d4352;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      margin: 10px 0;
+    }
+    .acciones {
+      display: inline-flex;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Estudios Médicos</h1>
+
+  <form id="form-subida">
+    <input type="file" name="archivo" accept=".pdf,.jpg,.jpeg,.png" required>
+    <button type="submit">Subir Estudio</button>
+  </form>
+
+  <h2>Archivos Subidos</h2>
+  <ul id="lista-estudios"></ul>
+
+  <script>
+    async function cargarEstudios() {
+      const response = await fetch('/listar-estudios');
+      const data = await response.json();
+      const lista = document.getElementById('lista-estudios');
+      lista.innerHTML = '';
+
+      if (data.archivos) {
+        data.archivos.forEach(nombre => {
+          const li = document.createElement('li');
+          li.innerHTML = `
+            ${nombre}
+            <div class="acciones">
+              <a href="/descargar-estudio/${nombre}" target="_blank">Descargar</a>
+              <button onclick="eliminar('${nombre}')">Eliminar</button>
+            </div>
+          `;
+          lista.appendChild(li);
+        });
+      } else {
+        lista.innerHTML = '<li>No se encontraron archivos</li>';
+      }
+    }
+
+    async function eliminar(nombre) {
+      const formData = new FormData();
+      formData.append('nombre_archivo', nombre);
+      const response = await fetch('/eliminar-estudio', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await response.json();
+      alert(data.message);
+      cargarEstudios();
+    }
+
+    document.getElementById('form-subida').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+      const response = await fetch('/subir-estudio', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await response.json();
+      alert(data.message);
+      form.reset();
+      cargarEstudios();
+    });
+
+    window.onload = cargarEstudios;
+  </script>
+</body>
+</html>

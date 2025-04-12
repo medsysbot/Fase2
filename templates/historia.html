@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historia Clínica - MEDISYS</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;0,300;1,300&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #083a51;
+      color: white;
+      margin: 0;
+      padding: 0;
+    }
+
+    .logo-grande {
+      width: 180px;
+      margin: 20px auto 10px auto;
+      display: block;
+    }
+
+    h1.titulo {
+      text-align: center;
+      font-style: italic;
+      font-weight: 600;
+      font-size: 28px;
+      margin-top: 10px;
+      margin-bottom: 25px;
+    }
+
+    .botonera {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+      margin-top: 30px;
+    }
+
+    a.boton-menu {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      background-color: #062e39;
+      color: white;
+      text-decoration: none;
+      font-weight: 400;
+      font-size: 1.1rem;
+      height: 50px; /* Altura ajustada a 50px */
+      padding: 0 15px;
+      border-radius: 12px;
+      width: 360px;
+      max-width: 90vw;
+      transition: background-color 0.3s ease;
+    }
+
+    a.boton-menu:hover {
+      background-color: #0d4352;
+    }
+
+    a.boton-menu img {
+      width: 56px;
+      height: 56px;
+      margin-right: 12px;
+      object-fit: contain;
+      align-self: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="/static/icons/icono-historia.png" alt="Logo Historia Clínica" class="logo-grande">
+    <h1 class="titulo">Seleccionar Tipo de Historia Clínica</h1>
+    <div class="botonera">
+      <a href="/historia-completa" class="boton-menu">
+        <img src="/static/icons/icono-historia-clinica-completa.png" class="icono-boton">
+        Historia Clínica Completa
+      </a>
+
+      <a href="/historia-resumen" class="boton-menu">
+        <img src="/static/icons/icono-historia-clinica-resumida.png" class="icono-boton">
+        Historia Clínica Resumida
+      </a>
+
+      <a href="/historia-evolucion" class="boton-menu">
+        <img src="/static/icons/evolucion-diaria.png" class="icono-boton">
+        Evolución Diaria
+      </a>
+    </div>
+  </div>
+</body>
+</html>

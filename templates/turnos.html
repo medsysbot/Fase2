@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Turnos Médicos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/static/styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #083C4A;
+      font-family: 'Poppins', sans-serif;
+      color: white;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .logo-grande {
+      width: 120px;
+      height: auto;
+      margin-bottom: 10px;
+    }
+    h2 {
+      text-align: center;
+      font-style: italic;
+      font-weight: 600;
+      font-size: 28px;
+      color: white;
+      margin-top: 10px;
+    }
+    .formulario {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      align-items: center;
+    }
+    .etiqueta-campo {
+      width: 100%;
+      max-width: 400px;
+    }
+    .etiqueta-campo span {
+      font-weight: 400;
+      font-size: 17.6px;
+      text-align: left;
+      color: white;
+      display: block;
+      margin-bottom: 5px;
+    }
+    .formulario input {
+      width: 100%;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 17.6px;
+      font-weight: 400;
+      color: black;
+      height: 36px;
+      box-sizing: border-box;
+    }
+    .visor-pdf {
+      margin-top: 40px;
+      text-align: center;
+    }
+    .visor-pdf iframe {
+      width: 90%;
+      height: 500px;
+      border: 2px solid #09394f;
+      border-radius: 10px;
+    }
+    .botones-flotantes {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      z-index: 1000;
+    }
+    .botones-flotantes button {
+      background-color: #4A90E2;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .botones-flotantes img {
+      width: 30px;
+      height: 30px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="/static/icons/icono-turnos.png" alt="Turnos Médicos" class="logo-grande" />
+    <h2>Asignar Turno</h2>
+  </header>
+
+  <main>
+    <form class="formulario" id="form-turnos">
+      <label class="etiqueta-campo">
+        <span>Nombre Completo:</span>
+        <input type="text" id="nombre_completo" name="nombre_completo" required />
+      </label>
+      <label class="etiqueta-campo">
+        <span>DNI:</span>
+        <input type="text" id="dni" name="dni" required />
+      </label>
+      <label class="etiqueta-campo">
+        <span>Teléfono:</span>
+        <input type="tel" id="telefono" name="telefono" required />
+      </label>
+      <label class="etiqueta-campo">
+        <span>Fecha del Turno:</span>
+        <input type="date" id="fecha_turno" name="fecha_turno" required />
+      </label>
+      <label class="etiqueta-campo">
+        <span>Profesional:</span>
+        <input type="text" id="profesional" name="profesional" required />
+      </label>
+    </form>
+
+    <div class="visor-pdf">
+      <h3>Vista previa del documento PDF:</h3>
+      <iframe id="pdf-visor" src="/static/doc/turno-medico-generado.pdf" type="application/pdf"></iframe>
+    </div>
+  </main>
+
+  <div class="botones-flotantes">
+    <button type="button" onclick="guardarPDF()" title="Guardar">
+      <img src="/static/icons/guardar.png" alt="Guardar" />
+    </button>
+    <button type="submit" form="form-turnos" title="Enviar">
+      <img src="/static/icons/enviar.png" alt="Enviar" />
+    </button>
+    <button type="button" onclick="imprimirPDF()" title="Imprimir">
+      <img src="/static/icons/imprimir.png" alt="Imprimir" />
+    </button>
+    <button type="button" onclick="document.getElementById('form-turnos').reset()" title="Borrar">
+      <img src="/static/icons/borrar.png" alt="Borrar" />
+    </button>
+    <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
+      <img src="/static/icons/microfono.png" alt="Voz" />
+    </button>
+  </div>
+
+  <script src="/static/js/funciones-pdf.js"></script>
+  <script>
+    function activarVoz() {
+      const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+      recognition.lang = "es-ES";
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.onresult = function(event) {
+        const texto = event.results[0][0].transcript;
+        const campo = document.activeElement;
+        if (campo && (campo.tagName === "INPUT" || campo.tagName === "TEXTAREA")) {
+          campo.value += (campo.value ? " " : "") + texto;
+        }
+      };
+      recognition.start();
+    }
+  </script>
+</body>
+</html>

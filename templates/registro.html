@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;0,300;1,300&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registro de Pacientes</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+  <style>
+    body {
+      background-color: #083C4A;
+      font-family: 'Poppins', sans-serif;
+      color: white;
+    }
+    header {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .logo-grande {
+      width: 180px;
+    }
+    h2 {
+      text-align: center;
+      font-style: italic;
+      font-weight: 600;
+      font-size: 28px;
+      margin-top: 10px;
+      color: white;
+    }
+    .formulario {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      align-items: center;
+    }
+    .etiqueta-campo {
+      width: 100%;
+      max-width: 400px;
+    }
+    .etiqueta-campo span {
+      font-weight: 400;
+      font-size: 1.1rem;
+      text-align: left;
+      color: white;
+      display: block;
+      margin-bottom: 5px;
+    }
+    .formulario input,
+    .formulario select {
+      width: 100%;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: none;
+      font-family: 'Poppins', sans-serif;
+      color: black;
+      font-weight: 400;
+      font-size: 1.1rem;
+      height: 36px;
+      box-sizing: border-box;
+    }
+    input[type="date"] {
+      height: 36px;
+    }
+    .botones-flotantes {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .botones-flotantes button,
+    .botones-flotantes a {
+      background-color: #4A90E2;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .botones-flotantes img {
+      width: 30px;
+      height: 30px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="/static/icons/icono-registro.png" alt="Registro de Pacientes" class="logo-grande" />
+  </header>
+
+  <main>
+    <h2>Registro de Pacientes</h2>
+    <form class="formulario" id="form-registro">
+
+      <label class="etiqueta-campo">
+        <span>Nombre del Paciente:</span>
+        <input type="text" name="nombre" required />
+      </label>
+
+      <label class="etiqueta-campo">
+        <span>Fecha de Nacimiento:</span>
+        <input type="date" name="fecha_nacimiento" required />
+      </label>
+
+      <label class="etiqueta-campo">
+        <span>DNI:</span>
+        <input type="text" name="dni" required />
+      </label>
+
+      <label class="etiqueta-campo">
+        <span>Dirección:</span>
+        <input type="text" name="direccion" required />
+      </label>
+
+      <label class="etiqueta-campo">
+        <span>Teléfono:</span>
+        <input type="tel" name="telefono" required />
+      </label>
+
+      <label class="etiqueta-campo">
+        <span>Obra Social:</span>
+        <select name="obra_social" required>
+          <option value="">Seleccionar</option>
+          <option value="si">Sí</option>
+          <option value="no">No</option>
+        </select>
+      </label>
+
+      <label class="etiqueta-campo">
+        <span>Sexo:</span>
+        <select name="sexo" required>
+          <option value="">Seleccionar</option>
+          <option value="femenino">Femenino</option>
+          <option value="masculino">Masculino</option>
+          <option value="no_binario">No Binario</option>
+        </select>
+      </label>
+
+      <label class="etiqueta-campo">
+        <span>Contacto de Emergencia:</span>
+        <input type="text" name="contacto_emergencia" required />
+      </label>
+    </form>
+  </main>
+
+  <div class="botones-flotantes">
+    <button title="Guardar" onclick="guardarPDF()">
+      <img src="/static/icons/guardar.png" alt="Guardar" />
+    </button>
+    <a href="/index" title="Volver al Menú">
+      <img src="/static/icons/enviar.png" alt="Volver al Menú" />
+    </a>
+    <button onclick="window.print()" title="Imprimir">
+      <img src="/static/icons/imprimir.png" alt="Imprimir" />
+    </button>
+    <button onclick="document.getElementById('form-registro').reset()" title="Borrar">
+      <img src="/static/icons/borrar.png" alt="Borrar" />
+    </button>
+    <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
+      <img src="/static/icons/microfono.png" alt="Voz" />
+    </button>
+  </div>
+
+  <script>
+    function activarVoz() {
+      const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+      recognition.lang = "es-ES";
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.onresult = function(event) {
+        const texto = event.results[0][0].transcript;
+        const campo = document.activeElement;
+        if (campo && (campo.tagName === "INPUT" || campo.tagName === "TEXTAREA")) {
+          campo.value += (campo.value ? " " : "") + texto;
+        }
+      };
+      recognition.start();
+    }
+  </script>
+</body>
+</html>

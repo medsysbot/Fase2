@@ -74,6 +74,10 @@ async def check_db():
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
+@app.get("/splash", response_class=HTMLResponse)
+async def splash(request: Request):
+    return templates.TemplateResponse("splash_screen.html", {"request": request})
+
 @app.get("/index", response_class=HTMLResponse)
 async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
@@ -117,3 +121,4 @@ async def busqueda(request: Request):
 @app.get("/estudios", response_class=HTMLResponse, dependencies=[rol_requerido(["director"])])
 async def estudios(request: Request):
     return templates.TemplateResponse("estudios.html", {"request": request})
+

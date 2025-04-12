@@ -96,7 +96,7 @@
 
   <div class="busqueda">
     <input type="text" id="busqueda" placeholder="Buscar estudio por nombre..." />
-    <button onclick="buscarEstudio()">🔍</button>
+    <button onclick="buscarEstudio()" title="Buscar">🔍</button>
   </div>
 
   <div class="visor-pdf">
@@ -152,7 +152,13 @@
     }
 
     function buscarEstudio() {
-      alert("Buscar estudio: función aún no implementada.");
+      const nombre = document.getElementById("busqueda").value.trim();
+      const visor = document.getElementById("pdf-visor");
+      if (nombre) {
+        visor.src = `/static/doc/${nombre}.pdf`;
+      } else {
+        alert("Por favor, introduce un nombre de archivo.");
+      }
     }
   </script>
 </body>

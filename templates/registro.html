@@ -2,171 +2,62 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;0,300;1,300&display=swap" rel="stylesheet" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Registro de Pacientes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="/static/styles.css" />
-  <style>
-    body {
-      background-color: #083C4A;
-      font-family: 'Poppins', sans-serif;
-      color: white;
-    }
-    header {
-      text-align: center;
-      margin-top: 20px;
-    }
-    .logo-grande {
-      width: 180px;
-    }
-    h2 {
-      text-align: center;
-      font-style: italic;
-      font-weight: 600;
-      font-size: 28px;
-      margin-top: 10px;
-      color: white;
-    }
-    .formulario {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px;
-      align-items: center;
-    }
-    .etiqueta-campo {
-      width: 100%;
-      max-width: 400px;
-    }
-    .etiqueta-campo span {
-      font-weight: 400;
-      font-size: 1.1rem;
-      text-align: left;
-      color: white;
-      display: block;
-      margin-bottom: 5px;
-    }
-    .formulario input,
-    .formulario select {
-      width: 100%;
-      padding: 6px 10px;
-      border-radius: 8px;
-      border: none;
-      font-family: 'Poppins', sans-serif;
-      color: black;
-      font-weight: 400;
-      font-size: 1.1rem;
-      height: 36px;
-      box-sizing: border-box;
-    }
-    input[type="date"] {
-      height: 36px;
-    }
-    .botones-flotantes {
-      position: fixed;
-      right: 20px;
-      bottom: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-    .botones-flotantes button,
-    .botones-flotantes a {
-      background-color: #4A90E2;
-      border: none;
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .botones-flotantes img {
-      width: 30px;
-      height: 30px;
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
 </head>
-<body>
-  <header>
-    <img src="/static/icons/icono-registro.png" alt="Registro de Pacientes" class="logo-grande" />
+<body style="background-color: #083C4A; font-family: 'Poppins', sans-serif; color: white; margin: 0; padding: 0;">
+  <header style="text-align: center; margin-top: 20px;">
+    <img src="/static/icons/icono-registro.png" alt="Registro" class="logo-grande" style="width: 120px; height: auto; margin-bottom: 10px;" />
+    <h2 style="font-style: italic; font-weight: 600; font-size: 28px; color: white; margin-top: 10px;">Registro de Pacientes</h2>
   </header>
 
   <main>
-    <h2>Registro de Pacientes</h2>
-    <form class="formulario" id="form-registro">
-
-      <label class="etiqueta-campo">
-        <span>Nombre del Paciente:</span>
+    <form class="formulario" id="form-registro" style="display: flex; flex-direction: column; gap: 20px; max-width: 600px; margin: 0 auto; padding: 20px; align-items: center;">
+      <label class="etiqueta-campo" style="width: 100%; max-width: 400px;">
+        <span>Nombre Completo:</span>
         <input type="text" name="nombre" required />
       </label>
-
-      <label class="etiqueta-campo">
-        <span>Fecha de Nacimiento:</span>
-        <input type="date" name="fecha_nacimiento" required />
-      </label>
-
-      <label class="etiqueta-campo">
+      <label class="etiqueta-campo" style="width: 100%; max-width: 400px;">
         <span>DNI:</span>
         <input type="text" name="dni" required />
       </label>
-
-      <label class="etiqueta-campo">
-        <span>Dirección:</span>
-        <input type="text" name="direccion" required />
-      </label>
-
-      <label class="etiqueta-campo">
+      <label class="etiqueta-campo" style="width: 100%; max-width: 400px;">
         <span>Teléfono:</span>
         <input type="tel" name="telefono" required />
       </label>
-
-      <label class="etiqueta-campo">
-        <span>Obra Social:</span>
-        <select name="obra_social" required>
-          <option value="">Seleccionar</option>
-          <option value="si">Sí</option>
-          <option value="no">No</option>
-        </select>
-      </label>
-
-      <label class="etiqueta-campo">
-        <span>Sexo:</span>
-        <select name="sexo" required>
-          <option value="">Seleccionar</option>
-          <option value="femenino">Femenino</option>
-          <option value="masculino">Masculino</option>
-          <option value="no_binario">No Binario</option>
-        </select>
-      </label>
-
-      <label class="etiqueta-campo">
-        <span>Contacto de Emergencia:</span>
-        <input type="text" name="contacto_emergencia" required />
+      <label class="etiqueta-campo" style="width: 100%; max-width: 400px;">
+        <span>Fecha de Nacimiento:</span>
+        <input type="date" name="fecha_nacimiento" required />
       </label>
     </form>
+
+    <div class="visor-pdf" style="margin-top: 40px; text-align: center;">
+      <h3>Vista previa del documento PDF:</h3>
+      <iframe id="pdf-visor" src="/static/doc/registro-generado.pdf" type="application/pdf" style="width: 90%; height: 500px; border: 2px solid #09394f; border-radius: 10px;"></iframe>
+    </div>
   </main>
 
-  <div class="botones-flotantes">
-    <button title="Guardar" onclick="guardarPDF()">
-      <img src="/static/icons/guardar.png" alt="Guardar" />
+  <div class="botones-flotantes" style="position: fixed; right: 20px; bottom: 20px; display: flex; flex-direction: column; gap: 15px; z-index: 1000;">
+    <button type="button" onclick="guardarPDF()" title="Guardar" style="background-color: #4A90E2; border: none; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+      <img src="/static/icons/guardar.png" alt="Guardar" style="width: 30px; height: 30px;" />
     </button>
-    <a href="/index" title="Volver al Menú">
-      <img src="/static/icons/enviar.png" alt="Volver al Menú" />
-    </a>
-    <button onclick="window.print()" title="Imprimir">
-      <img src="/static/icons/imprimir.png" alt="Imprimir" />
+    <button type="submit" form="form-registro" title="Enviar" style="background-color: #4A90E2; border: none; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+      <img src="/static/icons/enviar.png" alt="Enviar" style="width: 30px; height: 30px;" />
     </button>
-    <button onclick="document.getElementById('form-registro').reset()" title="Borrar">
-      <img src="/static/icons/borrar.png" alt="Borrar" />
+    <button type="button" onclick="imprimirPDF()" title="Imprimir" style="background-color: #4A90E2; border: none; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+      <img src="/static/icons/imprimir.png" alt="Imprimir" style="width: 30px; height: 30px;" />
     </button>
-    <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
-      <img src="/static/icons/microfono.png" alt="Voz" />
+    <button type="button" onclick="document.getElementById('form-registro').reset()" title="Borrar" style="background-color: #4A90E2; border: none; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+      <img src="/static/icons/borrar.png" alt="Borrar" style="width: 30px; height: 30px;" />
+    </button>
+    <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz" style="background-color: #4A90E2; border: none; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+      <img src="/static/icons/microfono.png" alt="Voz" style="width: 30px; height: 30px;" />
     </button>
   </div>
 
+  <script src="/static/js/funciones-pdf.js"></script>
   <script>
     function activarVoz() {
       const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
@@ -181,6 +72,15 @@
         }
       };
       recognition.start();
+    }
+
+    function imprimirPDF() {
+      const visor = document.getElementById("pdf-visor");
+      if (visor) visor.contentWindow.print();
+    }
+
+    function guardarPDF() {
+      alert("Funcionalidad de guardado aún no implementada.");
     }
   </script>
 </body>

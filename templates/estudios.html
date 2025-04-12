@@ -1,111 +1,159 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
   <title>Estudios Médicos</title>
-  <link rel="stylesheet" href="/static/styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/static/styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
   <style>
     body {
-      background-color: #083a51;
-      color: white;
+      background-color: #083C4A;
       font-family: 'Poppins', sans-serif;
-      text-align: center;
-      padding: 20px;
-    }
-    h1 {
-      font-size: 28px;
-      margin-bottom: 20px;
-    }
-    input[type="file"] {
-      margin-bottom: 10px;
-    }
-    button, a {
-      margin: 5px;
-      padding: 10px 20px;
-      background-color: #0d4352;
       color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-    }
-    ul {
-      list-style: none;
+      margin: 0;
       padding: 0;
     }
-    li {
-      margin: 10px 0;
+    header {
+      text-align: center;
+      margin-top: 20px;
     }
-    .acciones {
-      display: inline-flex;
-      gap: 10px;
+    .logo-grande {
+      width: 120px;
+      height: auto;
+      margin-bottom: 10px;
+    }
+    h2 {
+      text-align: center;
+      font-style: italic;
+      font-weight: 600;
+      font-size: 28px;
+      color: white;
+      margin-top: 10px;
+    }
+    .visor-pdf {
+      margin-top: 40px;
+      text-align: center;
+    }
+    .visor-pdf iframe {
+      width: 90%;
+      height: 500px;
+      border: 2px solid #09394f;
+      border-radius: 10px;
+    }
+    .botones-flotantes {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      z-index: 1000;
+    }
+    .botones-flotantes button {
+      background-color: #4A90E2;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .botones-flotantes img {
+      width: 30px;
+      height: 30px;
+    }
+    .busqueda {
+      text-align: center;
+      margin-top: 30px;
+    }
+    .busqueda input[type="text"] {
+      padding: 8px;
+      width: 300px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+    }
+    .busqueda button {
+      padding: 8px 16px;
+      margin-left: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      background-color: #4A90E2;
+      color: white;
     }
   </style>
 </head>
 <body>
-  <h1>Estudios Médicos</h1>
+  <header>
+    <img src="/static/icons/estudios.png" alt="Estudios Médicos" class="logo-grande" />
+    <h2>Estudios Médicos</h2>
+  </header>
 
-  <form id="form-subida">
-    <input type="file" name="archivo" accept=".pdf,.jpg,.jpeg,.png" required>
-    <button type="submit">Subir Estudio</button>
-  </form>
+  <div class="busqueda">
+    <input type="text" id="busqueda" placeholder="Buscar estudio por nombre..." />
+    <button onclick="buscarEstudio()">🔍</button>
+  </div>
 
-  <h2>Archivos Subidos</h2>
-  <ul id="lista-estudios"></ul>
+  <div class="visor-pdf">
+    <h3>Vista previa del estudio:</h3>
+    <iframe id="pdf-visor" src="/static/doc/estudio-ejemplo.pdf" type="application/pdf"></iframe>
+  </div>
+
+  <div class="botones-flotantes">
+    <button onclick="guardarPDF()" title="Guardar">
+      <img src="/static/icons/guardar.png" alt="Guardar" />
+    </button>
+    <button onclick="document.getElementById('busqueda').value = '';" title="Borrar">
+      <img src="/static/icons/borrar.png" alt="Borrar" />
+    </button>
+    <button onclick="imprimirPDF()" title="Imprimir">
+      <img src="/static/icons/imprimir.png" alt="Imprimir" />
+    </button>
+    <button ondblclick="activarVoz()" title="Reconocimiento por voz">
+      <img src="/static/icons/microfono.png" alt="Voz" />
+    </button>
+    <button onclick="enviarFormulario()" title="Enviar">
+      <img src="/static/icons/enviar.png" alt="Enviar" />
+    </button>
+  </div>
 
   <script>
-    async function cargarEstudios() {
-      const response = await fetch('/listar-estudios');
-      const data = await response.json();
-      const lista = document.getElementById('lista-estudios');
-      lista.innerHTML = '';
-
-      if (data.archivos) {
-        data.archivos.forEach(nombre => {
-          const li = document.createElement('li');
-          li.innerHTML = `
-            ${nombre}
-            <div class="acciones">
-              <a href="/descargar-estudio/${nombre}" target="_blank">Descargar</a>
-              <button onclick="eliminar('${nombre}')">Eliminar</button>
-            </div>
-          `;
-          lista.appendChild(li);
-        });
-      } else {
-        lista.innerHTML = '<li>No se encontraron archivos</li>';
-      }
+    function activarVoz() {
+      const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+      recognition.lang = "es-ES";
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.onresult = function(event) {
+        const texto = event.results[0][0].transcript;
+        const campo = document.activeElement;
+        if (campo && (campo.tagName === "INPUT" || campo.tagName === "TEXTAREA")) {
+          campo.value += (campo.value ? " " : "") + texto;
+        }
+      };
+      recognition.start();
     }
 
-    async function eliminar(nombre) {
-      const formData = new FormData();
-      formData.append('nombre_archivo', nombre);
-      const response = await fetch('/eliminar-estudio', {
-        method: 'POST',
-        body: formData
-      });
-      const data = await response.json();
-      alert(data.message);
-      cargarEstudios();
+    function imprimirPDF() {
+      const visor = document.getElementById("pdf-visor");
+      if (visor) visor.contentWindow.print();
     }
 
-    document.getElementById('form-subida').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const form = e.target;
-      const formData = new FormData(form);
-      const response = await fetch('/subir-estudio', {
-        method: 'POST',
-        body: formData
-      });
-      const data = await response.json();
-      alert(data.message);
-      form.reset();
-      cargarEstudios();
-    });
+    function guardarPDF() {
+      alert("Funcionalidad de guardado aún no implementada.");
+    }
 
-    window.onload = cargarEstudios;
+    function enviarFormulario() {
+      alert("Formulario enviado correctamente.");
+    }
+
+    function buscarEstudio() {
+      alert("Buscar estudio: función aún no implementada.");
+    }
   </script>
 </body>
 </html>

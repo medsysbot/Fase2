@@ -31,6 +31,17 @@
       color: white;
       margin-top: 10px;
     }
+    .etiqueta-campo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 30px;
+    }
+    .etiqueta-campo img {
+      width: 28px;
+      height: 28px;
+      margin-bottom: 5px;
+    }
     .visor-pdf {
       margin-top: 40px;
       text-align: center;
@@ -67,7 +78,7 @@
     }
     .busqueda {
       text-align: center;
-      margin-top: 30px;
+      margin-top: 10px;
     }
     .busqueda input[type="text"] {
       padding: 8px;
@@ -75,16 +86,6 @@
       border-radius: 8px;
       border: none;
       font-size: 16px;
-    }
-    .busqueda button {
-      padding: 8px 16px;
-      margin-left: 10px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      background-color: #4A90E2;
-      color: white;
     }
   </style>
 </head>
@@ -94,21 +95,25 @@
     <h2>Estudios Médicos</h2>
   </header>
 
+  <div class="etiqueta-campo">
+    <img src="/static/icons/busqueda.png" alt="Buscar" />
+    <span style="font-size: 18px; color: white;">Buscar</span>
+  </div>
+
   <div class="busqueda">
     <input type="text" id="busqueda" placeholder="Buscar estudio por nombre..." />
-    <button onclick="buscarEstudio()" title="Buscar">🔍</button>
   </div>
 
   <div class="visor-pdf">
     <h3>Vista previa del estudio:</h3>
-    <iframe id="pdf-visor" src="/static/doc/estudio-ejemplo.pdf" type="application/pdf"></iframe>
+    <iframe id="pdf-visor" src="" type="application/pdf"></iframe>
   </div>
 
   <div class="botones-flotantes">
     <button onclick="guardarPDF()" title="Guardar">
       <img src="/static/icons/guardar.png" alt="Guardar" />
     </button>
-    <button onclick="document.getElementById('busqueda').value = '';" title="Borrar">
+    <button onclick="document.getElementById('busqueda').value = ''" title="Borrar">
       <img src="/static/icons/borrar.png" alt="Borrar" />
     </button>
     <button onclick="imprimirPDF()" title="Imprimir">
@@ -116,6 +121,9 @@
     </button>
     <button ondblclick="activarVoz()" title="Reconocimiento por voz">
       <img src="/static/icons/microfono.png" alt="Voz" />
+    </button>
+    <button onclick="buscarEstudio()" title="Buscar">
+      <img src="/static/icons/busqueda.png" alt="Buscar" />
     </button>
     <button onclick="enviarFormulario()" title="Enviar">
       <img src="/static/icons/enviar.png" alt="Enviar" />

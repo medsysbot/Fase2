@@ -11,10 +11,12 @@ import logging
 # Configuración básica de logging
 logging.basicConfig(level=logging.INFO)
 
+# Configuración del entorno
 DEBUG = os.getenv("DEBUG", "false").lower() == "true"
 if DEBUG:
     logging.info("✅ MedSys se está ejecutando en modo DESARROLLO")
 
+# Inicialización de la app
 app = FastAPI()
 
 # Middleware CORS
@@ -25,10 +27,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Archivos Estáticos (Ruta absoluta para Railway)
-app.mount("/static", StaticFiles(directory="/app/static"), name="static")
+# Archivos Estáticos (Ruta relativa)
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Templates
+# Templates (Ruta relativa)
 templates = Jinja2Templates(directory="templates")
 
 # Clase PDF Base
@@ -64,10 +66,11 @@ def rol_requerido(roles_permitidos):
 async def root():
     return RedirectResponse(url="/splash")
 
+# Chequeo de base de datos (ruta relativa)
 @app.get("/check-db")
 async def check_db():
     try:
-        conn = sqlite3.connect("/app/static/doc/medsys.db")
+        conn = sqlite3.connect("static/doc/medsys.db")
         cursor = conn.cursor()
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
         tablas = cursor.fetchall()
@@ -77,6 +80,7 @@ async def check_db():
         logging.error(f"Error de base de datos: {e}")
         return {"status": "error", "message": str(e)}
 
+# Rutas HTML
 @app.get("/splash", response_class=HTMLResponse)
 async def splash(request: Request):
     return templates.TemplateResponse("splash_screen.html", {"request": request})
@@ -111,7 +115,7 @@ async def receta(request: Request):
 
 @app.get("/indicaciones", response_class=HTMLResponse, dependencies=[rol_requerido(["medico", "director"])])
 async def indicaciones(request: Request):
-    return templates.TemplateResponse("indicaciones.html", {"request": request})
+    return templates.TemplateResponse("indicaciones-medicas.html", {"request": request})
 
 @app.get("/turnos", response_class=HTMLResponse, dependencies=[rol_requerido(["secretaria", "director"])])
 async def turnos(request: Request):
@@ -125,6 +129,7 @@ async def busqueda(request: Request):
 async def estudios(request: Request):
     return templates.TemplateResponse("estudios.html", {"request": request})
 
+# Endpoint de prueba simple
 @app.get("/prueba", response_class=HTMLResponse)
 async def prueba():
     return "<h1>Prueba exitosa</h1>"

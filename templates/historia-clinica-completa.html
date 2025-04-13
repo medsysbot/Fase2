@@ -1,5 +1,3 @@
-<!-- pegalo como reemplazo completo -->
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -8,83 +6,60 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="/static/styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
-  <style>
-    body { background-color: #083C4A; font-family: 'Poppins', sans-serif; color: white; margin: 0; padding: 0; }
-    header { text-align: center; margin-top: 20px; }
-    .logo-grande { width: 120px; height: auto; margin-bottom: 10px; }
-    h2 { text-align: center; font-style: italic; font-weight: 600; font-size: 28px; color: white; margin-top: 10px; }
-    .formulario {
-      display: flex; flex-direction: column; gap: 20px;
-      max-width: 600px; margin: 0 auto; padding: 20px; align-items: center;
-    }
-    .etiqueta-campo { width: 100%; max-width: 400px; }
-    .etiqueta-campo span {
-      font-weight: 400; font-size: 17.6px; text-align: left;
-      color: white; display: block; margin-bottom: 5px;
-    }
-    .formulario input, .formulario textarea {
-      width: 100%; padding: 6px 10px; border-radius: 8px; border: none;
-      font-size: 17.6px; font-weight: 400; color: black; height: 36px;
-      box-sizing: border-box;
-    }
-    .formulario textarea { height: auto; resize: vertical; }
-    .vista-previa { display: block; margin-top: 10px; max-height: 100px; }
-    .btn-eliminar {
-      margin-top: 5px; background-color: crimson;
-      border: none; color: white; padding: 4px 8px;
-      border-radius: 6px; cursor: pointer;
-    }
-    .visor-pdf { margin-top: 40px; text-align: center; }
-    .visor-pdf iframe {
-      width: 90%; height: 500px; border: 2px solid #09394f;
-      border-radius: 10px;
-    }
-    .botones-flotantes {
-      position: fixed; right: 20px; bottom: 20px;
-      display: flex; flex-direction: column; gap: 15px; z-index: 1000;
-    }
-    .botones-flotantes button {
-      background-color: #4A90E2; border: none;
-      border-radius: 50%; width: 60px; height: 60px;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .botones-flotantes img { width: 30px; height: 30px; }
-  </style>
 </head>
-<body>
-  <header>
-    <img src="/static/icons/icono-historia-clinica-completa.png" alt="Logo MedSys" class="logo-grande" />
-    <h2>Historia Clínica Completa</h2>
+<body style="background-color: #083C4A; font-family: 'Poppins', sans-serif; color: white; margin: 0; padding: 0;">
+
+  <header style="text-align: center; margin-top: 20px;">
+    <img src="/static/icons/icono-historia-clinica-completa.png" alt="Historia Clínica Completa" class="logo-grande" style="width: 120px; height: auto; margin-bottom: 10px;" />
+    <h2 style="font-style: italic; font-weight: 600; font-size: 28px; margin-top: 10px;">Historia Clínica Completa</h2>
   </header>
 
   <main>
-    <form class="formulario" id="form-completa">
-      <!-- ... [todos los campos del formulario iguales, no cambié nada] ... -->
+    <form class="formulario" id="form-completa" style="display: flex; flex-direction: column; gap: 20px; max-width: 600px; margin: 0 auto; padding: 20px; align-items: center;">
+      <label class="etiqueta-campo"><span>Nombre del Paciente:</span><input type="text" name="nombre" required /></label>
+      <label class="etiqueta-campo"><span>Fecha de Nacimiento:</span><input type="date" name="fecha_nacimiento" required /></label>
+      <label class="etiqueta-campo"><span>Edad:</span><input type="number" name="edad" required /></label>
+      <label class="etiqueta-campo"><span>Sexo:</span>
+        <select name="sexo" required>
+          <option value="femenino">Femenino</option>
+          <option value="masculino">Masculino</option>
+          <option value="no_binario">No Binario</option>
+        </select>
+      </label>
+      <label class="etiqueta-campo"><span>DNI:</span><input type="text" name="dni" required /></label>
+      <label class="etiqueta-campo"><span>Domicilio:</span><input type="text" name="domicilio" /></label>
+      <label class="etiqueta-campo"><span>Teléfono:</span><input type="tel" name="telefono" /></label>
+      <label class="etiqueta-campo"><span>Correo Electrónico:</span><input type="email" name="email" /></label>
+      <label class="etiqueta-campo"><span>Obra Social / Prepaga:</span><input type="text" name="obra_social" /></label>
+      <label class="etiqueta-campo"><span>Número de Afiliado:</span><input type="text" name="afiliado" /></label>
+      <label class="etiqueta-campo"><span>Antecedentes Personales:</span><textarea name="antecedentes_personales"></textarea></label>
+      <label class="etiqueta-campo"><span>Antecedentes Familiares:</span><textarea name="antecedentes_familiares"></textarea></label>
+      <label class="etiqueta-campo"><span>Hábitos:</span><textarea name="habitos"></textarea></label>
+      <label class="etiqueta-campo"><span>Enfermedades Crónicas:</span><textarea name="enfermedades_cronicas"></textarea></label>
+      <label class="etiqueta-campo"><span>Cirugías y Hospitalizaciones:</span><textarea name="cirugias"></textarea></label>
+      <label class="etiqueta-campo"><span>Medicación Actual:</span><textarea name="medicacion"></textarea></label>
+      <label class="etiqueta-campo"><span>Estudios Complementarios:</span><textarea name="estudios"></textarea></label>
+      <label class="etiqueta-campo"><span>Motivo de Consulta:</span><textarea name="motivo_consulta"></textarea></label>
+      <label class="etiqueta-campo"><span>Diagnóstico Actual:</span><textarea name="diagnostico"></textarea></label>
+      <label class="etiqueta-campo"><span>Tratamiento Indicado:</span><textarea name="tratamiento"></textarea></label>
+      <label class="etiqueta-campo"><span>Instrucciones / Recomendaciones:</span><textarea name="recomendaciones"></textarea></label>
+      <label class="etiqueta-campo"><span>Fecha de Próxima Consulta:</span><input type="date" name="proxima_consulta" /></label>
+      <label class="etiqueta-campo"><span>Profesional:</span><input type="text" name="profesional" /></label>
+      <label class="etiqueta-campo"><span>Sello y Matrícula:</span><input type="text" name="matricula" /></label>
     </form>
 
-    <div class="visor-pdf">
+    <div class="visor-pdf" style="margin-top: 40px; text-align: center;">
       <h3>Vista previa del documento PDF:</h3>
-      <iframe id="pdf-visor" src="" style="display:none;"></iframe>
-      <p id="mensaje-error" style="color: lightcoral;"></p>
+      <iframe id="pdf-visor" src="/static/doc/HISTORIA_CLINICA_COMPLETA.pdf" type="application/pdf" style="width: 90%; height: 500px; border: 2px solid #09394f; border-radius: 10px;"></iframe>
     </div>
   </main>
 
   <div class="botones-flotantes">
-    <button type="button" onclick="guardarPDF()" title="Guardar">
-      <img src="/static/icons/guardar.png" alt="Guardar" />
-    </button>
-    <button type="submit" form="form-completa" title="Enviar">
-      <img src="/static/icons/enviar.png" alt="Enviar" />
-    </button>
-    <button type="button" onclick="imprimirPDF()" title="Imprimir">
-      <img src="/static/icons/imprimir.png" alt="Imprimir" />
-    </button>
-    <button type="button" onclick="document.getElementById('form-completa').reset()" title="Borrar">
-      <img src="/static/icons/borrar.png" alt="Borrar" />
-    </button>
-    <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
-      <img src="/static/icons/microfono.png" alt="Voz" />
-    </button>
+    <button type="button" onclick="guardarPDF()" title="Guardar"><img src="/static/icons/guardar.png" alt="Guardar" /></button>
+    <button type="submit" form="form-completa" title="Enviar"><img src="/static/icons/enviar.png" alt="Enviar" /></button>
+    <button type="button" onclick="imprimirPDF()" title="Imprimir"><img src="/static/icons/imprimir.png" alt="Imprimir" /></button>
+    <button type="button" onclick="document.getElementById('form-completa').reset()" title="Borrar"><img src="/static/icons/borrar.png" alt="Borrar" /></button>
+    <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz"><img src="/static/icons/microfono.png" alt="Voz" /></button>
   </div>
 
   <script src="/static/js/funciones-pdf.js"></script>
@@ -96,57 +71,20 @@
       recognition.interimResults = false;
       recognition.onresult = function(event) {
         const texto = event.results[0][0].transcript;
-        const campoActivo = document.activeElement;
-        if (campoActivo && (campoActivo.tagName === 'INPUT' || campoActivo.tagName === 'TEXTAREA')) {
-          campoActivo.value += (campoActivo.value ? ' ' : '') + texto;
+        const campo = document.activeElement;
+        if (campo && (campo.tagName === "INPUT" || campo.tagName === "TEXTAREA")) {
+          campo.value += (campo.value ? " " : "") + texto;
         }
       };
       recognition.start();
     }
-
-    function mostrarVistaPrevia(input, imgId, btnId) {
-      const file = input.files[0];
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        const img = document.getElementById(imgId);
-        const btn = document.getElementById(btnId);
-        img.src = e.target.result;
-        img.style.display = "block";
-        btn.style.display = "inline-block";
-        input.style.display = "none";
-      };
-      if (file) reader.readAsDataURL(file);
-    }
-
-    function eliminarImagen(inputId, imgId, btnId) {
-      document.getElementById(inputId).value = "";
-      document.getElementById(imgId).src = "";
-      document.getElementById(imgId).style.display = "none";
-      document.getElementById(btnId).style.display = "none";
-      document.getElementById(inputId).style.display = "block";
-    }
-
-    // Cargar PDF solo si existe
-    window.onload = function () {
+    function imprimirPDF() {
       const visor = document.getElementById("pdf-visor");
-      const error = document.getElementById("mensaje-error");
-      const pdfURL = "/static/doc/historia-clinica-completa-generada.pdf";
-
-      fetch(pdfURL, { method: 'HEAD' }).then(res => {
-        if (res.ok) {
-          visor.src = pdfURL;
-          visor.style.display = "block";
-          error.textContent = "";
-        } else {
-          visor.style.display = "none";
-          error.textContent = "El archivo PDF aún no está disponible.";
-        }
-      }).catch(() => {
-        visor.style.display = "none";
-        error.textContent = "No se pudo cargar el visor PDF.";
-      });
-    };
+      if (visor) visor.contentWindow.print();
+    }
+    function guardarPDF() {
+      alert("Funcionalidad aún no implementada.");
+    }
   </script>
 </body>
 </html>
-

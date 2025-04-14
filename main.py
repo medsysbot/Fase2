@@ -26,7 +26,7 @@ templates = Jinja2Templates(directory="templates")
 # ---------------- Ruta base (redirige al Splash) ----------------
 @app.get("/login", response_class=HTMLResponse)
 async def login(request: Request):
-    return templates. TemplateResponse("login-backend-secure.html", {request: request})
+    return templates.TemplateResponse("login.html", {"request": request})
 
 # ---------------- Rutas HTML ----------------
 @app.get("/index", response_class=HTMLResponse)

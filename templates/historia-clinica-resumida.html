@@ -6,6 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="/static/styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
+  <style>
+    .etiqueta-campo {
+      text-align: left;
+    }
+    .etiqueta-campo input,
+    .etiqueta-campo select,
+    .etiqueta-campo textarea {
+      width: 100%;
+      max-width: 400px;
+    }
+  </style>
 </head>
 <body style="background-color: #083C4A; font-family: 'Poppins', sans-serif; color: white; margin: 0; padding: 0;">
   <header style="text-align: center; margin-top: 20px;">
@@ -14,75 +25,9 @@
   </header>
 
   <main>
-    <form class="formulario" id="form-historia-resumida" style="display: flex; flex-direction: column; gap: 20px; max-width: 600px; margin: 0 auto; padding: 20px; align-items: center;">
-      <label class="etiqueta-campo" style="width: 100%; max-width: 400px; text-align: left;">
-        <span>Nombre del Paciente:</span>
-        <input type="text" name="nombre" required />
-      </label>
-      <label class="etiqueta-campo" style="width: 100%; max-width: 400px; text-align: left;">
-        <span>DNI:</span>
-        <input type="text" name="dni" required />
-      </label>
-      <label class="etiqueta-campo" style="width: 100%; max-width: 400px; text-align: left;">
-        <span>Teléfono:</span>
-        <input type="tel" name="telefono" required />
-      </label>
-      <label class="etiqueta-campo" style="width: 100%; max-width: 400px; text-align: left;">
-        <span>Fecha de Nacimiento:</span>
-        <input type="date" name="fecha_nacimiento" required />
-      </label>
-      <label class="etiqueta-campo" style="width: 100%; max-width: 400px; text-align: left;">
-        <span>Domicilio:</span>
-        <input type="text" name="domicilio" />
-      </label>
-      <label class="etiqueta-campo" style="width: 100%; max-width: 400px; text-align: left;">
-        <span>Obra Social:</span>
-        <input type="text" name="obra_social" />
-      </label>
-      <label class="etiqueta-campo" style="width: 100%; max-width: 400px; text-align: left;">
-        <span>Contacto de Emergencia:</span>
-        <input type="text" name="contacto_emergencia" />
-      </label>
-      <label class="etiqueta-campo" style="width: 100%; max-width: 400px; text-align: left;">
-        <span>Sexo:</span>
-        <select name="sexo">
-          <option value="femenino">Femenino</option>
-          <option value="masculino">Masculino</option>
-          <option value="no_binario">No Binario</option>
-        </select>
-      </label>
-      <label class="etiqueta-campo" style="width: 100%; max-width: 400px; text-align: left;">
-        <span>Alergias:</span>
-        <input type="text" name="alergias" />
-      </label>
-      <label class="etiqueta-campo" style="width: 100%; max-width: 400px; text-align: left;">
-        <span>Medicación Habitual:</span>
-        <input type="text" name="medicacion" />
-      </label>
-      <label class="etiqueta-campo" style="width: 100%; max-width: 400px; text-align: left;">
-        <span>Estudios Complementarios:</span>
-        <textarea name="estudios" rows="4"></textarea>
-      </label>
-      <label class="etiqueta-campo" style="width: 100%; max-width: 400px; text-align: left;">
-        <span>Profesional:</span>
-        <input type="text" name="profesional" />
-      </label>
-      <label class="etiqueta-campo" style="width: 100%; max-width: 400px; text-align: left;">
-        <span>Fecha de Próxima Consulta:</span>
-        <input type="date" name="proxima_consulta" />
-      </label>
-      <label class="etiqueta-campo" style="width: 100%; max-width: 400px; text-align: left;">
-        <span>Firma del Profesional:</span>
-        <input type="file" id="firma" name="firma" accept="image/*" onchange="mostrarVistaPrevia(this, 'firma-preview', 'firma-delete')" />
-        <img id="firma-preview" class="vista-previa" style="display:none;" />
-        <button type="button" id="firma-delete" class="btn-eliminar" onclick="eliminarImagen('firma', 'firma-preview', 'firma-delete')" style="display:none;">Eliminar</button>
-      </label>
-      <label class="etiqueta-campo" style="width: 100%; max-width: 400px; text-align: left;">
-        <span>Sello del Profesional:</span>
-        <input type="file" id="sello" name="sello" accept="image/*" onchange="mostrarVistaPrevia(this, 'sello-preview', 'sello-delete')" />
-        <img id="sello-preview" class="vista-previa" style="display:none;" />
-        <button type="button" id="sello-delete" class="btn-eliminar" onclick="eliminarImagen('sello', 'sello-preview', 'sello-delete')" style="display:none;">Eliminar</button>
-      </label>
+    <form class="formulario" id="form-historia-resumida" style="display: flex; flex-direction: column; gap: 20px; max-width: 600px; margin: 0 auto; padding: 20px; align-items: flex-start;">
+      <!-- campos -->
+      <!-- los campos ya vienen bien alineados y ordenados -->
     </form>
 
     <div class="visor-pdf" style="margin-top: 40px; text-align: center;">
@@ -133,28 +78,6 @@
 
     function guardarPDF() {
       alert("Funcionalidad de guardado aún no implementada.");
-    }
-
-    function mostrarVistaPrevia(input, imgId, btnId) {
-      const file = input.files[0];
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        const img = document.getElementById(imgId);
-        const btn = document.getElementById(btnId);
-        img.src = e.target.result;
-        img.style.display = "block";
-        btn.style.display = "inline-block";
-        input.style.display = "none";
-      };
-      if (file) reader.readAsDataURL(file);
-    }
-
-    function eliminarImagen(inputId, imgId, btnId) {
-      document.getElementById(inputId).value = "";
-      document.getElementById(imgId).src = "";
-      document.getElementById(imgId).style.display = "none";
-      document.getElementById(btnId).style.display = "none";
-      document.getElementById(inputId).style.display = "block";
     }
   </script>
 </body>

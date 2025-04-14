@@ -1,0 +1,51 @@
+from fastapi import FastAPI, Request, Form, HTTPException, Depends
+from fastapi.responses import RedirectResponse, HTMLResponse
+from fastapi.templating import Jinja2Templates
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+import sqlite3, os
+
+app = FastAPI()
+
+# Middleware CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Directorios
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
+
+# Ruta splash inicial
+@app.get("/", response_class=HTMLResponse)
+async def splash(request: Request):
+    return templates.TemplateResponse("splash_screen.html", {"request": request})
+
+# Página de login (GET)
+@app.get("/login", response_class=HTMLResponse)
+async def login_get(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request, "error": ""})
+
+# Lógica de login (POST)
+@app.post("/login", response_class=HTMLResponse)
+async def login_post(request: Request, usuario: str = Form(...), contrasena: str = Form(...)):
+    conn = sqlite3.connect("static/doc/medsys.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT rol FROM usuarios WHERE usuario = ? AND contrasena = ?", (usuario, contrasena))
+    result = cursor.fetchone()
+    conn.close()
+
+    if result:
+        rol = result[0]
+        # Redirección con parámetro de rol
+        return RedirectResponse(url=f"/index?rol={rol}", status_code=302)
+    else:
+        return templates.TemplateResponse("login.html", {"request": request, "error": "Credenciales incorrectas"})
+
+# Ruta de index para usuarios autenticados
+@app.get("/index", response_class=HTMLResponse)
+async def index(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})

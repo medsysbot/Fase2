@@ -121,3 +121,7 @@ async def subir_estudio(archivo: UploadFile = File(...)):
         f.write(contenido)
 
     return {"status": "success", "message": "Archivo subido correctamente"}
+
+@app.get("/", response_class=HTMLResponse)
+async def inicio(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})

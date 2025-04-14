@@ -24,9 +24,9 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 # ---------------- Ruta base (redirige al Splash) ----------------
-@app.get("/", response_class=RedirectResponse)
-async def root():
-    return RedirectResponse(url="/splash")
+@app.get("/login", response_class=HTMLResponse)
+async def login(request: Request):
+    return templates. TemplateResponse("login-backend-secure.html", {request: request})
 
 # ---------------- Rutas HTML ----------------
 @app.get("/index", response_class=HTMLResponse)

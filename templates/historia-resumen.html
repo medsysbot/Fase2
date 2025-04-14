@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Historia Clínica Resumida</title>
+  <title>Historia-resumen</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="/static/styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
@@ -20,8 +20,8 @@
 </head>
 <body style="background-color: #083C4A; font-family: 'Poppins', sans-serif; color: white; margin: 0; padding: 0;">
   <header style="text-align: center; margin-top: 20px;">
-    <img src="/static/icons/icono-historia.png" alt="Historia Clínica Resumida" class="logo-grande" style="width: 120px; height: auto; margin-bottom: 10px;" />
-    <h2 style="font-style: italic; font-weight: 600; font-size: 28px; color: white; margin-top: 10px;">Historia Clínica Resumida</h2>
+    <img src="/static/icons/icono-historia.png" alt="Historia-resumen" class="logo-grande" style="width: 120px; height: auto; margin-bottom: 10px;" />
+    <h2 style="font-style: italic; font-weight: 600; font-size: 28px; color: white; margin-top: 10px;">Historia-Resumen</h2>
   </header>
 
   <main>
@@ -32,7 +32,7 @@
 
     <div class="visor-pdf" style="margin-top: 40px; text-align: center;">
       <h3>Vista previa del documento PDF:</h3>
-      <iframe id="pdf-visor" src="/static/doc/historia-clinica-resumida-generada.pdf" type="application/pdf" style="width: 90%; height: 500px; border: 2px solid #09394f; border-radius: 10px;"></iframe>
+      <iframe id="pdf-visor" src="/static/doc/historia-resumen-generada.pdf" type="application/pdf" style="width: 90%; height: 500px; border: 2px solid #09394f; border-radius: 10px;"></iframe>
     </div>
   </main>
 
@@ -40,13 +40,13 @@
     <button type="button" onclick="guardarPDF()" title="Guardar" style="background-color: #4A90E2; border: none; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
       <img src="/static/icons/guardar.png" alt="Guardar" style="width: 30px; height: 30px;" />
     </button>
-    <button type="submit" form="form-historia-resumida" title="Enviar" style="background-color: #4A90E2; border: none; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+    <button type="submit" form="form-historia-resumen" title="Enviar" style="background-color: #4A90E2; border: none; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
       <img src="/static/icons/enviar.png" alt="Enviar" style="width: 30px; height: 30px;" />
     </button>
     <button type="button" onclick="imprimirPDF()" title="Imprimir" style="background-color: #4A90E2; border: none; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
       <img src="/static/icons/imprimir.png" alt="Imprimir" style="width: 30px; height: 30px;" />
     </button>
-    <button type="button" onclick="document.getElementById('form-historia-resumida').reset()" title="Borrar" style="background-color: #4A90E2; border: none; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+    <button type="button" onclick="document.getElementById('form-historia-resumen').reset()" title="Borrar" style="background-color: #4A90E2; border: none; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
       <img src="/static/icons/borrar.png" alt="Borrar" style="width: 30px; height: 30px;" />
     </button>
     <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz" style="background-color: #4A90E2; border: none; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">

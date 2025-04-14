@@ -125,3 +125,12 @@ async def subir_estudio(archivo: UploadFile = File(...)):
 @app.get("/", response_class=HTMLResponse)
 async def inicio(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
+
+
+@app.get("/", response_class=HTMLResponse)
+async def splash_inicio(request: Request):
+    return templates.TemplateResponse("splash_screen.html", {"request": request})
+
+@app.get("/splash-final", response_class=HTMLResponse)
+async def splash_final(request: Request):
+    return templates.TemplateResponse("splash_final.html", {"request": request})

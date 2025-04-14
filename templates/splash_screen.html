@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MedSys – Splash Screen</title>
-  <link rel="stylesheet" href="/static/styles.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MEDISYS</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;0,600;1,600&display=swap" rel="stylesheet">
   <style>
     body {
@@ -19,26 +18,44 @@
       justify-content: center;
       height: 100vh;
       text-align: center;
+      overflow: hidden;
       animation: fadeout 1s ease-in-out forwards;
-      animation-delay: 2.5s;
+      animation-delay: 4.5s;
     }
 
     .logo-splash {
-      width: 220px;
-      margin-bottom: 20px;
-      animation: fadein 1.5s ease-in-out;
+      width: 80px;
+      animation: growLogo 3s ease-in-out forwards;
     }
 
     .eslogan {
       font-size: 20px;
       font-style: italic;
       font-weight: 600;
-      animation: fadein 1.5s ease-in-out;
+      opacity: 0;
+      animation: fadein 2s ease-in-out forwards;
+      animation-delay: 1.5s;
+    }
+
+    @keyframes growLogo {
+      0% {
+        opacity: 0;
+        transform: scale(0.2);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.2);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+        width: 220px;
+      }
     }
 
     @keyframes fadein {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     @keyframes fadeout {
@@ -47,8 +64,8 @@
   </style>
   <script>
     setTimeout(() => {
-      window.location.href = "/index";
-    }, 3500);
+      window.location.href = "/login";
+    }, 5000);
   </script>
 </head>
 <body>

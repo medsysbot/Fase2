@@ -1,13 +1,15 @@
-from fastapi import FastAPI, Request, Form, HTTPException, Depends
-from fastapi.responses import RedirectResponse, HTMLResponse
-from fastapi.templating import Jinja2Templates
+from fastapi import FastAPI, Request, Form, UploadFile, File, HTTPException, Depends
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-import sqlite3, os
+from fpdf import FPDF
+import sqlite3
+import os
 
 app = FastAPI()
 
-# Middleware CORS
+# ---------------- CORS ----------------
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -15,37 +17,59 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Directorios
+# ---------------- Archivos Estáticos ----------------
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# ---------------- Templates ----------------
 templates = Jinja2Templates(directory="templates")
 
-# Ruta splash inicial
-@app.get("/", response_class=HTMLResponse)
-async def splash(request: Request):
-    return templates.TemplateResponse("splash_screen.html", {"request": request})
+# ---------------- Clase PDF Base ----------------
+class MedSysPDF(FPDF):
+    def header(self):
+        try:
+            self.image("static/icons/logo1.png", x=10, y=8, w=30)
+        except:
+            pass
+        self.set_font("Arial", 'B', 14)
+        self.cell(0, 10, "MedSys - Documento Médico", ln=True, align="C")
+        self.ln(20)
 
-# Página de login (GET)
-@app.get("/login", response_class=HTMLResponse)
-async def login_get(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request, "error": ""})
+    def cuerpo(self, campos: dict):
+        self.set_font("Arial", '', 12)
+        for campo, valor in campos.items():
+            self.multi_cell(0, 10, f"{campo}: {valor}")
+            self.ln(1)
 
-# Lógica de login (POST)
-@app.post("/login", response_class=HTMLResponse)
-async def login_post(request: Request, usuario: str = Form(...), contrasena: str = Form(...)):
+# ---------------- Base de Datos: Crear tabla usuarios ----------------
+def inicializar_base():
     conn = sqlite3.connect("static/doc/medsys.db")
     cursor = conn.cursor()
-    cursor.execute("SELECT rol FROM usuarios WHERE usuario = ? AND contrasena = ?", (usuario, contrasena))
-    result = cursor.fetchone()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS usuarios (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            usuario TEXT NOT NULL UNIQUE,
+            contrasena TEXT NOT NULL,
+            rol TEXT NOT NULL
+        )
+    """)
+    conn.commit()
     conn.close()
 
-    if result:
-        rol = result[0]
-        # Redirección con parámetro de rol
-        return RedirectResponse(url=f"/index?rol={rol}", status_code=302)
-    else:
-        return templates.TemplateResponse("login.html", {"request": request, "error": "Credenciales incorrectas"})
+inicializar_base()
 
-# Ruta de index para usuarios autenticados
-@app.get("/index", response_class=HTMLResponse)
-async def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+# ---------------- Ruta de Login ----------------
+@app.post("/login")
+async def login(usuario: str = Form(...), contrasena: str = Form(...), rol: str = Form(...)):
+    conn = sqlite3.connect("static/doc/medsys.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM usuarios WHERE usuario=? AND contrasena=? AND rol=?", (usuario, contrasena, rol))
+    user = cursor.fetchone()
+    conn.close()
+    if user:
+        if rol == "director":
+            return RedirectResponse(url="/index?rol=director", status_code=303)
+        elif rol == "medico":
+            return RedirectResponse(url="/index?rol=medico", status_code=303)
+        elif rol == "secretaria":
+            return RedirectResponse(url="/index?rol=secretaria", status_code=303)
+    return HTMLResponse("<h3 style='color:red;text-align:center;'>Usuario o contraseña incorrectos</h3>")

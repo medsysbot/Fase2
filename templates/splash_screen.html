@@ -3,44 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MEDISYS</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;0,600;1,600&display=swap" rel="stylesheet">
+  <title>MedSys - Inicio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
       padding: 0;
-      background-color: #083C4A;
-      color: white;
+      height: 100vh;
       font-family: 'Poppins', sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
       text-align: center;
-      overflow: hidden;
+      color: white;
+      background: linear-gradient(135deg, #083C4A, #0fb7a9);
       animation: fadeout 1s ease-in-out forwards;
-      animation-delay: 4.5s;
+      animation-delay: 4s;
     }
 
-    .logo-splash {
-      width: 80px;
-      animation: growLogo 3s ease-in-out forwards;
+    .logo {
+      width: 140px;
+      margin-bottom: 20px;
+      animation: zoomin 2s ease-in-out;
     }
 
     .eslogan {
       font-size: 20px;
-      font-style: italic;
-      font-weight: 600;
+      font-weight: 500;
       opacity: 0;
       animation: fadein 2s ease-in-out forwards;
       animation-delay: 1.5s;
     }
 
-    @keyframes growLogo {
-      0% { opacity: 0; transform: scale(0.2); }
-      50% { opacity: 1; transform: scale(1.2); }
-      100% { opacity: 1; transform: scale(1); width: 220px; }
+    @keyframes zoomin {
+      from { transform: scale(0.3); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
     }
 
     @keyframes fadein {
@@ -55,11 +53,11 @@
   <script>
     setTimeout(() => {
       window.location.href = "/login";
-    }, 5000);
+    }, 4000);
   </script>
 </head>
 <body>
-  <img src="/static/icons/logo-medsys.png" alt="Logo MEDISYS" class="logo-splash">
+  <img src="/static/icons/logo-medsys.png" alt="Logo MedSys" class="logo">
   <div class="eslogan">Salud inteligente para un mundo real.</div>
 </body>
 </html>

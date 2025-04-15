@@ -28,6 +28,11 @@ templates = Jinja2Templates(directory="templates")
 async def splash_inicio(request: Request):
     return templates.TemplateResponse("splash_screen.html", {"request": request})
 
+# ---------------- LOGIN (GET) ----------------
+@app.get("/login", response_class=HTMLResponse)
+async def login_get(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
 # ---------------- SPLASH FINAL ----------------
 @app.get("/splash-final", response_class=HTMLResponse)
 async def splash_final(request: Request):

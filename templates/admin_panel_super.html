@@ -11,33 +11,41 @@
       color: #d3d3d3;
       font-family: 'Poppins', sans-serif;
       margin: 0;
-      padding: 30px;
+      padding: 20px;
     }
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
+
+    h1, h2 {
       color: #1ab0e1;
+      text-align: center;
     }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 40px;
     }
+
     th, td {
-      padding: 12px;
+      padding: 10px;
       border: 1px solid #ffffff33;
       text-align: center;
     }
+
     th {
       background-color: #1ab0e1;
       color: white;
     }
-    td.estado-activo {
-      color: #4ef58c;
-    }
-    td.estado-inactivo {
-      color: #ff6e6e;
-    }
+
+    td.estado-activo { color: #4ef58c; }
+    td.estado-inactivo { color: #ff6e6e; }
+
     .btn {
       padding: 6px 12px;
       border: none;
@@ -45,77 +53,138 @@
       font-weight: bold;
       cursor: pointer;
     }
+
     .activar {
       background-color: #4ef58c;
       color: black;
     }
+
     .desactivar {
       background-color: #ff6e6e;
       color: white;
+    }
+
+    .formulario {
+      background: #ffffff08;
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .formulario input, .formulario select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      border: none;
+      background: #ffffff10;
+      color: #d3d3d3;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .formulario button {
+      background-color: #1ab0e1;
+      color: white;
+      font-weight: bold;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
   <h1>Panel de Control - Superadmin MEDSYS</h1>
+  <div class="container">
 
-  <h2>Instituciones Registradas</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>Estado</th>
-        <th>Acción</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for inst in instituciones %}
-      <tr>
-        <td>{{ inst[0] }}</td>
-        <td>{{ inst[1] }}</td>
-        <td class="estado-{{ 'activo' if inst[2] == 'activa' else 'inactivo' }}">{{ inst[2].capitalize() }}</td>
-        <td>
-          <form method="post" action="/admin/institucion/activar-desactivar">
-            <input type="hidden" name="institucion_id" value="{{ inst[0] }}">
-            <button class="btn {{ 'desactivar' if inst[2] == 'activa' else 'activar' }}" type="submit">
-              {{ 'Suspender' if inst[2] == 'activa' else 'Activar' }}
-            </button>
-          </form>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+    <div>
+      <h2>Instituciones Registradas</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Estado</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for inst in instituciones %}
+          <tr>
+            <td>{{ inst[0] }}</td>
+            <td>{{ inst[1] }}</td>
+            <td class="estado-{{ 'activo' if inst[2] == 'activa' else 'inactivo' }}">{{ inst[2].capitalize() }}</td>
+            <td>
+              <form method="post" action="/admin/institucion/activar-desactivar">
+                <input type="hidden" name="institucion_id" value="{{ inst[0] }}">
+                <button class="btn {{ 'desactivar' if inst[2] == 'activa' else 'activar' }}" type="submit">
+                  {{ 'Suspender' if inst[2] == 'activa' else 'Activar' }}
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
 
-  <h2>Usuarios Registrados</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Usuario</th>
-        <th>Rol</th>
-        <th>Institución</th>
-        <th>Estado</th>
-        <th>Acción</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for user in usuarios %}
-      <tr>
-        <td>{{ user[0] }}</td>
-        <td>{{ user[1] }}</td>
-        <td>{{ user[2] }}</td>
-        <td class="estado-{{ 'activo' if user[3] == 1 else 'inactivo' }}">{{ 'Activo' if user[3] == 1 else 'Inactivo' }}</td>
-        <td>
-          <form method="post" action="/admin/usuario/activar-desactivar">
-            <input type="hidden" name="usuario" value="{{ user[0] }}">
-            <button class="btn {{ 'desactivar' if user[3] == 1 else 'activar' }}" type="submit">
-              {{ 'Desactivar' if user[3] == 1 else 'Activar' }}
-            </button>
-          </form>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+      <div class="formulario">
+        <h3>Agregar nueva institución</h3>
+        <form method="post" action="/admin/institucion/agregar">
+          <input type="text" name="id" placeholder="ID (ej: metsys002)" required>
+          <input type="text" name="nombre" placeholder="Nombre de la institución" required>
+          <button type="submit">Agregar institución</button>
+        </form>
+      </div>
+    </div>
+
+    <div>
+      <h2>Usuarios Registrados</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Rol</th>
+            <th>Institución</th>
+            <th>Estado</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in usuarios %}
+          <tr>
+            <td>{{ user[0] }}</td>
+            <td>{{ user[1] }}</td>
+            <td>{{ user[2] }}</td>
+            <td class="estado-{{ 'activo' if user[3] == 1 else 'inactivo' }}">{{ 'Activo' if user[3] == 1 else 'Inactivo' }}</td>
+            <td>
+              <form method="post" action="/admin/usuario/activar-desactivar">
+                <input type="hidden" name="usuario" value="{{ user[0] }}">
+                <button class="btn {{ 'desactivar' if user[3] == 1 else 'activar' }}" type="submit">
+                  {{ 'Desactivar' if user[3] == 1 else 'Activar' }}
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="formulario">
+        <h3>Agregar nuevo usuario</h3>
+        <form method="post" action="/admin/usuario/agregar">
+          <input type="text" name="usuario" placeholder="Nombre de usuario" required>
+          <input type="password" name="contrasena" placeholder="Contraseña" required>
+          <select name="rol" required>
+            <option value="" disabled selected>Seleccionar rol</option>
+            <option value="director">Director</option>
+            <option value="medico">Médico</option>
+            <option value="secretaria">Secretaria</option>
+          </select>
+          <input type="text" name="institucion" placeholder="ID institución (ej: metsys001)" required>
+          <button type="submit">Agregar usuario</button>
+        </form>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

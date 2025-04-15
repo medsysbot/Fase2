@@ -1,107 +1,140 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Registro de Pacientes</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="/static/styles.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de Pacientes - MedSys</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/estilos.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #031b2d, #0a2e42);
+      color: #d3d3d3;
+    }
+
+    h2 {
+      text-align: center;
+      color: #1ab0e1;
+    }
+
+    form {
+      max-width: 600px;
+      margin: auto;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: none;
+      background-color: #ffffff15;
+      color: #ffffff;
+    }
+
+    .botones-flotantes {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 999;
+    }
+
+    .boton {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: #1ab0e1;
+      border: none;
+      cursor: pointer;
+      background-size: 60%;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    .boton.grande {
+      width: 70px;
+      height: 70px;
+      display: none;
+    }
+
+    .confirmacion {
+      display: none;
+      position: fixed;
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #142f42;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      text-align: center;
+      z-index: 1000;
+    }
+
+    .mensaje-exito {
+      text-align: center;
+      margin-top: 20px;
+      color: #4ef58c;
+      font-weight: bold;
+    }
+  </style>
 </head>
-<body style="background-color: #083C4A; font-family: 'Poppins', sans-serif; color: white; margin: 0; padding: 0;">
-  <header style="text-align: center; margin-top: 20px;">
-    <img src="/static/icons/icono-registro.png" alt="Registro" class="logo-grande" style="width: 120px; height: auto; margin-bottom: 10px;" />
-    <h2 style="font-style: italic; font-weight: 600; font-size: 28px; color: white; margin-top: 10px;">Registro de Pacientes</h2>
-  </header>
+<body>
+  <h2>Registro de Pacientes</h2>
 
-  <main>
-    <form class="formulario" id="form-registro" style="display: flex; flex-direction: column; gap: 20px; max-width: 600px; margin: 0 auto; padding: 20px; align-items: center;">
-      <label class="etiqueta-campo" style="width: 100%; max-width: 400px;">
-        <span>Nombre Completo:</span>
-        <input type="text" name="nombre" required />
-      </label>
-      <label class="etiqueta-campo" style="width: 100%; max-width: 400px;">
-        <span>DNI:</span>
-        <input type="text" name="dni" required />
-      </label>
-      <label class="etiqueta-campo" style="width: 100%; max-width: 400px;">
-        <span>Teléfono:</span>
-        <input type="tel" name="telefono" required />
-      </label>
-      <label class="etiqueta-campo" style="width: 100%; max-width: 400px;">
-        <span>Fecha de Nacimiento:</span>
-        <input type="date" name="fecha_nacimiento" required />
-      </label>
-      <label class="etiqueta-campo" style="width: 100%; max-width: 400px;">
-        <span>Domicilio:</span>
-        <input type="text" name="domicilio" />
-      </label>
-      <label class="etiqueta-campo" style="width: 100%; max-width: 400px;">
-        <span>Obra Social:</span>
-        <input type="text" name="obra_social" />
-      </label>
-      <label class="etiqueta-campo" style="width: 100%; max-width: 400px;">
-        <span>Contacto de Emergencia:</span>
-        <input type="text" name="contacto_emergencia" />
-      </label>
-      <label class="etiqueta-campo" style="width: 100%; max-width: 400px;">
-        <span>Sexo:</span>
-        <select name="sexo">
-          <option value="femenino">Femenino</option>
-          <option value="masculino">Masculino</option>
-          <option value="no_binario">No Binario</option>
-        </select>
-      </label>
-    </form>
+  <!-- Botones flotantes -->
+  <div class="botones-flotantes">
+    <button class="boton" id="btn-guardar" style="background-image: url('/static/icons/guardar.png');"></button>
+    <button class="boton" id="btn-enviar" style="background-image: url('/static/icons/enviar.png');"></button>
+    <button class="boton" id="btn-imprimir" style="background-image: url('/static/icons/imprimir.png');"></button>
+    <button class="boton" id="btn-borrar" style="background-image: url('/static/icons/borrar.png');"></button>
+    <button class="boton" id="btn-voz" ondblclick="activarDictado()" style="background-image: url('/static/icons/mic.png');"></button>
 
-    <div class="visor-pdf" style="margin-top: 40px; text-align: center;">
-      <h3>Vista previa del documento PDF:</h3>
-      <iframe id="pdf-visor" src="/static/doc/registro-generado.pdf" type="application/pdf" style="width: 90%; height: 500px; border: 2px solid #09394f; border-radius: 10px;"></iframe>
-    </div>
-  </main>
-
-  <div class="botones-flotantes" style="position: fixed; right: 20px; bottom: 20px; display: flex; flex-direction: column; gap: 15px; z-index: 1000;">
-    <button type="button" onclick="guardarPDF()" title="Guardar" style="background-color: #4A90E2; border: none; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
-      <img src="/static/icons/guardar.png" alt="Guardar" style="width: 30px; height: 30px;" />
-    </button>
-    <button type="submit" form="form-registro" title="Enviar" style="background-color: #4A90E2; border: none; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
-      <img src="/static/icons/enviar.png" alt="Enviar" style="width: 30px; height: 30px;" />
-    </button>
-    <button type="button" onclick="imprimirPDF()" title="Imprimir" style="background-color: #4A90E2; border: none; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
-      <img src="/static/icons/imprimir.png" alt="Imprimir" style="width: 30px; height: 30px;" />
-    </button>
-    <button type="button" onclick="document.getElementById('form-registro').reset()" title="Borrar" style="background-color: #4A90E2; border: none; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
-      <img src="/static/icons/borrar.png" alt="Borrar" style="width: 30px; height: 30px;" />
-    </button>
-    <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz" style="background-color: #4A90E2; border: none; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
-      <img src="/static/icons/microfono.png" alt="Voz" style="width: 30px; height: 30px;" />
-    </button>
+    <button class="boton grande" id="btn-close" style="background-image: url('/static/icons/close.png'); display: none;"></button>
+    <button class="boton grande" id="btn-confirmar" style="background-image: url('/static/icons/confirmar-borrado.png'); display: none;"></button>
   </div>
 
-  <script src="/static/js/funciones-pdf.js"></script>
-  <script>
-    function activarVoz() {
-      const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
-      recognition.lang = "es-ES";
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.onresult = function(event) {
-        const texto = event.results[0][0].transcript;
-        const campo = document.activeElement;
-        if (campo && (campo.tagName === "INPUT" || campo.tagName === "TEXTAREA")) {
-          campo.value += (campo.value ? " " : "") + texto;
-        }
-      };
-      recognition.start();
-    }
+  <!-- Formulario -->
+  <form id="formulario" method="post" action="/registro-paciente">
+    <label for="nombre">Nombre completo</label>
+    <input type="text" id="nombre" name="nombre" required>
 
-    function imprimirPDF() {
-      const visor = document.getElementById("pdf-visor");
-      if (visor) visor.contentWindow.print();
-    }
+    <label for="dni">DNI</label>
+    <input type="text" id="dni" name="dni">
 
-    function guardarPDF() {
-      alert("Funcionalidad de guardado aún no implementada.");
-    }
-  </script>
+    <label for="fecha_nacimiento">Fecha de Nacimiento</label>
+    <input type="date" id="fecha_nacimiento" name="fecha_nacimiento">
+
+    <label for="telefono">Teléfono</label>
+    <input type="text" id="telefono" name="telefono">
+
+    <label for="direccion">Dirección</label>
+    <input type="text" id="direccion" name="direccion">
+
+    <label for="institucion">Institución</label>
+    <input type="text" id="institucion" name="institucion" value="metsys001" readonly>
+  </form>
+
+  <!-- Confirmación -->
+  <div class="confirmacion" id="confirmacion-borrado">
+    <p>¿Desea borrar este paciente de la base de datos?</p>
+  </div>
+
+  <div class="mensaje-exito" id="mensaje-exito"></div>
+
+  <script src="/static/js/registro_voz.js"></script>
+  <script src="/static/js/registro_formulario.js"></script>
 </body>
 </html>

@@ -1,1 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Panel de Pacientes por Institución - MedSys</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #04151f, #0a2c40);
+      color: #d3d3d3;
+      padding: 30px;
+    }
 
+    h1 {
+      text-align: center;
+      color: #1ab0e1;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border: 1px solid #ffffff33;
+    }
+
+    th {
+      background-color: #1ab0e1;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #ffffff0a;
+    }
+
+    a.btn {
+      display: inline-block;
+      padding: 6px 12px;
+      background-color: #1ab0e1;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+
+    a.btn:hover {
+      background-color: #1590bb;
+    }
+  </style>
+</head>
+<body>
+  <h1>Instituciones - Pacientes Registrados</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Estado</th>
+        <th>Pacientes</th>
+        <th>Exportar</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for inst in instituciones %}
+      <tr>
+        <td>{{ inst.id }}</td>
+        <td>{{ inst.nombre }}</td>
+        <td>{{ inst.estado }}</td>
+        <td>{{ inst.total }}</td>
+        <td>
+          <a class="btn" href="/exportar-pacientes/{{ inst.id }}">Exportar PDF</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

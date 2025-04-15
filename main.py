@@ -23,10 +23,15 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # ---------------- Templates ----------------
 templates = Jinja2Templates(directory="templates")
 
-# ---------------- Ruta base (redirige al Splash) ----------------
-@app.get("/login", response_class=HTMLResponse)
-async def login(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+# ---------------- Ruta SPLASH INICIAL ----------------
+@app.get("/", response_class=HTMLResponse)
+async def splash_inicio(request: Request):
+    return templates.TemplateResponse("splash_screen.html", {"request": request})
+
+# ---------------- SPLASH FINAL ----------------
+@app.get("/splash-final", response_class=HTMLResponse)
+async def splash_final(request: Request):
+    return templates.TemplateResponse("splash_final.html", {"request": request})
 
 # ---------------- Rutas HTML ----------------
 @app.get("/index", response_class=HTMLResponse)

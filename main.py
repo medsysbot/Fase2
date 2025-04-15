@@ -24,7 +24,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 # ---------------- Ruta SPLASH INICIAL ----------------
-@app.get("/splash_screen", response_class=HTMLResponse)
+@app.get("/splash-screen", response_class=HTMLResponse)
 async def splash_inicio(request: Request):
     return templates.TemplateResponse("splash_screen.html", {"request": request})
 
@@ -45,6 +45,7 @@ async def login_post(request: Request, usuario: str = Form(...), contrasena: str
         return RedirectResponse(url="/splash-final", status_code=303)
     else:
         return templates.TemplateResponse("login.html", {"request": request, "error": "Usuario o contraseña incorrectos"})
+
 # ---------------- SPLASH FINAL ----------------
 @app.get("/splash-final", response_class=HTMLResponse)
 async def splash_final(request: Request):

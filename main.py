@@ -1,9 +1,8 @@
-from fastapi import FastAPI, Request, Form, UploadFile, File, HTTPException, Depends
+from fastapi import FastAPI, Request, Form, UploadFile, File, HTTPException
 from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from fpdf import FPDF
 import sqlite3
 import os
 
@@ -17,16 +16,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ---------------- Archivos estáticos ----------------
+# ---------------- Archivos Estáticos ----------------
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # ---------------- Templates ----------------
 templates = Jinja2Templates(directory="templates")
-
-# ---------------- Ruta base (redirige al Splash) ----------------
-@app.get("/login", response_class=HTMLResponse)
-async def login(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
 
 # ---------------- Rutas HTML ----------------
 @app.get("/index", response_class=HTMLResponse)
@@ -122,15 +116,30 @@ async def subir_estudio(archivo: UploadFile = File(...)):
 
     return {"status": "success", "message": "Archivo subido correctamente"}
 
-@app.get("/", response_class=HTMLResponse)
-async def inicio(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
-
-
+# ---------------- SPLASH INICIAL ----------------
 @app.get("/", response_class=HTMLResponse)
 async def splash_inicio(request: Request):
     return templates.TemplateResponse("splash_screen.html", {"request": request})
 
+# ---------------- SPLASH FINAL ----------------
 @app.get("/splash-final", response_class=HTMLResponse)
 async def splash_final(request: Request):
     return templates.TemplateResponse("splash_final.html", {"request": request})
+
+# ---------------- LOGIN (GET) ----------------
+@app.get("/login", response_class=HTMLResponse)
+async def login_get(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+# ---------------- LOGIN (POST) ----------------
+@app.post("/login")
+async def login_post(request: Request, usuario: str = Form(...), contrasena: str = Form(...), rol: str = Form(...)):
+    conn = sqlite3.connect("static/doc/medsys.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM usuarios WHERE usuario=? AND contrasena=? AND rol=?", (usuario, contrasena, rol))
+    user = cursor.fetchone()
+    conn.close()
+    if user:
+        return RedirectResponse(url="/splash-final", status_code=303)
+    else:
+        return templates.TemplateResponse("login.html", {"request": request, "error": "Usuario o contraseña incorrectos"})

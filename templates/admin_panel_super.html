@@ -1,1 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel Superadmin - MEDSYS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #04151f, #0a2c40);
+      color: #d3d3d3;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 30px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #1ab0e1;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 40px;
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #ffffff33;
+      text-align: center;
+    }
+    th {
+      background-color: #1ab0e1;
+      color: white;
+    }
+    td.estado-activo {
+      color: #4ef58c;
+    }
+    td.estado-inactivo {
+      color: #ff6e6e;
+    }
+    .btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .activar {
+      background-color: #4ef58c;
+      color: black;
+    }
+    .desactivar {
+      background-color: #ff6e6e;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>Panel de Control - Superadmin MEDSYS</h1>
 
+  <h2>Instituciones Registradas</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Estado</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for inst in instituciones %}
+      <tr>
+        <td>{{ inst[0] }}</td>
+        <td>{{ inst[1] }}</td>
+        <td class="estado-{{ 'activo' if inst[2] == 'activa' else 'inactivo' }}">{{ inst[2].capitalize() }}</td>
+        <td>
+          <form method="post" action="/admin/institucion/activar-desactivar">
+            <input type="hidden" name="institucion_id" value="{{ inst[0] }}">
+            <button class="btn {{ 'desactivar' if inst[2] == 'activa' else 'activar' }}" type="submit">
+              {{ 'Suspender' if inst[2] == 'activa' else 'Activar' }}
+            </button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h2>Usuarios Registrados</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Usuario</th>
+        <th>Rol</th>
+        <th>Institución</th>
+        <th>Estado</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in usuarios %}
+      <tr>
+        <td>{{ user[0] }}</td>
+        <td>{{ user[1] }}</td>
+        <td>{{ user[2] }}</td>
+        <td class="estado-{{ 'activo' if user[3] == 1 else 'inactivo' }}">{{ 'Activo' if user[3] == 1 else 'Inactivo' }}</td>
+        <td>
+          <form method="post" action="/admin/usuario/activar-desactivar">
+            <input type="hidden" name="usuario" value="{{ user[0] }}">
+            <button class="btn {{ 'desactivar' if user[3] == 1 else 'activar' }}" type="submit">
+              {{ 'Desactivar' if user[3] == 1 else 'Activar' }}
+            </button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

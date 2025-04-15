@@ -129,3 +129,6 @@ async def subir_estudio(archivo: UploadFile = File(...)):
 # ---------------- Incluir módulo de acciones pacientes ----------------
 from acciones_pacientes import router as pacientes_router
 app.include_router(pacientes_router)
+
+from admin_routes import router as admin_router
+app.include_router(admin_router)

@@ -7,8 +7,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
   <style>
     body {
-      background-color: #0d4352;
-      color: white;
+      background: linear-gradient(135deg, #02141f, #061f30);
+      color: #d3d3d3;
       font-family: 'Poppins', sans-serif;
       margin: 0;
       padding: 0;
@@ -17,45 +17,53 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      text-align: center;
       animation: fadeout 1s ease-in-out forwards;
-      animation-delay: 4s;
-    }
-
-    h1 {
-      font-size: 28px;
-      margin-bottom: 15px;
-    }
-
-    p {
-      font-size: 18px;
-      opacity: 0.9;
+      animation-delay: 4.5s;
     }
 
     .logo-final {
-      width: 160px;
+      width: 180px;
       margin-bottom: 20px;
       animation: pulse 2s infinite;
     }
 
+    .saludo {
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 10px;
+      animation: fadein 1s ease-in-out forwards;
+    }
+
+    .cargando {
+      font-size: 16px;
+      opacity: 0.8;
+    }
+
     @keyframes pulse {
       0% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.05); opacity: 0.8; }
+      50% { transform: scale(1.05); opacity: 0.85; }
       100% { transform: scale(1); opacity: 1; }
     }
 
     @keyframes fadeout {
       to { opacity: 0; }
     }
+
+    @keyframes fadein {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
   <script>
     setTimeout(() => {
       window.location.href = "/index";
-    }, 4000);
+    }, 5000);
   </script>
 </head>
 <body>
   <img src="/static/icons/logo-medsys.png" alt="Logo MedSys" class="logo-final">
-  <h1>Acceso concedido</h1>
-  <p>Redirigiendo al sistema...</p>
+  <div class="saludo">Bienvenida a <strong>MEDSYS</strong>, Dr. Andrea</div>
+  <div class="cargando">Cargando sistema...</div>
 </body>
 </html>

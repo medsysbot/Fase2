@@ -45,29 +45,14 @@ async def agregar_usuario(usuario: str = Form(...), contrasena: str = Form(...),
     conn.close()
     return HTMLResponse(content="<script>window.location.href='/admin/pacientes'</script>")
 
-   @router.get("/exportar-pacientes/{institucion_id}")
-async def exportar_pacientes(institucion_id: str):
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-
-    cursor.execute("SELECT * FROM pacientes WHERE institucion=?", (institucion_id,))
-    pacientes = cursor.fetchall()
-    columnas = [desc[0] for desc in cursor.description]
-
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", size=10)
-
-    for col in columnas:
-        pdf.cell(40, 10, col, 1)
-    pdf.ln()
-
-    for paciente in pacientes:
-        for dato in paciente:
-            pdf.cell(40, 10, str(dato), 1)
-        pdf.ln()
-
-    pdf.output("static/doc/pacientes_exportados.pdf")
-    conn.close()
-
-    return HTMLResponse(content="<script>alert('Exportación completada'); window.location.href='/admin/pacientes'</script>")
+ @router.get("/exportar-pacientes/{institucion_id}")
+ async def exportar_pacientes(institucion_id: int):
+    try:
+        conn = sqlite3.connect("static/doc/medsys.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM pacientes WHERE institucion_id=?", (institucion_id,))
+        pacientes = cursor.fetchall()
+        conn.close()
+        return {"status": "success", "pacientes": pacientes}
+    except Exception as e:
+        return {"status": "error", "detalle": str(e)}

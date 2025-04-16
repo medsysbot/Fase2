@@ -7,7 +7,7 @@ from fpdf import FPDF
 import sqlite3
 import os
 
-from starlette.middleware.sessions import SessionMiddleware
+app = FastAPI()
 
 # ---------------- CORS ----------------
 app.add_middleware(
@@ -17,9 +17,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ---------------- Sesiones ----------------
-app.add_middleware(SessionMiddleware, secret_key="clave-super-secreta")
-
 # ---------------- Archivos estáticos ----------------
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -27,44 +24,14 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 # ---------------- Ruta SPLASH INICIAL ----------------
-
-# Esta ruta captura el acceso directo desde la raíz "/"
-# Es la que se usa cuando alguien entra desde Railway u otra URL base
 @app.get("/", response_class=HTMLResponse)
-async def root_redirect(request: Request):
-    return templates.TemplateResponse("splash_screen.html", {"request": request})
-
-# Esta ruta permite acceder al Splash directamente desde otra parte del sistema si querés
-@app.get("/splash-screen", response_class=HTMLResponse)
 async def splash_inicio(request: Request):
     return templates.TemplateResponse("splash_screen.html", {"request": request})
 
-# ---------------- LOGIN (GET) ----------------
-@app.get("/login", response_class=HTMLResponse)
-async def login_get(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
-
-# ---------------- LOGIN (POST) ----------------
-@app.post("/login")
-async def login_post(request: Request, usuario: str = Form(...), contrasena: str = Form(...), rol: str = Form(...)):
-    import sqlite3
-
-    conn = sqlite3.connect("static/doc/medsys.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM usuarios WHERE usuario=? AND contrasena=? AND rol=? AND activo=1", (usuario, contrasena, rol))
-    user = cursor.fetchone()
-    conn.close()
-
-    if user:
-        request.session["usuario"] = usuario
-        request.session["rol"] = rol
-
-        return RedirectResponse(url="/splash-final", status_code=303)
-    else:
-        return templates.TemplateResponse("login.html", {
-            "request": request,
-            "error": "Usuario o contraseña incorrectos"
-        })
+# ---------------- SPLASH FINAL ----------------
+@app.get("/splash-final", response_class=HTMLResponse)
+async def splash_final(request: Request):
+    return templates.TemplateResponse("splash_final.html", {"request": request})
 
 # ---------------- Rutas HTML ----------------
 @app.get("/index", response_class=HTMLResponse)
@@ -107,42 +74,17 @@ async def turnos(request: Request):
 async def busqueda(request: Request):
     return templates.TemplateResponse("busqueda.html", {"request": request})
 
+@app.get("/splash", response_class=HTMLResponse)
+async def splash(request: Request):
+    return templates.TemplateResponse("splash_screen.html", {"request": request})
+
 @app.get("/estudios", response_class=HTMLResponse)
 async def estudios(request: Request):
     return templates.TemplateResponse("estudios.html", {"request": request})
 
-# ---------------- SPLASH FINAL ---------------
-@app.get("/splash-final", response_class=HTMLResponse)
-async def splash_final(request: Request):
-    import sqlite3
-
-    usuario_logueado = request.session.get("usuario")
-
-    conn = sqlite3.connect("static/doc/medsys.db")
-    cursor = conn.cursor()
-
-    cursor.execute("SELECT nombre, apellido, rol FROM usuarios WHERE usuario=?", (usuario_logueado,))
-    resultado = cursor.fetchone()
-
-    conn.close()
-
-    if resultado:
-        nombre, apellido, rol = resultado
-    else:
-        nombre, apellido, rol = "Invitado", "", "desconocido"
-
-    if rol in ["medico", "director"]:
-        titulo = "Doctora"
-    elif rol == "secretaria":
-        titulo = "Sra."
-    else:
-        titulo = ""
-
-    return templates.TemplateResponse("splash_final.html", {
-        "request": request,
-        "nombre": f"{nombre} {apellido}",
-        "titulo": titulo
-    })
+@app.get("/", response_class=HTMLResponse)
+async def inicio(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
 
 # ---------------- Listar archivos de estudios ----------------
 @app.get("/listar-estudios")

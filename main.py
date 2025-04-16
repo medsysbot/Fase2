@@ -7,6 +7,8 @@ from fpdf import FPDF
 import sqlite3
 import os
 
+from starlette.middleware.sessions import SessionMiddleware
+
 # ---------------- CORS ----------------
 app.add_middleware(
     CORSMiddleware,

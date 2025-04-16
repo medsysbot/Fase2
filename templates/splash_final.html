@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Acceso Exitoso</title>
+  <title>Splash Final</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
   <style>
     body {
-      background: linear-gradient(135deg, #02141f, #061f30);
-      color: #d3d3d3;
+      background: linear-gradient(135deg, #123e5a, #2ea8c9);
+      color: #ffffff;
       font-family: 'Poppins', sans-serif;
       margin: 0;
       padding: 0;
@@ -19,40 +19,45 @@
       align-items: center;
       text-align: center;
       animation: fadeout 1s ease-in-out forwards;
-      animation-delay: 4.5s;
+      animation-delay: 5s;
+    }
+
+    .logo-container {
+      width: 180px;
+      margin-bottom: 20px;
+      animation: oscilacion 1.2s ease-in-out infinite alternate;
     }
 
     .logo-final {
-      width: 180px;
-      margin-bottom: 20px;
-      animation: pulse 2s infinite;
+      width: 100%;
     }
 
-    .saludo {
+    @keyframes oscilacion {
+      0% { transform: translateY(0px); }
+      100% { transform: translateY(-10px); }
+    }
+
+    .saludo-linea1 {
       font-size: 20px;
-      font-weight: 500;
-      margin-bottom: 10px;
+      font-weight: 600;
+      margin-bottom: 8px;
       animation: fadein 1s ease-in-out forwards;
     }
 
-    .cargando {
-      font-size: 16px;
-      opacity: 0.8;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.05); opacity: 0.85; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    @keyframes fadeout {
-      to { opacity: 0; }
+    .saludo-linea2 {
+      font-size: 18px;
+      font-weight: 300;
+      opacity: 0.9;
+      animation: fadein 1.5s ease-in-out forwards;
     }
 
     @keyframes fadein {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeout {
+      to { opacity: 0; }
     }
   </style>
   <script>
@@ -62,8 +67,10 @@
   </script>
 </head>
 <body>
-  <img src="/static/icons/logo-medsys.png" alt="Logo MedSys" class="logo-final">
-  <div class="saludo">Bienvenida a <strong>MEDSYS</strong>, Dr. Andrea</div>
-  <div class="cargando">Cargando sistema...</div>
+  <div class="logo-container">
+    <img src="/static/icons/logo-medsys.png" alt="Logo MedSys" class="logo-final">
+  </div>
+  <div class="saludo-linea1">Bienvenida a <strong>MEDSYS</strong></div>
+  <div class="saludo-linea2">{{ titulo }} {{ nombre }}</div>
 </body>
 </html>

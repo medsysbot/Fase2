@@ -44,16 +44,24 @@ async def login_get(request: Request):
 # ---------------- LOGIN (POST) ----------------
 @app.post("/login")
 async def login_post(request: Request, usuario: str = Form(...), contrasena: str = Form(...), rol: str = Form(...)):
+    import sqlite3
+
     conn = sqlite3.connect("static/doc/medsys.db")
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM usuarios WHERE usuario=? AND contrasena=? AND rol=? AND activo=1", (usuario, contrasena, rol))
     user = cursor.fetchone()
     conn.close()
+
     if user:
+        request.session["usuario"] = usuario
+        request.session["rol"] = rol
+
         return RedirectResponse(url="/splash-final", status_code=303)
     else:
-        return templates.TemplateResponse("login.html", {"request": request, "error": "Usuario o contraseña incorrectos"})
-
+        return templates.TemplateResponse("login.html", {
+            "request": request,
+            "error": "Usuario o contraseña incorrectos"
+        })
 # ---------------- SPLASH FINAL ----------------
 @app.get("/splash-final", response_class=HTMLResponse)
 async def splash_final(request: Request):

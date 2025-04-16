@@ -108,10 +108,6 @@ async def busqueda(request: Request):
 async def estudios(request: Request):
     return templates.TemplateResponse("estudios.html", {"request": request})
 
-@app.get("/", response_class=HTMLResponse)
-async def inicio(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
-
 # ---------------- SPLASH FINAL ---------------
 @app.get("/splash-final", response_class=HTMLResponse)
 async def splash_final(request: Request):

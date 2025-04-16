@@ -64,6 +64,13 @@ async def login_post(request: Request, usuario: str = Form(...), contrasena: str
 async def splash_final(request: Request):
     usuario_logueado = request.session.get("usuario")
 
+    if not usuario_logueado:
+        return templates.TemplateResponse("splash_final.html", {
+            "request": request,
+            "nombre": "Invitado",
+            "titulo": ""
+        })
+
     conn = sqlite3.connect("static/doc/medsys.db")
     cursor = conn.cursor()
     cursor.execute("SELECT nombre, apellido, rol FROM usuarios WHERE usuario=?", (usuario_logueado,))
@@ -75,12 +82,7 @@ async def splash_final(request: Request):
     else:
         nombre, apellido, rol = "Invitado", "", "desconocido"
 
-    if rol in ["medico", "director"]:
-        titulo = "Doctora"
-    elif rol == "secretaria":
-        titulo = "Sra."
-    else:
-        titulo = ""
+    titulo = "Doctora" if rol in ["medico", "director"] else "Sra." if rol == "secretaria" else ""
 
     return templates.TemplateResponse("splash_final.html", {
         "request": request,

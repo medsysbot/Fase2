@@ -7,8 +7,6 @@ from fpdf import FPDF
 import sqlite3
 import os
 
-app = FastAPI()
-
 # ---------------- CORS ----------------
 app.add_middleware(
     CORSMiddleware,
@@ -16,6 +14,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ---------------- Sesiones ----------------
+app.add_middleware(SessionMiddleware, secret_key="clave-super-secreta")
 
 # ---------------- Archivos estáticos ----------------
 app.mount("/static", StaticFiles(directory="static"), name="static")

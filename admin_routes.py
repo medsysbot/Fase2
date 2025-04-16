@@ -1,37 +1,20 @@
-from fastapi import APIRouter, Form, Request
+from fastapi import APIRouter, Request, Form
 from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
-from fpdf import FPDF
 import sqlite3
 
 router = APIRouter()
-templates = Jinja2Templates(directory="templates")
 DB_PATH = "static/doc/medsys.db"
 
-@router.get("/admin/pacientes", response_class=HTMLResponse)
-async def panel_admin(request: Request):
+@router.post("/admin/usuario/activar-desactivar")
+async def activar_desactivar_usuario(usuario: str = Form(...)):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-
-    cursor.execute("SELECT * FROM instituciones")
-    instituciones = cursor.fetchall()
-
-    cursor.execute("SELECT * FROM usuarios")
-    usuarios = cursor.fetchall()
-
-    conn.close()
-    return templates.TemplateResponse("control_total.html", {
-        "request": request,
-        "instituciones": instituciones,
-        "usuarios": usuarios
-    })
-
-@router.post("/admin/institucion/agregar")
-async def agregar_institucion(nombre: str = Form(...)):
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO instituciones (nombre, activa) VALUES (?, 1)", (nombre,))
-    conn.commit()
+    cursor.execute("SELECT activo FROM usuarios WHERE usuario=?", (usuario,))
+    actual = cursor.fetchone()
+    if actual:
+        nuevo_estado = 0 if actual[0] == 1 else 1
+        cursor.execute("UPDATE usuarios SET activo=? WHERE usuario=?", (nuevo_estado, usuario))
+        conn.commit()
     conn.close()
     return HTMLResponse(content="<script>window.location.href='/admin/pacientes'</script>")
 
@@ -45,10 +28,10 @@ async def agregar_usuario(usuario: str = Form(...), contrasena: str = Form(...),
     conn.close()
     return HTMLResponse(content="<script>window.location.href='/admin/pacientes'</script>")
 
- @router.get("/exportar-pacientes/{institucion_id}")
- async def exportar_pacientes(institucion_id: int):
+@router.get("/exportar-pacientes/{institucion_id}")
+async def exportar_pacientes(institucion_id: int):
     try:
-        conn = sqlite3.connect("static/doc/medsys.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM pacientes WHERE institucion_id=?", (institucion_id,))
         pacientes = cursor.fetchall()

@@ -181,7 +181,4 @@ from acciones_pacientes import router as pacientes_router
 app.include_router(pacientes_router)
 
 from admin_routes import router as admin_router
-app.include_router(admin_router)
-
-from admin_db_inspect import router as inspect_router
-app.include_router(inspect_router)
+app.include_router(admin_router) 

@@ -26,7 +26,8 @@ async def admin_pacientes(request: Request):
     for inst in instituciones_raw:
         try:
             cursor.execute("SELECT COUNT(*) FROM pacientes WHERE institucion=?", (inst[0],))
-            total = cursor.fetchone()[0] if cursor.fetchone() else 0
+            result = cursor.fetchone()
+            total = result[0] if result else 0
         except:
             total = 0
         instituciones.append({
@@ -82,18 +83,27 @@ async def activar_desactivar_usuario(usuario: str = Form(...)):
     conn.close()
     return HTMLResponse(content="<script>window.location.href='/admin/pacientes'</script>")
 
-# ---------------- Agregar nuevo usuario ----------------
+# ---------------- Agregar nuevo usuario (con nombre y apellido) ----------------
 @router.post("/admin/usuario/agregar")
-async def agregar_usuario(usuario: str = Form(...), contrasena: str = Form(...), rol: str = Form(...), institucion: str = Form(...)):
+async def agregar_usuario(
+    usuario: str = Form(...),
+    contrasena: str = Form(...),
+    rol: str = Form(...),
+    institucion: str = Form(...),
+    nombre: str = Form(...),
+    apellido: str = Form(...)
+):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO usuarios (usuario, contrasena, rol, institucion, activo) VALUES (?, ?, ?, ?, 1)",
-                   (usuario, contrasena, rol, institucion))
+    cursor.execute("""
+        INSERT INTO usuarios (usuario, contrasena, rol, institucion, activo, nombre, apellido)
+        VALUES (?, ?, ?, ?, 1, ?, ?)
+    """, (usuario, contrasena, rol, institucion, nombre, apellido))
     conn.commit()
     conn.close()
     return HTMLResponse(content="<script>window.location.href='/admin/pacientes'</script>")
 
-# ---------------- Agregar nuevo paciente manual ----------------
+# ---------------- Agregar nuevo paciente ----------------
 @router.post("/admin/paciente/manual/agregar")
 async def agregar_paciente(
     nombre: str = Form(...),
@@ -113,7 +123,7 @@ async def agregar_paciente(
     conn.close()
     return HTMLResponse(content="<script>window.location.href='/admin/pacientes'</script>")
 
-# ---------------- Exportar pacientes de una institución ----------------
+# ---------------- Exportar pacientes PDF ----------------
 @router.get("/exportar-pacientes/{institucion_id}")
 async def exportar_pacientes(institucion_id: str):
     conn = sqlite3.connect(DB_PATH)

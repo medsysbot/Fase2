@@ -3,6 +3,7 @@ from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.sessions import SessionMiddleware
 from fpdf import FPDF
 import sqlite3
 import os
@@ -17,6 +18,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ---------------- Sesiones ----------------
+app.add_middleware(SessionMiddleware, secret_key="clave-super-secreta")
+
 # ---------------- Archivos estáticos ----------------
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -25,20 +29,18 @@ templates = Jinja2Templates(directory="templates")
 
 # ---------------- Ruta SPLASH INICIAL ----------------
 @app.get("/", response_class=HTMLResponse)
+async def root_redirect(request: Request):
+    return templates.TemplateResponse("splash_screen.html", {"request": request})
+
+@app.get("/splash-screen", response_class=HTMLResponse)
 async def splash_inicio(request: Request):
     return templates.TemplateResponse("splash_screen.html", {"request": request})
 
-# ---------------- SPLASH FINAL ----------------
-@app.get("/splash-final", response_class=HTMLResponse)
-async def splash_final(request: Request):
-    return templates.TemplateResponse("splash_final.html", {"request": request})
-
-# ---------------- LOGIN (GET) ----------------
+# ---------------- LOGIN ----------------
 @app.get("/login", response_class=HTMLResponse)
 async def login_get(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
-# ---------------- LOGIN (POST) ----------------
 @app.post("/login")
 async def login_post(request: Request, usuario: str = Form(...), contrasena: str = Form(...), rol: str = Form(...)):
     conn = sqlite3.connect("static/doc/medsys.db")
@@ -46,10 +48,45 @@ async def login_post(request: Request, usuario: str = Form(...), contrasena: str
     cursor.execute("SELECT * FROM usuarios WHERE usuario=? AND contrasena=? AND rol=? AND activo=1", (usuario, contrasena, rol))
     user = cursor.fetchone()
     conn.close()
+
     if user:
+        request.session["usuario"] = usuario
+        request.session["rol"] = rol
         return RedirectResponse(url="/splash-final", status_code=303)
     else:
-        return templates.TemplateResponse("login.html", {"request": request, "error": "Usuario o contraseña incorrectos"})
+        return templates.TemplateResponse("login.html", {
+            "request": request,
+            "error": "Usuario o contraseña incorrectos"
+        })
+
+# ---------------- SPLASH FINAL ----------------
+@app.get("/splash-final", response_class=HTMLResponse)
+async def splash_final(request: Request):
+    usuario_logueado = request.session.get("usuario")
+
+    conn = sqlite3.connect("static/doc/medsys.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT nombre, apellido, rol FROM usuarios WHERE usuario=?", (usuario_logueado,))
+    resultado = cursor.fetchone()
+    conn.close()
+
+    if resultado:
+        nombre, apellido, rol = resultado
+    else:
+        nombre, apellido, rol = "Invitado", "", "desconocido"
+
+    if rol in ["medico", "director"]:
+        titulo = "Doctora"
+    elif rol == "secretaria":
+        titulo = "Sra."
+    else:
+        titulo = ""
+
+    return templates.TemplateResponse("splash_final.html", {
+        "request": request,
+        "nombre": f"{nombre} {apellido}",
+        "titulo": titulo
+    })
 
 # ---------------- Rutas HTML ----------------
 @app.get("/index", response_class=HTMLResponse)
@@ -92,29 +129,19 @@ async def turnos(request: Request):
 async def busqueda(request: Request):
     return templates.TemplateResponse("busqueda.html", {"request": request})
 
-@app.get("/splash", response_class=HTMLResponse)
-async def splash(request: Request):
-    return templates.TemplateResponse("splash_screen.html", {"request": request})
-
 @app.get("/estudios", response_class=HTMLResponse)
 async def estudios(request: Request):
     return templates.TemplateResponse("estudios.html", {"request": request})
 
-@app.get("/", response_class=HTMLResponse)
-async def inicio(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
-
-# ---------------- Listar archivos de estudios ----------------
+# ---------------- Subida y gestión de archivos ----------------
 @app.get("/listar-estudios")
 async def listar_estudios():
     carpeta = "static/estudios"
     if os.path.exists(carpeta):
-        archivos = os.listdir(carpeta)
-        return {"archivos": archivos}
+        return {"archivos": os.listdir(carpeta)}
     else:
         raise HTTPException(status_code=404, detail="Directorio de estudios no encontrado")
 
-# ---------------- Eliminar estudio médico ----------------
 @app.post("/eliminar-estudio")
 async def eliminar_estudio(nombre_archivo: str = Form(...)):
     ruta = f"static/estudios/{nombre_archivo}"
@@ -124,7 +151,6 @@ async def eliminar_estudio(nombre_archivo: str = Form(...)):
     else:
         raise HTTPException(status_code=404, detail="Archivo no encontrado")
 
-# ---------------- Descargar estudio individual ----------------
 @app.get("/descargar-estudio/{nombre_archivo}")
 async def descargar_estudio(nombre_archivo: str):
     ruta = f"static/estudios/{nombre_archivo}"
@@ -133,7 +159,6 @@ async def descargar_estudio(nombre_archivo: str):
     else:
         raise HTTPException(status_code=404, detail="Archivo no encontrado")
 
-# ---------------- Subir estudio médico ----------------
 @app.post("/subir-estudio")
 async def subir_estudio(archivo: UploadFile = File(...)):
     extensiones_permitidas = [".pdf", ".jpg", ".jpeg", ".png"]
@@ -149,7 +174,7 @@ async def subir_estudio(archivo: UploadFile = File(...)):
 
     return {"status": "success", "message": "Archivo subido correctamente"}
 
-# ---------------- Incluir módulo de acciones pacientes ----------------
+# ---------------- Rutas de módulos externos ----------------
 from acciones_pacientes import router as pacientes_router
 app.include_router(pacientes_router)
 

@@ -108,6 +108,38 @@ async def estudios(request: Request):
 async def inicio(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
+@app.get("/splash-final", response_class=HTMLResponse)
+async def splash_final(request: Request):
+    import sqlite3
+
+    usuario_logueado = request.session.get("usuario")
+
+    conn = sqlite3.connect("static/doc/medsys.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT nombre, apellido, rol FROM usuarios WHERE usuario=?", (usuario_logueado,))
+    resultado = cursor.fetchone()
+
+    conn.close()
+
+    if resultado:
+        nombre, apellido, rol = resultado
+    else:
+        nombre, apellido, rol = "Invitado", "", "desconocido"
+
+    if rol in ["medico", "director"]:
+        titulo = "Doctora"
+    elif rol == "secretaria":
+        titulo = "Sra."
+    else:
+        titulo = ""
+
+    return templates.TemplateResponse("splash_final.html", {
+        "request": request,
+        "nombre": f"{nombre} {apellido}",
+        "titulo": titulo
+    })
+
 # ---------------- Listar archivos de estudios ----------------
 @app.get("/listar-estudios")
 async def listar_estudios():

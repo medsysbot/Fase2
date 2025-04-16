@@ -24,6 +24,14 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 # ---------------- Ruta SPLASH INICIAL ----------------
+
+# Esta ruta captura el acceso directo desde la raíz "/"
+# Es la que se usa cuando alguien entra desde Railway u otra URL base
+@app.get("/", response_class=HTMLResponse)
+async def root_redirect(request: Request):
+    return templates.TemplateResponse("splash_screen.html", {"request": request})
+
+# Esta ruta permite acceder al Splash directamente desde otra parte del sistema si querés
 @app.get("/splash-screen", response_class=HTMLResponse)
 async def splash_inicio(request: Request):
     return templates.TemplateResponse("splash_screen.html", {"request": request})

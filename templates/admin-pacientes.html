@@ -2,112 +2,96 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Panel General - MedSys</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+  <title>Panel de Administración</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
   <style>
     body {
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #04151f, #0a2c40);
-      color: #d3d3d3;
-      padding: 30px;
+      margin: 20px;
+      background-color: #f5f5f5;
+      color: #333;
     }
 
-    h1, h2, h3 {
-      text-align: center;
-      color: #1ab0e1;
+    h1 {
+      color: #0077aa;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      margin: 30px 0;
+      margin-bottom: 40px;
     }
 
     th, td {
+      border: 1px solid #ccc;
       padding: 10px;
-      text-align: center;
-      border: 1px solid #ffffff33;
+      text-align: left;
     }
 
     th {
-      background-color: #1ab0e1;
-      color: white;
+      background-color: #e0f7fa;
     }
 
-    tr:nth-child(even) {
-      background-color: #ffffff0a;
+    form {
+      margin-bottom: 30px;
+      padding: 15px;
+      background-color: #ffffff;
+      border: 1px solid #ccc;
     }
 
-    .btn {
-      padding: 6px 12px;
-      background-color: #1ab0e1;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .formulario {
-      margin-top: 40px;
-      background-color: #ffffff0a;
-      padding: 20px;
-      border-radius: 8px;
-    }
-
-    .formulario input, .formulario select {
-      width: 100%;
-      padding: 10px;
+    label {
+      display: block;
       margin-top: 10px;
-      margin-bottom: 20px;
-      border-radius: 4px;
-      border: none;
-      background: #ffffff10;
-      color: #d3d3d3;
-      font-family: 'Poppins', sans-serif;
     }
 
-    .formulario button {
-      background-color: #1ab0e1;
-      color: white;
-      font-weight: bold;
-      border: none;
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+    }
+
+    button {
       padding: 10px 20px;
-      border-radius: 6px;
+      background-color: #0077aa;
+      color: white;
+      border: none;
       cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #005b85;
     }
   </style>
 </head>
 <body>
+  <h1>Panel de Administración de Pacientes</h1>
 
-  <h1>Panel de Control Institucional - MedSys</h1>
-
-  <h2>Instituciones Registradas</h2>
+  <h2>Instituciones</h2>
   <table>
     <thead>
       <tr>
         <th>ID</th>
         <th>Nombre</th>
         <th>Estado</th>
-        <th>Pacientes</th>
+        <th>Total Pacientes</th>
         <th>Exportar</th>
       </tr>
     </thead>
     <tbody>
-      {% for inst in instituciones %}
+      {% for i in instituciones %}
       <tr>
-        <td>{{ inst.id }}</td>
-        <td>{{ inst.nombre }}</td>
-        <td>{{ inst.estado }}</td>
-        <td>{{ inst.total }}</td>
-        <td><a class="btn" href="/exportar-pacientes/{{ inst.id }}">Exportar PDF</a></td>
+        <td>{{ i.id }}</td>
+        <td>{{ i.nombre }}</td>
+        <td>{{ i.estado }}</td>
+        <td>{{ i.total }}</td>
+        <td><a href="/exportar-pacientes/{{ i.id }}">Exportar PDF</a></td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
 
-  <h2>Usuarios del Sistema</h2>
+  <h2>Usuarios</h2>
   <table>
     <thead>
       <tr>
@@ -119,18 +103,16 @@
       </tr>
     </thead>
     <tbody>
-      {% for user in usuarios %}
+      {% for u in usuarios %}
       <tr>
-        <td>{{ user.usuario }}</td>
-        <td>{{ user.rol }}</td>
-        <td>{{ user.institucion }}</td>
-        <td>{{ 'Activo' if user.activo == 1 else 'Inactivo' }}</td>
+        <td>{{ u.usuario }}</td>
+        <td>{{ u.rol }}</td>
+        <td>{{ u.institucion }}</td>
+        <td>{{ 'Activo' if u.activo else 'Suspendido' }}</td>
         <td>
-          <form method="post" action="/admin/usuario/activar-desactivar">
-            <input type="hidden" name="usuario" value="{{ user.usuario }}">
-            <button class="btn" type="submit">
-              {{ 'Desactivar' if user.activo == 1 else 'Activar' }}
-            </button>
+          <form action="/admin/usuario/activar-desactivar" method="post">
+            <input type="hidden" name="usuario" value="{{ u.usuario }}">
+            <button type="submit">{{ 'Desactivar' if u.activo else 'Activar' }}</button>
           </form>
         </td>
       </tr>
@@ -138,26 +120,28 @@
     </tbody>
   </table>
 
-    <h2>Agregar Nuevo Usuario</h2>
-  <form class="formulario" method="post" action="/admin/usuario/agregar">
-    <input type="text" name="usuario" placeholder="Usuario" required>
-    <input type="password" name="contrasena" placeholder="Contraseña" required>
-    <input type="text" name="nombre" placeholder="Nombre" required>
-    <input type="text" name="apellido" placeholder="Apellido" required>
+  <h3>Agregar Usuario</h3>
+  <form action="/admin/usuario/agregar" method="post">
+    <label>Usuario:</label>
+    <input type="text" name="usuario" required>
+
+    <label>Contraseña:</label>
+    <input type="text" name="contrasena" required>
+
+    <label>Rol:</label>
     <select name="rol" required>
       <option value="director">Director</option>
       <option value="medico">Médico</option>
       <option value="secretaria">Secretaria</option>
     </select>
-    <input type="text" name="institucion" placeholder="Institución" required>
-    <select name="activo">
-      <option value="1">Activo</option>
-      <option value="0">Inactivo</option>
-    </select>
+
+    <label>Institución:</label>
+    <input type="text" name="institucion" required>
+
     <button type="submit">Agregar Usuario</button>
   </form>
 
-  <h2>Pacientes Registrados</h2>
+  <h2>Pacientes</h2>
   <table>
     <thead>
       <tr>
@@ -185,17 +169,27 @@
     </tbody>
   </table>
 
-  <h2>Agregar Paciente Manualmente</h2>
-  <form class="formulario" method="post" action="/admin/paciente/manual/agregar">
-    <input type="text" name="nombre" placeholder="Nombre" required>
-    <input type="text" name="apellido" placeholder="Apellido" required>
-    <input type="text" name="dni" placeholder="DNI" required>
-    <input type="text" name="institucion" placeholder="Institución">
-    <input type="text" name="telefono" placeholder="Teléfono">
-    <input type="email" name="email" placeholder="Email">
+  <h3>Agregar Paciente</h3>
+  <form action="/admin/paciente/manual/agregar" method="post">
+    <label>Nombre:</label>
+    <input type="text" name="nombre" required>
+
+    <label>Apellido:</label>
+    <input type="text" name="apellido" required>
+
+    <label>DNI:</label>
+    <input type="text" name="dni" required>
+
+    <label>Institución:</label>
+    <input type="text" name="institucion" required>
+
+    <label>Teléfono:</label>
+    <input type="text" name="telefono" required>
+
+    <label>Email:</label>
+    <input type="email" name="email" required>
+
     <button type="submit">Agregar Paciente</button>
   </form>
-
 </body>
 </html>
-

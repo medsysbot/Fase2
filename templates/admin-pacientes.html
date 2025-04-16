@@ -13,7 +13,7 @@
       padding: 30px;
     }
 
-    h1, h2 {
+    h1, h2, h3 {
       text-align: center;
       color: #1ab0e1;
     }
@@ -80,6 +80,7 @@
   </style>
 </head>
 <body>
+
   <h1>Panel de Control Institucional - MedSys</h1>
 
   <h2>Instituciones Registradas</h2>
@@ -136,21 +137,3 @@
       {% endfor %}
     </tbody>
   </table>
-
-  <div class="formulario">
-    <h3>Agregar nuevo usuario</h3>
-    <form method="post" action="/admin/usuario/agregar">
-      <input type="text" name="usuario" placeholder="Nombre de usuario" required>
-      <input type="password" name="contrasena" placeholder="Contraseña" required>
-      <select name="rol" required>
-        <option value="" disabled selected>Seleccionar rol</option>
-        <option value="director">Director</option>
-        <option value="medico">Médico</option>
-        <option value="secretaria">Secretaria</option>
-      </select>
-      <input type="text" name="institucion" placeholder="ID institución (ej: metsys001)" required>
-      <button type="submit">Agregar usuario</button>
-    </form>
-  </div>
-</body>
-</html>

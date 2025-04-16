@@ -62,10 +62,6 @@ async def login_post(request: Request, usuario: str = Form(...), contrasena: str
             "request": request,
             "error": "Usuario o contraseña incorrectos"
         })
-# ---------------- SPLASH FINAL ----------------
-@app.get("/splash-final", response_class=HTMLResponse)
-async def splash_final(request: Request):
-    return templates.TemplateResponse("splash_final.html", {"request": request})
 
 # ---------------- Rutas HTML ----------------
 @app.get("/index", response_class=HTMLResponse)
@@ -116,6 +112,7 @@ async def estudios(request: Request):
 async def inicio(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
+# ---------------- SPLASH FINAL ---------------
 @app.get("/splash-final", response_class=HTMLResponse)
 async def splash_final(request: Request):
     import sqlite3

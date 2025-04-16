@@ -1,195 +1,127 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Panel de Administración</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <title>Panel Admin - MedSys</title>
   <style>
     body {
-      font-family: 'Poppins', sans-serif;
-      margin: 20px;
-      background-color: #f5f5f5;
-      color: #333;
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      margin: 0;
+      padding: 20px;
     }
-
-    h1 {
-      color: #0077aa;
+    h2 {
+      background: #2ea8c9;
+      color: white;
+      padding: 10px;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 40px;
+      margin-bottom: 30px;
     }
-
     th, td {
       border: 1px solid #ccc;
-      padding: 10px;
-      text-align: left;
-    }
-
-    th {
-      background-color: #e0f7fa;
-    }
-
-    form {
-      margin-bottom: 30px;
-      padding: 15px;
-      background-color: #ffffff;
-      border: 1px solid #ccc;
-    }
-
-    label {
-      display: block;
-      margin-top: 10px;
-    }
-
-    input, select {
-      width: 100%;
       padding: 8px;
-      margin-top: 5px;
-      margin-bottom: 15px;
     }
-
+    th {
+      background: #e0e0e0;
+    }
+    form {
+      margin-top: 20px;
+      padding: 15px;
+      background: #ffffff;
+      border: 1px solid #ddd;
+    }
+    input, select {
+      margin: 5px;
+      padding: 6px;
+      width: 180px;
+    }
     button {
-      padding: 10px 20px;
-      background-color: #0077aa;
+      padding: 8px 14px;
+      background: #2ea8c9;
       color: white;
       border: none;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #005b85;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
-  <h1>Panel de Administración de Pacientes</h1>
 
-  <h2>Instituciones</h2>
+  <h2>Instituciones Registradas</h2>
   <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>Estado</th>
-        <th>Total Pacientes</th>
-        <th>Exportar</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for i in instituciones %}
-      <tr>
-        <td>{{ i.id }}</td>
-        <td>{{ i.nombre }}</td>
-        <td>{{ i.estado }}</td>
-        <td>{{ i.total }}</td>
-        <td><a href="/exportar-pacientes/{{ i.id }}">Exportar PDF</a></td>
-      </tr>
-      {% endfor %}
-    </tbody>
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>Estado</th>
+      <th>Total Pacientes</th>
+      <th>Exportar</th>
+    </tr>
+    {% for i in instituciones %}
+    <tr>
+      <td>{{ i.id }}</td>
+      <td>{{ i.nombre }}</td>
+      <td>{{ i.estado }}</td>
+      <td>{{ i.total }}</td>
+      <td>
+        <a href="/exportar-pacientes/{{ i.id }}" target="_blank">PDF</a>
+      </td>
+    </tr>
+    {% endfor %}
   </table>
 
-  <h2>Usuarios</h2>
+  <h2>Usuarios Registrados</h2>
   <table>
-    <thead>
-      <tr>
-        <th>Usuario</th>
-        <th>Rol</th>
-        <th>Institución</th>
-        <th>Estado</th>
-        <th>Acción</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for u in usuarios %}
-      <tr>
-        <td>{{ u.usuario }}</td>
-        <td>{{ u.rol }}</td>
-        <td>{{ u.institucion }}</td>
-        <td>{{ 'Activo' if u.activo else 'Suspendido' }}</td>
-        <td>
-          <form action="/admin/usuario/activar-desactivar" method="post">
-            <input type="hidden" name="usuario" value="{{ u.usuario }}">
-            <button type="submit">{{ 'Desactivar' if u.activo else 'Activar' }}</button>
-          </form>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
+    <tr>
+      <th>Usuario</th>
+      <th>Rol</th>
+      <th>Institución</th>
+      <th>Activo</th>
+      <th>Acción</th>
+    </tr>
+    {% for u in usuarios %}
+    <tr>
+      <td>{{ u.usuario }}</td>
+      <td>{{ u.rol }}</td>
+      <td>{{ u.institucion }}</td>
+      <td>{{ "Sí" if u.activo == 1 else "No" }}</td>
+      <td>
+        <form action="/admin/usuario/activar-desactivar" method="post">
+          <input type="hidden" name="usuario" value="{{ u.usuario }}">
+          <button type="submit">Cambiar Estado</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
   </table>
 
-  <h3>Agregar Usuario</h3>
+  <h2>Agregar Nuevo Usuario</h2>
   <form action="/admin/usuario/agregar" method="post">
-    <label>Usuario:</label>
-    <input type="text" name="usuario" required>
-
-    <label>Contraseña:</label>
-    <input type="text" name="contrasena" required>
-
-    <label>Rol:</label>
+    <input type="text" name="usuario" placeholder="Usuario" required>
+    <input type="password" name="contrasena" placeholder="Contraseña" required>
+    <input type="text" name="nombre" placeholder="Nombre" required>
+    <input type="text" name="apellido" placeholder="Apellido" required>
     <select name="rol" required>
+      <option value="">Rol</option>
       <option value="director">Director</option>
       <option value="medico">Médico</option>
       <option value="secretaria">Secretaria</option>
     </select>
-
-    <label>Institución:</label>
-    <input type="text" name="institucion" required>
-
+    <input type="number" name="institucion" placeholder="Institución ID" required>
     <button type="submit">Agregar Usuario</button>
   </form>
 
-  <h2>Pacientes</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>Apellido</th>
-        <th>DNI</th>
-        <th>Institución</th>
-        <th>Teléfono</th>
-        <th>Email</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for p in pacientes %}
-      <tr>
-        <td>{{ p[0] }}</td>
-        <td>{{ p[1] }}</td>
-        <td>{{ p[2] }}</td>
-        <td>{{ p[3] }}</td>
-        <td>{{ p[4] }}</td>
-        <td>{{ p[5] }}</td>
-        <td>{{ p[6] }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-
-  <h3>Agregar Paciente</h3>
+  <h2>Agregar Nuevo Paciente</h2>
   <form action="/admin/paciente/manual/agregar" method="post">
-    <label>Nombre:</label>
-    <input type="text" name="nombre" required>
-
-    <label>Apellido:</label>
-    <input type="text" name="apellido" required>
-
-    <label>DNI:</label>
-    <input type="text" name="dni" required>
-
-    <label>Institución:</label>
-    <input type="text" name="institucion" required>
-
-    <label>Teléfono:</label>
-    <input type="text" name="telefono" required>
-
-    <label>Email:</label>
-    <input type="email" name="email" required>
-
+    <input type="text" name="nombre" placeholder="Nombre" required>
+    <input type="text" name="apellido" placeholder="Apellido" required>
+    <input type="text" name="dni" placeholder="DNI" required>
+    <input type="number" name="institucion" placeholder="Institución ID" required>
+    <input type="text" name="telefono" placeholder="Teléfono">
+    <input type="email" name="email" placeholder="Email">
     <button type="submit">Agregar Paciente</button>
   </form>
+
 </body>
 </html>

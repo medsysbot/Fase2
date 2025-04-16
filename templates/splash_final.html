@@ -83,10 +83,10 @@ async def splash_final(request: Request):
         print("== USUARIO LOGUEADO:", usuario_logueado)
 
         conn = sqlite3.connect("static/doc/medsys.db")
-        cursor = conn.cursor()
-        cursor.execute("SELECT nombre, apellido, rol FROM usuarios WHERE usuario=?", (usuario_logueado,))
-        resultado = cursor.fetchone()
-        conn.close()
+       cursor = conn.cursor()
+cursor.execute("SELECT nombres, apellido, rol FROM usuarios WHERE usuario=?", (usuario_logueado,))
+resultado = cursor.fetchone()
+conn.close()
 
         if resultado and len(resultado) == 3:
             nombre, apellido, rol = resultado

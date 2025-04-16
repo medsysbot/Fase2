@@ -98,3 +98,6 @@ async def exportar_pacientes(institucion_id: str):
     pdf.output(export_path)
 
     return FileResponse(export_path, media_type="application/pdf", filename=f"pacientes_{institucion_id}.pdf")
+
+    from admin_control_total import router as control_router
+app.include_router(control_router)

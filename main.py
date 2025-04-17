@@ -42,7 +42,7 @@ async def login_post(request: Request, usuario: str = Form(...), contrasena: str
     try:
         conn = sqlite3.connect("static/doc/medsys.db")
         cursor = conn.cursor()
-        cursor.execute("SELECT nombres, apellido FROM usuarios WHERE usuario=? AND contrasena=? AND rol=? AND activo=1", (usuario, contrasena, rol))
+        cursor.execute("SELECT nombres, apellido FROM usuarios WHERE usuario=? AND clave=? AND rol=? AND activo=1", (usuario, contrasena, rol))
         user = cursor.fetchone()
         conn.close()
         print("Resultado de consulta SQL:", user)

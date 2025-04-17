@@ -51,14 +51,14 @@ async def login_post(request: Request, usuario: str = Form(...), contrasena: str
 if user:
     request.session["usuario"] = usuario
     request.session["rol"] = rol
-    request.session["nombres"] = user[3]   # columna nombres
-    request.session["apellido"] = user[4] # columna apellido
+    request.session["nombres"] = user[3]
+    request.session["apellido"] = user[4]
     return RedirectResponse(url="/splash-final", status_code=303)
-    else:
-        return templates.TemplateResponse("login.html", {
-            "request": request,
-            "error": "Usuario o contrasena incorrectos"
-        })
+else:
+    return templates.TemplateResponse("login.html", {
+        "request": request,
+        "error": "Usuario o contrasena incorrectos"
+    })
 
 # ---------------- SPLASH FINAL ----------------
 @app.get("/splash-final", response_class=HTMLResponse)

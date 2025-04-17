@@ -2,65 +2,58 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Splash Final</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Splash Final - MEDSYS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
-      background: linear-gradient(135deg, #123e5a, #2ea8c9);
-      color: #ffffff;
-      font-family: 'Poppins', sans-serif;
       margin: 0;
       padding: 0;
       height: 100vh;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #003d5c, #0e3a59);
       display: flex;
-      flex-direction: column;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      flex-direction: column;
       text-align: center;
-      animation: fadeout 1s ease-in-out forwards;
-      animation-delay: 5s;
     }
 
-    .logo-container {
-      width: 180px;
-      margin-bottom: 20px;
-      animation: oscilacion 1.2s ease-in-out infinite alternate;
+    .logo {
+      width: 120px;
+      margin-bottom: 30px;
     }
 
-    .logo-final {
-      width: 100%;
-    }
-
-    @keyframes oscilacion {
-      0% { transform: translateY(0px); }
-      100% { transform: translateY(-10px); }
-    }
-
-    .saludo-linea1 {
-      font-size: 24px;
-      font-weight: 600;
-      margin-bottom: 10px;
-    }
-
-    .saludo-linea2 {
+    .titulo {
       font-size: 20px;
-      font-weight: 300;
+      margin-bottom: 10px;
+      color: #7dd4ff;
     }
 
-    @keyframes fadeout {
-      to {
-        opacity: 0;
-        visibility: hidden;
-      }
+    .nombre {
+      font-size: 26px;
+      font-weight: 600;
+    }
+
+    .boton {
+      margin-top: 40px;
+      background-color: #1ab0e1;
+      border: none;
+      color: white;
+      padding: 12px 30px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
-  <div class="logo-container">
-    <img src="/static/icons/icon-login.png" alt="Logo Final" class="logo-final">
-  </div>
-  <div class="saludo-linea1">Bienvenida</div>
-  <div class="saludo-linea2">{{ titulo }} {{ nombres }} {{ apellido }}</div>
+  <img src="/static/icons/icon-login.png" alt="Logo" class="logo">
+  <div class="titulo">{{ titulo }}</div>
+  <div class="nombre">{{ nombres }} {{ apellido }}</div>
+
+  <a href="/index" class="boton">Ingresar al sistema</a>
 </body>
 </html>

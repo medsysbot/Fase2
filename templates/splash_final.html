@@ -2,58 +2,77 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Splash Final - MEDSYS</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Acceso Exitoso</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
   <style>
     body {
+      background: linear-gradient(135deg, #02141f, #061f30);
+      color: #d3d3d3;
+      font-family: 'Poppins', sans-serif;
       margin: 0;
       padding: 0;
       height: 100vh;
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #003d5c, #0e3a59);
       display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #ffffff;
       flex-direction: column;
+      justify-content: center;
+      align-items: center;
       text-align: center;
+      animation: fadeout 1s ease-in-out forwards;
+      animation-delay: 4.5s;
     }
 
-    .logo {
-      width: 120px;
-      margin-bottom: 30px;
+    .logo-final {
+      width: 180px;
+      margin-bottom: 20px;
+      animation: pulse 2s infinite;
     }
 
-    .titulo {
-      font-size: 20px;
-      margin-bottom: 10px;
-      color: #7dd4ff;
-    }
-
-    .nombre {
-      font-size: 26px;
+    .bienvenida {
+      font-size: 22px;
       font-weight: 600;
+      margin-bottom: 6px;
+      animation: fadein 1s ease-in-out forwards;
+      text-transform: uppercase;
     }
 
-    .boton {
-      margin-top: 40px;
-      background-color: #1ab0e1;
-      border: none;
-      color: white;
-      padding: 12px 30px;
+    .saludo {
+      font-size: 18px;
+      font-weight: 400;
+      margin-bottom: 12px;
+      animation: fadein 1.5s ease-in-out forwards;
+    }
+
+    .cargando {
       font-size: 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      text-decoration: none;
+      opacity: 0.8;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.85; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes fadeout {
+      to { opacity: 0; }
+    }
+
+    @keyframes fadein {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
+  <script>
+    setTimeout(() => {
+      window.location.href = "/index";
+    }, 5000);
+  </script>
 </head>
 <body>
-  <img src="/static/icons/icon-login.png" alt="Logo" class="logo">
-  <div class="titulo">{{ titulo }}</div>
-  <div class="nombre">{{ nombres }} {{ apellido }}</div>
-
-  <a href="/index" class="boton">Ingresar al sistema</a>
+  <img src="/static/icons/logo-medsys.png" alt="Logo MedSys" class="logo-final">
+  <div class="bienvenida">Bienvenido a MEDSYS</div>
+  <div class="saludo">{{ titulo }} {{ nombre }}</div>
+  <div class="cargando">Cargando sistema...</div>
 </body>
 </html>

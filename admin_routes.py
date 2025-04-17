@@ -3,33 +3,22 @@ from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.templating import Jinja2Templates
 import sqlite3
 from fpdf import FPDF
-import os
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 DB_PATH = "static/doc/medsys.db"
 
-# ---------------- PANEL /admin/pacientes ----------------
 @router.get("/admin/pacientes", response_class=HTMLResponse)
 async def admin_pacientes(request: Request):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    # Cargar instituciones
-    try:
-        cursor.execute("SELECT id, nombre, estado FROM instituciones")
-        instituciones_raw = cursor.fetchall()
-    except:
-        instituciones_raw = []
-
+    cursor.execute("SELECT id, nombre, estado FROM instituciones")
+    instituciones_raw = cursor.fetchall()
     instituciones = []
     for inst in instituciones_raw:
-        try:
-            cursor.execute("SELECT COUNT(*) FROM pacientes WHERE institucion_id=?", (inst[0],))
-            result = cursor.fetchone()
-            total = result[0] if result else 0
-        except:
-            total = 0
+        cursor.execute("SELECT COUNT(*) FROM pacientes WHERE institucion_id=?", (inst[0],))
+        total = cursor.fetchone()[0]
         instituciones.append({
             "id": inst[0],
             "nombre": inst[1],
@@ -37,13 +26,8 @@ async def admin_pacientes(request: Request):
             "total": total
         })
 
-    # Cargar usuarios
-    try:
-        cursor.execute("SELECT usuario, nombres, apellido, rol, institucion_id, activo FROM usuarios")
-        usuarios_raw = cursor.fetchall()
-    except:
-        usuarios_raw = []
-
+    cursor.execute("SELECT usuario, nombres, apellido, rol, institucion_id, activo FROM usuarios")
+    usuarios_raw = cursor.fetchall()
     usuarios = []
     for u in usuarios_raw:
         usuarios.append({
@@ -62,7 +46,6 @@ async def admin_pacientes(request: Request):
         "usuarios": usuarios
     })
 
-# ---------------- AGREGAR USUARIO ----------------
 @router.post("/admin/usuario/agregar")
 async def agregar_usuario(
     usuario: str = Form(...),
@@ -74,29 +57,27 @@ async def agregar_usuario(
 ):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute(
-        "INSERT INTO usuarios (usuario, contraseña, nombres, apellido, rol, institucion_id, activo) VALUES (?, ?, ?, ?, ?, ?, 1)",
-        (usuario, contrasena, nombres, apellido, rol, institucion)
-    )
+    cursor.execute("""
+        INSERT INTO usuarios (usuario, contraseña, nombres, apellido, rol, institucion_id, activo)
+        VALUES (?, ?, ?, ?, ?, ?, 1)
+    """, (usuario, contrasena, nombres, apellido, rol, institucion))
     conn.commit()
     conn.close()
     return HTMLResponse(content="<script>window.location.href='/admin/pacientes'</script>")
 
-# ---------------- ACTIVAR / DESACTIVAR USUARIO ----------------
 @router.post("/admin/usuario/activar-desactivar")
 async def activar_desactivar_usuario(usuario: str = Form(...)):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("SELECT activo FROM usuarios WHERE usuario=?", (usuario,))
-    estado_actual = cursor.fetchone()
-    if estado_actual:
-        nuevo_estado = 0 if estado_actual[0] == 1 else 1
+    actual = cursor.fetchone()
+    if actual:
+        nuevo_estado = 0 if actual[0] == 1 else 1
         cursor.execute("UPDATE usuarios SET activo=? WHERE usuario=?", (nuevo_estado, usuario))
         conn.commit()
     conn.close()
     return HTMLResponse(content="<script>window.location.href='/admin/pacientes'</script>")
 
-# ---------------- ELIMINAR USUARIO ----------------
 @router.post("/admin/usuario/eliminar")
 async def eliminar_usuario(usuario: str = Form(...)):
     conn = sqlite3.connect(DB_PATH)
@@ -106,7 +87,6 @@ async def eliminar_usuario(usuario: str = Form(...)):
     conn.close()
     return HTMLResponse(content="<script>window.location.href='/admin/pacientes'</script>")
 
-# ---------------- EXPORTAR PACIENTES PDF ----------------
 @router.get("/exportar-pacientes/{institucion_id}")
 async def exportar_pacientes(institucion_id: str):
     conn = sqlite3.connect(DB_PATH)
@@ -124,8 +104,8 @@ async def exportar_pacientes(institucion_id: str):
     pdf.cell(200, 10, txt=f"Pacientes de la institución: {institucion_id}", ln=True)
     pdf.set_font("Arial", size=10)
 
-    for paciente in pacientes:
-        for i, dato in enumerate(paciente):
+    for p in pacientes:
+        for i, dato in enumerate(p):
             linea = f"{columnas[i]}: {dato}"
             pdf.cell(200, 8, txt=linea.encode('latin-1', 'replace').decode('latin-1'), ln=True)
         pdf.cell(200, 5, txt="-----------------------------", ln=True)
@@ -133,4 +113,5 @@ async def exportar_pacientes(institucion_id: str):
     conn.close()
     export_path = f"static/doc/pacientes_export_{institucion_id}.pdf"
     pdf.output(export_path)
+
     return FileResponse(export_path, media_type="application/pdf", filename=f"pacientes_{institucion_id}.pdf")

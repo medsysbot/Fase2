@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Panel Admin - MedSys</title>
   <style>
     body {
@@ -64,9 +64,7 @@
       <td>{{ i.nombre }}</td>
       <td>{{ i.estado }}</td>
       <td>{{ i.total }}</td>
-      <td>
-        <a href="/exportar-pacientes/{{ i.id }}" target="_blank">PDF</a>
-      </td>
+      <td><a href="/exportar-pacientes/{{ i.id }}" target="_blank">PDF</a></td>
     </tr>
     {% endfor %}
   </table>
@@ -75,21 +73,29 @@
   <table>
     <tr>
       <th>Usuario</th>
+      <th>Nombres</th>
+      <th>Apellido</th>
       <th>Rol</th>
       <th>Institución</th>
       <th>Activo</th>
-      <th>Acción</th>
+      <th>Acciones</th>
     </tr>
     {% for u in usuarios %}
     <tr>
       <td>{{ u.usuario }}</td>
+      <td>{{ u.nombres }}</td>
+      <td>{{ u.apellido }}</td>
       <td>{{ u.rol }}</td>
       <td>{{ u.institucion }}</td>
       <td>{{ "Sí" if u.activo == 1 else "No" }}</td>
       <td>
-        <form action="/admin/usuario/activar-desactivar" method="post">
+        <form action="/admin/usuario/activar-desactivar" method="post" style="display:inline">
           <input type="hidden" name="usuario" value="{{ u.usuario }}">
           <button type="submit">Cambiar Estado</button>
+        </form>
+        <form action="/admin/usuario/eliminar" method="post" style="display:inline" onsubmit="return confirm('¿Eliminar este usuario?')">
+          <input type="hidden" name="usuario" value="{{ u.usuario }}">
+          <button type="submit" style="background:#d9534f;">Eliminar</button>
         </form>
       </td>
     </tr>
@@ -100,7 +106,7 @@
   <form action="/admin/usuario/agregar" method="post">
     <input type="text" name="usuario" placeholder="Usuario" required>
     <input type="password" name="contrasena" placeholder="Contraseña" required>
-    <input type="text" name="nombre" placeholder="Nombre" required>
+    <input type="text" name="nombres" placeholder="Nombre(s)" required>
     <input type="text" name="apellido" placeholder="Apellido" required>
     <select name="rol" required>
       <option value="">Rol</option>
@@ -108,19 +114,8 @@
       <option value="medico">Médico</option>
       <option value="secretaria">Secretaria</option>
     </select>
-    <input type="number" name="institucion" placeholder="Institución ID" required>
+    <input type="text" name="institucion" placeholder="Institución ID" required>
     <button type="submit">Agregar Usuario</button>
-  </form>
-
-  <h2>Agregar Nuevo Paciente</h2>
-  <form action="/admin/paciente/manual/agregar" method="post">
-    <input type="text" name="nombre" placeholder="Nombre" required>
-    <input type="text" name="apellido" placeholder="Apellido" required>
-    <input type="text" name="dni" placeholder="DNI" required>
-    <input type="number" name="institucion" placeholder="Institución ID" required>
-    <input type="text" name="telefono" placeholder="Teléfono">
-    <input type="email" name="email" placeholder="Email">
-    <button type="submit">Agregar Paciente</button>
   </form>
 
 </body>

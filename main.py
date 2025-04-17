@@ -48,17 +48,17 @@ async def login_post(request: Request, usuario: str = Form(...), contrasena: str
     user = cursor.fetchone()
     conn.close()
 
-if user:
-    request.session["usuario"] = usuario
-    request.session["rol"] = rol
-    request.session["nombres"] = user[3]
-    request.session["apellido"] = user[4]
-    return RedirectResponse(url="/splash-final", status_code=303)
-else:
-    return templates.TemplateResponse("login.html", {
-        "request": request,
-        "error": "Usuario o contrasena incorrectos"
-    })
+    if user:
+        request.session["usuario"] = usuario
+        request.session["rol"] = rol
+        request.session["nombres"] = user[3]
+        request.session["apellido"] = user[4]
+        return RedirectResponse(url="/splash-final", status_code=303)
+    else:
+        return templates.TemplateResponse("login.html", {
+            "request": request,
+            "error": "Usuario o contrasena incorrectos"
+        })
 
 # ---------------- SPLASH FINAL ----------------
 @app.get("/splash-final", response_class=HTMLResponse)
@@ -182,4 +182,4 @@ from admin_routes import router as admin_router
 app.include_router(admin_router)
 
 from acciones_pacientes import router as pacientes_router
-app.include_router(pacientes_router) Capi, como te puedo decir que me corrijas este mine pick que te voy a subir con la corrección que le hiciste al anterior, porque si funcionó.
+app.include_router(pacientes_router)

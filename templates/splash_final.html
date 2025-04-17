@@ -7,7 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
   <style>
     body {
-      background: linear-gradient(135deg, #02141f, #061f30);
+      background: linear-gradient(135deg, #10323f, #0d4b63);
       color: #d3d3d3;
       font-family: 'Poppins', sans-serif;
       margin: 0;
@@ -43,11 +43,6 @@
       animation: fadein 1.5s ease-in-out forwards;
     }
 
-    .cargando {
-      font-size: 16px;
-      opacity: 0.8;
-    }
-
     @keyframes pulse {
       0% { transform: scale(1); opacity: 1; }
       50% { transform: scale(1.05); opacity: 0.85; }
@@ -73,6 +68,5 @@
   <img src="/static/icons/logo-medsys.png" alt="Logo MedSys" class="logo-final">
   <div class="bienvenida">Bienvenido a MEDSYS</div>
   <div class="saludo">{{ titulo }} {{ nombre }}</div>
-  <div class="cargando">Cargando sistema...</div>
 </body>
 </html>

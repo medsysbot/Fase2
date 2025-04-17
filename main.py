@@ -32,10 +32,6 @@ templates = Jinja2Templates(directory="templates")
 async def root_redirect(request: Request):
     return templates.TemplateResponse("splash_screen.html", {"request": request})
 
-@app.get("/splash-screen", response_class=HTMLResponse)
-async def splash_inicio(request: Request):
-    return templates.TemplateResponse("splash_screen.html", {"request": request})
-
 # ---------------- LOGIN ----------------
 @app.get("/login", response_class=HTMLResponse)
 async def login_get(request: Request):
@@ -62,35 +58,39 @@ async def login_post(request: Request, usuario: str = Form(...), contrasena: str
 # ---------------- SPLASH FINAL ----------------
 @app.get("/splash-final", response_class=HTMLResponse)
 async def splash_final(request: Request):
-    usuario_logueado = request.session.get("usuario")
+    try:
+        usuario_logueado = request.session.get("usuario", "Invitado")
 
-    if not usuario_logueado:
+        if usuario_logueado == "Invitado":
+            return templates.TemplateResponse("splash_final.html", {
+                "request": request,
+                "nombre": "Invitado",
+                "titulo": ""
+            })
+
+        conn = sqlite3.connect("static/doc/medsys.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT nombres, apellido, rol FROM usuarios WHERE usuario=?", (usuario_logueado,))
+        resultado = cursor.fetchone()
+        conn.close()
+
+        if resultado:
+            nombres, apellido, rol = resultado
+        else:
+            nombres, apellido, rol = "Invitado", "", "desconocido"
+
+        titulo = "Doctora" if rol in ["medico", "director"] else "Sra." if rol == "secretaria" else ""
+
         return templates.TemplateResponse("splash_final.html", {
             "request": request,
-            "nombre": "Invitado",
-            "titulo": ""
+            "nombre": f"{nombres} {apellido}",
+            "titulo": titulo
         })
 
-    conn = sqlite3.connect("static/doc/medsys.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT nombre, apellido, rol FROM usuarios WHERE usuario=?", (usuario_logueado,))
-    resultado = cursor.fetchone()
-    conn.close()
+    except Exception as e:
+        return HTMLResponse(content=f"<h1>Error interno en Splash Final: {str(e)}</h1>", status_code=500)
 
-    if resultado:
-        nombre, apellido, rol = resultado
-    else:
-        nombre, apellido, rol = "Invitado", "", "desconocido"
-
-    titulo = "Doctora" if rol in ["medico", "director"] else "Sra." if rol == "secretaria" else ""
-
-    return templates.TemplateResponse("splash_final.html", {
-        "request": request,
-        "nombre": f"{nombre} {apellido}",
-        "titulo": titulo
-    })
-
-# ---------------- Rutas HTML ----------------
+# ---------------- Resto de rutas (sin modificar) ----------------
 @app.get("/index", response_class=HTMLResponse)
 async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
@@ -135,7 +135,6 @@ async def busqueda(request: Request):
 async def estudios(request: Request):
     return templates.TemplateResponse("estudios.html", {"request": request})
 
-# ---------------- Subida y gestión de archivos ----------------
 @app.get("/listar-estudios")
 async def listar_estudios():
     carpeta = "static/estudios"
@@ -181,4 +180,4 @@ from acciones_pacientes import router as pacientes_router
 app.include_router(pacientes_router)
 
 from admin_routes import router as admin_router
-app.include_router(admin_router) 
+app.include_router(admin_router)

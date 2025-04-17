@@ -38,69 +38,29 @@
     }
 
     .saludo-linea1 {
-      font-size: 20px;
+      font-size: 24px;
       font-weight: 600;
-      margin-bottom: 8px;
-      animation: fadein 1s ease-in-out forwards;
+      margin-bottom: 10px;
     }
 
     .saludo-linea2 {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 300;
-      opacity: 0.9;
-      animation: fadein 1.5s ease-in-out forwards;
-    }
-
-    @keyframes fadein {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
     }
 
     @keyframes fadeout {
-      to { opacity: 0; }
+      to {
+        opacity: 0;
+        visibility: hidden;
+      }
     }
   </style>
-  <script>
-    setTimeout(() => {
-      window.location.href = "/index";
-    }, 5000);
-  </script>
 </head>
 <body>
   <div class="logo-container">
-    <img src="/static/icons/logo-medsys.png" alt="Logo MedSys" class="logo-final">
+    <img src="/static/icons/icon-login.png" alt="Logo Final" class="logo-final">
   </div>
-  <div class="saludo-linea1">Bienvenida a <strong>MEDSYS</strong></div>
-  <div class="saludo-linea2">{{ titulo }} {{ nombre }}</div>
+  <div class="saludo-linea1">Bienvenida</div>
+  <div class="saludo-linea2">{{ titulo }} {{ nombres }} {{ apellido }}</div>
 </body>
 </html>
-
-@app.get("/splash-final", response_class=HTMLResponse)
-async def splash_final(request: Request):
-    try:
-        print("== SESIÓN COMPLETA:", request.session)
-        usuario_logueado = request.session.get("usuario", "Invitado")
-        print("== USUARIO LOGUEADO:", usuario_logueado)
-
-        conn = sqlite3.connect("static/doc/medsys.db")
-       cursor = conn.cursor()
-cursor.execute("SELECT nombres, apellido, rol FROM usuarios WHERE usuario=?", (usuario_logueado,))
-resultado = cursor.fetchone()
-conn.close()
-
-        if resultado and len(resultado) == 3:
-            nombre, apellido, rol = resultado
-        else:
-            nombre, apellido, rol = "Invitado", "", "desconocido"
-
-        titulo = "Doctora" if rol in ["medico", "director"] else "Sra." if rol == "secretaria" else ""
-
-        return templates.TemplateResponse("splash_final.html", {
-            "request": request,
-            "nombre": f"{nombre} {apellido}",
-            "titulo": titulo
-        })
-
-    except Exception as e:
-        print("== ERROR EN SPLASH FINAL:", str(e))
-        return HTMLResponse(content=f"<h1>Error interno: {str(e)}</h1>", status_code=500)

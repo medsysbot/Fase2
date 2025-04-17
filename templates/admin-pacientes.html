@@ -103,20 +103,17 @@
   </table>
 
   <h2>Agregar Nuevo Usuario</h2>
-  <form action="/admin/usuario/agregar" method="post">
-    <input type="text" name="usuario" placeholder="Usuario" required>
-    <input type="password" name="contrasena" placeholder="Contraseña" required>
-    <input type="text" name="nombre" placeholder="Nombre(s)" required>
-    <input type="text" name="apellido" placeholder="Apellido" required>
-    <select name="rol" required>
-      <option value="">Rol</option>
-      <option value="director">Director</option>
-      <option value="medico">Médico</option>
-      <option value="secretaria">Secretaria</option>
-    </select>
-    <input type="text" name="institucion" placeholder="Institución ID" required>
-    <button type="submit">Agregar Usuario</button>
-  </form>
-
-</body>
-</html>
+<form action="/admin/usuario/agregar" method="post">
+  <input type="text" name="usuario" placeholder="Usuario" required>
+  <input type="password" name="contrasena" placeholder="Contraseña" required>
+  <input type="text" name="nombres" placeholder="Nombre(s)" required>
+  <input type="text" name="apellido" placeholder="Apellido" required>
+  <select name="rol" required>
+    <option value="">Rol</option>
+    <option value="director">Director</option>
+    <option value="medico">Médico</option>
+    <option value="secretaria">Secretaria</option>
+  </select>
+  <input type="text" name="institucion" placeholder="Institución ID" required>
+  <button type="submit">Agregar Usuario</button>
+</form>

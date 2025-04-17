@@ -139,7 +139,7 @@ async def exportar_pacientes(institucion_id: str):
     pdf.set_auto_page_break(auto=True, margin=10)
 
     pdf.set_font("Arial", "B", 12)
-    pdf.cell(200, 10, txt=f"Pacientes de la institución: {institucion_id}", ln=True)
+    pdf.cell(200, 10, txt=f"Pacientes de la instituciÃ³n: {institucion_id}", ln=True)
     pdf.set_font("Arial", size=10)
 
     for paciente in pacientes:

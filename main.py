@@ -48,10 +48,12 @@ async def login_post(request: Request, usuario: str = Form(...), contrasena: str
     user = cursor.fetchone()
     conn.close()
 
-    if user:
-        request.session["usuario"] = usuario
-        request.session["rol"] = rol
-        return RedirectResponse(url="/splash-final", status_code=303)
+if user:
+    request.session["usuario"] = usuario
+    request.session["rol"] = rol
+    request.session["nombres"] = user[3]   # columna nombres
+    request.session["apellido"] = user[4] # columna apellido
+    return RedirectResponse(url="/splash-final", status_code=303)
     else:
         return templates.TemplateResponse("login.html", {
             "request": request,

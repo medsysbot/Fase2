@@ -37,12 +37,12 @@ async def login_get(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 @app.post("/login")
-async def login_post(request: Request, usuario: str = Form(...), contrasena: str = Form(...), rol: str = Form(...)):
-    print("Intentando login con:", usuario, contrasena, rol)
+async def login_post(request: Request, usuario: str = Form(...), rol: str = Form(...)):
+    print("Intentando login con:", usuario, rol)
     try:
         conn = sqlite3.connect("static/doc/medsys.db")
         cursor = conn.cursor()
-        cursor.execute("SELECT nombres, apellido FROM usuarios WHERE usuario=? AND clave=? AND rol=? AND activo=1", (usuario, contrasena, rol))
+        cursor.execute("SELECT nombres, apellido FROM usuarios WHERE usuario=? AND rol=? AND activo=1", (usuario, rol))
         user = cursor.fetchone()
         conn.close()
         print("Resultado de consulta SQL:", user)
@@ -58,7 +58,7 @@ async def login_post(request: Request, usuario: str = Form(...), contrasena: str
             print("Login fallido")
             return templates.TemplateResponse("login.html", {
                 "request": request,
-                "error": "Usuario o contraseña incorrectos"
+                "error": "Usuario no válido o inactivo"
             })
     except Exception as e:
         print("ERROR EN LOGIN:", str(e))

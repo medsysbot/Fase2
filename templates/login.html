@@ -1,0 +1,111 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - MEDSYS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #041c2c, #0e3a59);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #d3d3d3;
+    }
+
+    .logo {
+      width: 150px;
+      margin-bottom: 20px;
+    }
+
+    .welcome {
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 40px;
+      color: #d3d3d3;
+    }
+
+    .form-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 300px;
+    }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      width: 100%;
+      background-color: #ffffff10;
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    .input-group img {
+      width: 24px;
+      margin-right: 10px;
+    }
+
+    .input-group input, .input-group select {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      color: #d3d3d3;
+      font-size: 16px;
+    }
+
+    .submit-button {
+      background-color: #1ab0e1;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .submit-button img {
+      width: 48px;
+      height: 48px;
+    }
+  </style>
+</head>
+<body>
+  <img src="/static/icons/icon-login.png" alt="Logo MedSys" class="logo">
+  <div class="welcome">Bienvenido a MEDSYS</div>
+  <form class="form-container" action="/login" method="post">
+    <div class="input-group">
+      <img src="/static/icons/icon-user.png" alt="Usuario">
+      <input type="text" name="usuario" placeholder="Usuario" required>
+    </div>
+    <div class="input-group">
+      <img src="/static/icons/icon-password.png" alt="Contraseña">
+      <input type="password" name="contrasena" placeholder="Contraseña" required>
+    </div>
+    <div class="input-group">
+      <img src="/static/icons/icon-role.png" alt="Rol">
+      <select name="rol" required>
+        <option value="" disabled selected>Seleccione Rol</option>
+        <option value="director">Director</option>
+        <option value="medico">Médico</option>
+        <option value="secretaria">Secretaria</option>
+      </select>
+    </div>
+    <button type="submit" class="submit-button">
+      <img src="/static/icons/Icon-submit.png" alt="Enviar">
+    </button>
+  </form>
+</body>
+</html>

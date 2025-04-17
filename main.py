@@ -38,31 +38,44 @@ async def login_get(request: Request):
 
 @app.post("/login")
 async def login_post(request: Request, usuario: str = Form(...), contrasena: str = Form(...), rol: str = Form(...)):
-    conn = sqlite3.connect("static/doc/medsys.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT nombres, apellido FROM usuarios WHERE usuario=? AND contrasena=? AND rol=? AND activo=1", (usuario, contrasena, rol))
-    user = cursor.fetchone()
-    conn.close()
+    print("Intentando login con:", usuario, contrasena, rol)
+    try:
+        conn = sqlite3.connect("static/doc/medsys.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT nombres, apellido FROM usuarios WHERE usuario=? AND contrasena=? AND rol=? AND activo=1", (usuario, contrasena, rol))
+        user = cursor.fetchone()
+        conn.close()
+        print("Resultado de consulta SQL:", user)
 
-    if user:
-        request.session["usuario"] = usuario
-        request.session["rol"] = rol
-        request.session["nombres"] = user[0]
-        request.session["apellido"] = user[1]
-        return RedirectResponse(url="/splash-final", status_code=303)
-    else:
+        if user:
+            request.session["usuario"] = usuario
+            request.session["rol"] = rol
+            request.session["nombres"] = user[0]
+            request.session["apellido"] = user[1]
+            print("Guardado en sesión:", request.session)
+            return RedirectResponse(url="/splash-final", status_code=303)
+        else:
+            print("Login fallido")
+            return templates.TemplateResponse("login.html", {
+                "request": request,
+                "error": "Usuario o contraseña incorrectos"
+            })
+    except Exception as e:
+        print("ERROR EN LOGIN:", str(e))
         return templates.TemplateResponse("login.html", {
             "request": request,
-            "error": "Usuario o contraseña incorrectos"
+            "error": "Error interno en el login"
         })
 
 # ---------------- SPLASH FINAL ----------------
 @app.get("/splash-final", response_class=HTMLResponse)
 async def splash_final(request: Request):
     try:
+        print("Entrando al splash-final")
         nombres = request.session.get("nombres", "")
         apellido = request.session.get("apellido", "")
         rol = request.session.get("rol", "")
+        print("Desde sesión:", nombres, apellido, rol)
 
         if rol == "medico":
             titulo = "Doctora"
@@ -70,6 +83,8 @@ async def splash_final(request: Request):
             titulo = "Sra."
         else:
             titulo = ""
+
+        print("Título asignado:", titulo)
 
         return templates.TemplateResponse("splash_final.html", {
             "request": request,
@@ -80,6 +95,7 @@ async def splash_final(request: Request):
         })
 
     except Exception as e:
+        print("ERROR EN SPLASH:", str(e))
         return templates.TemplateResponse("error.html", {
             "request": request,
             "mensaje": f"Error al generar el splash: {str(e)}"

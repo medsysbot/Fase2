@@ -56,10 +56,6 @@ async def login_post(request: Request, usuario: str = Form(...), contrasena: str
         })
 
 # ---------------- SPLASH FINAL ----------------
-@app.get("/splash-final", response_class=HTMLResponse)
-async def splash_final(request: Request):
-    try:
-        usuario_logueado = request.session.get("usuario", "Invitado")
 
         if usuario_logueado == "Invitado":
             return templates.TemplateResponse("splash_final.html", {
@@ -181,3 +177,32 @@ app.include_router(pacientes_router)
 
 from admin_routes import router as admin_router
 app.include_router(admin_router)
+
+
+@app.get("/splash-final", response_class=HTMLResponse)
+async def splash_final(request: Request):
+    try:
+        nombres = request.session.get("nombres", "")
+        apellido = request.session.get("apellido", "")
+        rol = request.session.get("rol", "")
+
+        if rol == "medico":
+            titulo = "Doctora"
+        elif rol == "secretaria":
+            titulo = "Sra."
+        else:
+            titulo = ""
+
+        return templates.TemplateResponse("splash_final.html", {
+            "request": request,
+            "nombres": nombres,
+            "apellido": apellido,
+            "rol": rol,
+            "titulo": titulo
+        })
+
+    except Exception as e:
+        return templates.TemplateResponse("error.html", {
+            "request": request,
+            "mensaje": f"Error al generar el splash: {str(e)}"
+        })

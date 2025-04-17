@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Panel Admin - MedSys</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+    }
+    h2 {
+      background: #2ea8c9;
+      color: white;
+      padding: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+    }
+    th {
+      background: #e0e0e0;
+    }
+    form {
+      margin-top: 20px;
+      padding: 15px;
+      background: #ffffff;
+      border: 1px solid #ddd;
+    }
+    input, select {
+      margin: 5px;
+      padding: 6px;
+      width: 180px;
+    }
+    button {
+      padding: 8px 14px;
+      background: #2ea8c9;
+      color: white;
+      border: none;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Instituciones Registradas</h2>
+  <table>
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>Estado</th>
+      <th>Total Pacientes</th>
+      <th>Exportar</th>
+    </tr>
+    {% for i in instituciones %}
+    <tr>
+      <td>{{ i.id }}</td>
+      <td>{{ i.nombre }}</td>
+      <td>{{ i.estado }}</td>
+      <td>{{ i.total }}</td>
+      <td><a href="/exportar-pacientes/{{ i.id }}" target="_blank">PDF</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <h2>Usuarios Registrados</h2>
+  <table>
+    <tr>
+      <th>Usuario</th>
+      <th>Nombre(s)</th>
+      <th>Apellido</th>
+      <th>Rol</th>
+      <th>Institución</th>
+      <th>Activo</th>
+      <th>Acciones</th>
+    </tr>
+    {% for u in usuarios %}
+    <tr>
+      <td>{{ u.usuario }}</td>
+      <td>{{ u.nombres }}</td>
+      <td>{{ u.apellido }}</td>
+      <td>{{ u.rol }}</td>
+      <td>{{ u.institucion }}</td>
+      <td>{{ "Sí" if u.activo == 1 else "No" }}</td>
+      <td>
+        <form action="/admin/usuario/activar-desactivar" method="post" style="display:inline">
+          <input type="hidden" name="usuario" value="{{ u.usuario }}">
+          <button type="submit">Cambiar Estado</button>
+        </form>
+        <form action="/admin/usuario/eliminar" method="post" style="display:inline" onsubmit="return confirm('¿Eliminar este usuario?')">
+          <input type="hidden" name="usuario" value="{{ u.usuario }}">
+          <button type="submit" style="background:#d9534f;">Eliminar</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <h2>Agregar Nuevo Usuario</h2>
+<form action="/admin/usuario/agregar" method="post">
+  <input type="text" name="usuario" placeholder="Usuario" required>
+  <input type="password" name="contrasena" placeholder="Contraseña" required>
+  <input type="text" name="nombres" placeholder="Nombre(s)" required>
+  <input type="text" name="apellido" placeholder="Apellido" required>
+  <select name="rol" required>
+    <option value="">Rol</option>
+    <option value="director">Director</option>
+    <option value="medico">Médico</option>
+    <option value="secretaria">Secretaria</option>
+  </select>
+  <input type="text" name="institucion" placeholder="Institución ID" required>
+  <button type="submit">Agregar Usuario</button>
+</form>

@@ -7,7 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
   <style>
     body {
-      background: linear-gradient(to bottom left, #26529e, #2b5ad0);
+      background: linear-gradient(to bottom left, #0a2a3d, #155f82);
       font-family: 'Poppins', sans-serif;
       color: #d3d3d3;
       margin: 0;
@@ -34,7 +34,7 @@
     }
 
     form {
-      max-width: 600px;
+      max-width: 700px;
       margin: 0 auto;
       padding: 20px;
     }
@@ -125,35 +125,69 @@
   </header>
 
   <form class="formulario" id="form-completa">
-    <label class="etiqueta-campo"><span>Nombre del Paciente:</span>
-      <input type="text" name="nombre" required />
-    </label>
+    <label>Paciente:</label>
+    <input type="text" name="paciente" value="Lucía Fernández" />
 
-    <label class="etiqueta-campo"><span>DNI:</span>
-      <input type="text" name="dni" required />
-    </label>
+    <label>Fecha de nacimiento:</label>
+    <input type="date" name="fecha_nacimiento" value="1986-05-23" />
 
-    <label class="etiqueta-campo"><span>Fecha:</span>
-      <input type="date" name="fecha" required />
-    </label>
+    <label>Edad:</label>
+    <input type="text" name="edad" value="38 años" />
 
-    <label class="etiqueta-campo"><span>Antecedentes:</span>
-      <textarea name="antecedentes" rows="4" required></textarea>
-    </label>
+    <label>Sexo:</label>
+    <input type="text" name="sexo" value="Femenino" />
 
-    <label class="etiqueta-campo"><span>Motivo de consulta:</span>
-      <textarea name="motivo" rows="3" required></textarea>
-    </label>
+    <label>DNI:</label>
+    <input type="text" name="dni" value="28.456.789" />
 
-    <label class="etiqueta-campo"><span>Diagnóstico:</span>
-      <textarea name="diagnostico" rows="3" required></textarea>
-    </label>
+    <label>Domicilio:</label>
+    <input type="text" name="domicilio" value="Av. Siempreviva 123" />
 
-    <label class="etiqueta-campo"><span>Tratamiento:</span>
-      <textarea name="tratamiento" rows="4" required></textarea>
-    </label>
+    <label>Teléfono:</label>
+    <input type="text" name="telefono" value="1123456789" />
 
-    <!-- Firma y sello como en receta -->
+    <label>Correo electrónico:</label>
+    <input type="email" name="email" value="lucia@mail.com" />
+
+    <label>Obra Social / Prepaga:</label>
+    <input type="text" name="obra_social" value="OSDE" />
+
+    <label>Número de Afiliado:</label>
+    <input type="text" name="nro_afiliado" value="123456789" />
+
+    <label>Antecedentes personales:</label>
+    <textarea name="antecedentes_personales">Hipotiroidismo</textarea>
+
+    <label>Antecedentes familiares:</label>
+    <textarea name="antecedentes_familiares">Padre con hipertensión</textarea>
+
+    <label>Hábitos:</label>
+    <textarea name="habitos">No fuma. Bebe ocasionalmente. Actividad física 3 veces por semana. Dieta balanceada.</textarea>
+
+    <label>Enfermedades crónicas:</label>
+    <textarea name="cronicas">Hipotiroidismo</textarea>
+
+    <label>Cirugías y Hospitalizaciones:</label>
+    <textarea name="cirugias">Apendicectomía en 2022</textarea>
+
+    <label>Medicación Actual:</label>
+    <textarea name="medicacion">Levotiroxina 75 mcg diaria</textarea>
+
+    <label>Estudios Complementarios:</label>
+    <textarea name="estudios">Laboratorio normal. Eco tiroidea sin nódulos.</textarea>
+
+    <label>Motivo de consulta:</label>
+    <textarea name="motivo">Chequeo general</textarea>
+
+    <label>Diagnóstico actual:</label>
+    <textarea name="diagnostico">Buen estado general</textarea>
+
+    <label>Tratamiento indicado:</label>
+    <textarea name="tratamiento">Continuar con tratamiento actual</textarea>
+
+    <label>Instrucciones / Recomendaciones:</label>
+    <textarea name="instrucciones">Volver en 6 meses para seguimiento</textarea>
+
     <label class="etiqueta-campo"><span>Firma del Profesional:</span>
       <input type="file" id="firma" name="firma" accept="image/*" onchange="mostrarVistaPrevia(this, 'firma-preview', 'firma-delete')" />
       <img id="firma-preview" class="vista-previa" style="display:none;" />
@@ -167,13 +201,11 @@
     </label>
   </form>
 
-  <!-- Visor PDF -->
   <div class="visor-pdf">
     <h3>Vista previa del documento PDF:</h3>
     <iframe id="pdf-visor" src="/static/doc/historia-clinica-generada.pdf" type="application/pdf"></iframe>
   </div>
 
-  <!-- Botones flotantes -->
   <div class="botones-flotantes">
     <button type="button" onclick="guardarPDF()" title="Guardar">
       <img src="/static/icons/guardar.png" alt="Guardar" />

@@ -1,47 +1,96 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Cargando Sistema</title>
-    <style>
-        body {
-            margin: 0;
-            height: 100vh;
-            background: linear-gradient(to top left, #0a0a0a, #3a3a3a); /* más oscuro que login */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-family: Arial, sans-serif;
-            color: #cccccc;
-            overflow: hidden;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Acceso Exitoso</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(225deg, #0a1c27, #10323f); /* más oscuro, inferior derecha */
+      color: #d3d3d3;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      animation: fadeout 1s ease-in-out forwards;
+      animation-delay: 5s;
+    }
 
-        .logo {
-            width: 120px;
-            margin-bottom: 30px;
-        }
+    .logo-final {
+      width: 180px;
+      margin-bottom: 20px;
+      animation: pulse 2s infinite;
+      z-index: 2;
+    }
 
-        .gif-container {
-            width: 80%;
-            max-width: 500px;
-            margin-top: 20px;
-        }
+    .bienvenida {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      animation: fadein 1s ease-in-out forwards;
+      text-transform: uppercase;
+      z-index: 2;
+    }
 
-        .gif-container img {
-            width: 100%;
-        }
-    </style>
-    <script>
-        setTimeout(function() {
-            window.location.href = "/index";
-        }, 4000); // espera 4 segundos
-    </script>
+    .saludo {
+      font-size: 18px;
+      font-weight: 400;
+      margin-bottom: 12px;
+      animation: fadein 1.5s ease-in-out forwards;
+      z-index: 2;
+    }
+
+    .linea-ecg {
+      position: absolute;
+      top: 40px;
+      left: -100%;
+      width: 300%;
+      height: 80px;
+      background: url('/static/icons/linea-vida.gif') repeat-x;
+      background-size: contain;
+      animation: ecg-move 5s linear forwards;
+      z-index: 1;
+    }
+
+    @keyframes ecg-move {
+      to {
+        left: 0;
+      }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.85; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes fadeout {
+      to { opacity: 0; }
+    }
+
+    @keyframes fadein {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+  <script>
+    setTimeout(() => {
+      window.location.href = "/index";
+    }, 5000);
+  </script>
 </head>
 <body>
-    <img src="/static/icons/logo.png" alt="Logo" class="logo">
-    <div class="gif-container">
-        <img src="/static/icons/vida_pulso.gif" alt="Pulso de vida">
-    </div>
+  <div class="linea-ecg"></div>
+  <img src="/static/icons/logo-medsys.png" alt="Logo MedSys" class="logo-final">
+  <div class="bienvenida">Bienvenido a MEDSYS</div>
+  <div class="saludo">{{ titulo }} {{ nombre }}</div>
 </body>
 </html>

@@ -52,9 +52,9 @@
       padding: 6px 10px;
       border-radius: 8px;
       border: none;
-      background-color: #ffffff15;
+      background-color: white;
       font-size: 17.6px;
-      color: white;
+      color: black;
       margin-top: 5px;
       box-sizing: border-box;
       height: 36px;
@@ -108,6 +108,18 @@
       color: #4ef58c;
       font-weight: bold;
     }
+
+    .visor-pdf {
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    .visor-pdf iframe {
+      width: 90%;
+      height: 500px;
+      border: 2px solid #09394f;
+      border-radius: 10px;
+    }
   </style>
 </head>
 <body>
@@ -145,9 +157,21 @@
     <label for="direccion">Dirección</label>
     <input type="text" id="direccion" name="direccion">
 
+    <label for="obra_social">Obra Social</label>
+    <input type="text" id="obra_social" name="obra_social">
+
+    <label for="emergencia">Contacto de Emergencia</label>
+    <input type="text" id="emergencia" name="emergencia">
+
     <label for="institucion">Institución</label>
     <input type="text" id="institucion" name="institucion" value="metsys001" readonly>
   </form>
+
+  <!-- Visor PDF -->
+  <div class="visor-pdf">
+    <h3>Vista previa del documento PDF:</h3>
+    <iframe id="pdf-visor" src="/static/doc/paciente-generado.pdf" type="application/pdf"></iframe>
+  </div>
 
   <!-- Confirmación -->
   <div class="confirmacion" id="confirmacion-borrado">

@@ -1,72 +1,90 @@
-style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    min-height: 100vh;
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(45deg, #083a51, #031f2b);
-    color: #d3d3d3;
-  }
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Historia Clínica</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(45deg, #083a51, #031f2b);
+            color: #d3d3d3;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
 
-  .container {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-  }
+        .container {
+            text-align: center;
+            padding: 20px;
+        }
 
-  .logo-grande {
-    width: 180px;
-    margin: 20px auto 10px auto;
-    display: block;
-  }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: #d3d3d3;
+        }
 
-  h1.titulo {
-    text-align: center;
-    font-style: italic;
-    font-weight: 600;
-    font-size: 28px;
-    margin-top: 10px;
-    margin-bottom: 25px;
-    color: #d3d3d3;
-  }
+        .icon {
+            width: 120px;
+            height: auto;
+            margin-bottom: 20px;
+        }
 
-  .botonera {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    align-items: center;
-    margin-bottom: 40px;
-  }
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
 
-  a.boton-menu {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    background-color: #062e39;
-    color: #d3d3d3;
-    text-decoration: none;
-    font-weight: 400;
-    font-size: 1.1rem;
-    height: 50px;
-    padding: 0 15px;
-    border-radius: 12px;
-    width: 360px;
-    max-width: 90vw;
-    transition: background-color 0.3s ease;
-  }
+        .historia-button {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid #d3d3d3;
+            border-radius: 8px;
+            padding: 12px 20px;
+            width: 260px;
+            font-size: 18px;
+            color: #d3d3d3;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background-color 0.3s ease;
+        }
 
-  a.boton-menu:hover {
-    background-color: #0d4352;
-  }
+        .historia-button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
 
-  a.boton-menu img {
-    width: 56px;
-    height: 56px;
-    margin-right: 12px;
-    object-fit: contain;
-    align-self: center;
-  }
-</style>
+        .historia-button img {
+            width: 28px;
+            height: 28px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="/static/icons/historia.png" alt="Historia Clínica" class="icon">
+        <h1><em>Seleccionar Tipo de Historia Clínica</em></h1>
+
+        <div class="button-container">
+            <a href="/historia/completa" class="historia-button">
+                <img src="/static/icons/receta.png" alt="Completa">
+                Historia Clínica Completa
+            </a>
+            <a href="/historia/resumen" class="historia-button">
+                <img src="/static/icons/pdf.png" alt="Resumen">
+                Historia Clínica Resumida
+            </a>
+            <a href="/historia/evolucion" class="historia-button">
+                <img src="/static/icons/estudios.png" alt="Evolución">
+                Evolución Diaria
+            </a>
+        </div>
+    </div>
+</body>
+</html>

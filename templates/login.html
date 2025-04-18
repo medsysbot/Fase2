@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -12,7 +11,7 @@
       padding: 0;
       height: 100vh;
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #041c2c, #0e3a59);
+      background: linear-gradient(225deg, #031a28, #0a3b57); /* gradiente más oscuro */
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -21,15 +20,8 @@
     }
 
     .logo {
-      width: 150px;
+      width: 195px; /* 30% más grande */
       margin-bottom: 20px;
-    }
-
-    .welcome {
-      font-size: 20px;
-      font-weight: 500;
-      margin-bottom: 40px;
-      color: #d3d3d3;
     }
 
     .form-container {
@@ -84,7 +76,6 @@
 </head>
 <body>
   <img src="/static/icons/icon-login.png" alt="Logo MedSys" class="logo">
-  <div class="welcome">Bienvenido a MEDSYS</div>
   <form class="form-container" action="/login" method="post">
     <div class="input-group">
       <img src="/static/icons/icon-user.png" alt="Usuario">

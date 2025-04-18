@@ -2,118 +2,187 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Historia-Clinica-Resumida</title>
+  <title>Historia Clínica Resumida</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="/static/styles.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@0,400;0,600&display=swap" rel="stylesheet" />
   <style>
-    .etiqueta-campo {
-      text-align: left;
+    body {
+      background: linear-gradient(to bottom left, #0a2a3d, #155f82);
+      font-family: 'Poppins', sans-serif;
+      color: #d3d3d3;
+      margin: 0;
+      padding: 0;
     }
-    .etiqueta-campo input,
-    .etiqueta-campo select,
-    .etiqueta-campo textarea {
+
+    header {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .logo-grande {
+      width: 204px;
+      height: auto;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      text-align: center;
+      font-style: italic;
+      font-weight: 600;
+      font-size: 28px;
+      margin-top: 10px;
+    }
+
+    form {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 500;
+      font-size: 17px;
+    }
+
+    input, textarea {
       width: 100%;
-      max-width: 400px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: none;
+      background-color: white;
+      font-size: 16px;
+      color: black;
+      margin-top: 5px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      resize: vertical;
+      height: auto;
+    }
+
+    .vista-previa {
+      display: block;
+      margin-top: 10px;
+      max-height: 100px;
+    }
+
+    .btn-eliminar {
+      margin-top: 5px;
+      background-color: crimson;
+      border: none;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .visor-pdf {
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    .visor-pdf iframe {
+      width: 90%;
+      height: 500px;
+      border: 2px solid #09394f;
+      border-radius: 10px;
+    }
+
+    .botones-flotantes {
+      position: fixed;
+      right: 20px;
+      top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      z-index: 1000;
+    }
+
+    .botones-flotantes button {
+      background-color: #4A90E2;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .botones-flotantes img {
+      width: 30px;
+      height: 30px;
     }
   </style>
 </head>
-<body style="background-color: #083C4A; font-family: 'Poppins', sans-serif; color: white; margin: 0; padding: 0;">
-  <header style="text-align: center; margin-top: 20px;">
-    <img src="/static/icons/icono-historia.png" alt="Historia-resumen" class="logo-grande" style="width: 120px; height: auto; margin-bottom: 10px;" />
-    <h2 style="font-style: italic; font-weight: 600; font-size: 28px;">Historia Clínica Resumida</h2>
+<body>
+  <header>
+    <img src="/static/icons/icono-historia.png" alt="Logo Historia Clínica" class="logo-grande" />
+    <h2>Historia Clínica Resumida</h2>
   </header>
 
-  <main>
-    <form class="formulario" id="form-historia-resumen" style="display: flex; flex-direction: column; gap: 20px; max-width: 600px; margin: 0 auto; padding: 20px; align-items: flex-start;">
-      <label class="etiqueta-campo"><span>Paciente:</span>
-        <input type="text" name="paciente" />
-      </label>
-      <label class="etiqueta-campo"><span>Fecha de nacimiento:</span>
-        <input type="date" name="fecha_nacimiento" />
-      </label>
-      <label class="etiqueta-campo"><span>Edad:</span>
-        <input type="number" name="edad" />
-      </label>
-      <label class="etiqueta-campo"><span>Sexo:</span>
-        <select name="sexo">
-          <option value="femenino">Femenino</option>
-          <option value="masculino">Masculino</option>
-          <option value="no_binario">No binario</option>
-        </select>
-      </label>
-      <label class="etiqueta-campo"><span>Obra Social / Prepaga:</span>
-        <input type="text" name="obra_social" />
-      </label>
-      <label class="etiqueta-campo"><span>Número de Afiliado:</span>
-        <input type="text" name="nro_afiliado" />
-      </label>
-      <label class="etiqueta-campo"><span>Contacto de emergencia:</span>
-        <input type="text" name="contacto_emergencia" />
-      </label>
-      <label class="etiqueta-campo"><span>Diagnósticos médicos relevantes:</span>
-        <textarea name="diagnosticos" rows="2"></textarea>
-      </label>
-      <label class="etiqueta-campo"><span>Alergias:</span>
-        <textarea name="alergias" rows="2"></textarea>
-      </label>
-      <label class="etiqueta-campo"><span>Medicación habitual:</span>
-        <textarea name="medicacion" rows="2"></textarea>
-      </label>
-      <label class="etiqueta-campo"><span>Cirugías previas importantes:</span>
-        <textarea name="cirugias" rows="2"></textarea>
-      </label>
-      <label class="etiqueta-campo"><span>Estudios complementarios:</span>
-        <textarea name="estudios" rows="2"></textarea>
-      </label>
-      <label class="etiqueta-campo"><span>Motivo de la consulta:</span>
-        <textarea name="motivo" rows="2"></textarea>
-      </label>
-      <label class="etiqueta-campo"><span>Diagnóstico de la consulta:</span>
-        <textarea name="diagnostico" rows="2"></textarea>
-      </label>
-      <label class="etiqueta-campo"><span>Tratamiento indicado:</span>
-        <textarea name="tratamiento" rows="2"></textarea>
-      </label>
-      <label class="etiqueta-campo"><span>Instrucciones para la próxima visita:</span>
-        <textarea name="instrucciones" rows="2"></textarea>
-      </label>
-      <label class="etiqueta-campo"><span>Fecha de próxima consulta:</span>
-        <input type="date" name="fecha_proxima" />
-      </label>
-      <label class="etiqueta-campo"><span>Información relevante para el paciente:</span>
-        <textarea name="info_paciente" rows="2"></textarea>
-      </label>
-      <label class="etiqueta-campo"><span>Profesional:</span>
-        <input type="text" name="profesional" />
-      </label>
-    </form>
+  <form class="formulario" id="form-resumen">
+    <label>Paciente:</label>
+    <input type="text" name="paciente" />
 
-    <div class="visor-pdf" style="margin-top: 40px; text-align: center;">
-      <h3>Vista previa del documento PDF:</h3>
-      <iframe id="pdf-visor" src="/static/doc/historia-resumen-generada.pdf" type="application/pdf" style="width: 90%; height: 500px; border: 2px solid #09394f; border-radius: 10px;"></iframe>
-    </div>
-  </main>
+    <label>DNI:</label>
+    <input type="text" name="dni" />
 
-  <div class="botones-flotantes" style="position: fixed; right: 20px; bottom: 20px; display: flex; flex-direction: column; gap: 15px; z-index: 1000;">
-    <button type="button" onclick="guardarPDF()" title="Guardar" style="background-color: #4A90E2; border: none; border-radius: 50%; width: 60px; height: 60px;">
-      <img src="/static/icons/guardar.png" alt="Guardar" style="width: 30px; height: 30px;" />
+    <label>Edad:</label>
+    <input type="text" name="edad" />
+
+    <label>Motivo de consulta:</label>
+    <textarea name="motivo"></textarea>
+
+    <label>Diagnóstico:</label>
+    <textarea name="diagnostico"></textarea>
+
+    <label>Tratamiento:</label>
+    <textarea name="tratamiento"></textarea>
+
+    <label>Observaciones:</label>
+    <textarea name="observaciones"></textarea>
+
+    <!-- Firma y sello con vista previa -->
+    <label class="etiqueta-campo"><span>Firma del Profesional:</span>
+      <input type="file" id="firma" name="firma" accept="image/*" onchange="mostrarVistaPrevia(this, 'firma-preview', 'firma-delete')" />
+      <img id="firma-preview" class="vista-previa" style="display:none;" />
+      <button type="button" id="firma-delete" class="btn-eliminar" onclick="eliminarImagen('firma', 'firma-preview', 'firma-delete')" style="display:none;">Eliminar</button>
+    </label>
+
+    <label class="etiqueta-campo"><span>Sello del Profesional:</span>
+      <input type="file" id="sello" name="sello" accept="image/*" onchange="mostrarVistaPrevia(this, 'sello-preview', 'sello-delete')" />
+      <img id="sello-preview" class="vista-previa" style="display:none;" />
+      <button type="button" id="sello-delete" class="btn-eliminar" onclick="eliminarImagen('sello', 'sello-preview', 'sello-delete')" style="display:none;">Eliminar</button>
+    </label>
+  </form>
+
+  <div class="visor-pdf">
+    <h3>Vista previa del documento PDF:</h3>
+    <iframe id="pdf-visor" src="/static/doc/historia-resumen-generada.pdf" type="application/pdf"></iframe>
+  </div>
+
+  <div class="botones-flotantes">
+    <button type="button" onclick="guardarPDF()" title="Guardar">
+      <img src="/static/icons/guardar.png" alt="Guardar" />
     </button>
-    <button type="submit" form="form-historia-resumen" title="Enviar" style="background-color: #4A90E2; border: none; border-radius: 50%; width: 60px; height: 60px;">
-      <img src="/static/icons/enviar.png" alt="Enviar" style="width: 30px; height: 30px;" />
+    <button type="submit" form="form-resumen" title="Enviar">
+      <img src="/static/icons/enviar.png" alt="Enviar" />
     </button>
-    <button type="button" onclick="imprimirPDF()" title="Imprimir" style="background-color: #4A90E2; border: none; border-radius: 50%; width: 60px; height: 60px;">
-      <img src="/static/icons/imprimir.png" alt="Imprimir" style="width: 30px; height: 30px;" />
+    <button type="button" onclick="imprimirPDF()" title="Imprimir">
+      <img src="/static/icons/imprimir.png" alt="Imprimir" />
     </button>
-    <button type="button" onclick="document.getElementById('form-historia-resumen').reset()" title="Borrar" style="background-color: #4A90E2; border: none; border-radius: 50%; width: 60px; height: 60px;">
-      <img src="/static/icons/borrar.png" alt="Borrar" style="width: 30px; height: 30px;" />
+    <button type="button" onclick="document.getElementById('form-resumen').reset()" title="Borrar">
+      <img src="/static/icons/borrar.png" alt="Borrar" />
     </button>
-    <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz" style="background-color: #4A90E2; border: none; border-radius: 50%; width: 60px; height: 60px;">
-      <img src="/static/icons/microfono.png" alt="Voz" style="width: 30px; height: 30px;" />
+    <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
+      <img src="/static/icons/microfono.png" alt="Voz" />
     </button>
   </div>
 
-  <script src="/static/js/funciones-pdf.js"></script>
   <script>
     function activarVoz() {
       const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
@@ -130,13 +199,26 @@
       recognition.start();
     }
 
-    function imprimirPDF() {
-      const visor = document.getElementById("pdf-visor");
-      if (visor) visor.contentWindow.print();
+    function mostrarVistaPrevia(input, imgId, btnId) {
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = document.getElementById(imgId);
+        const btn = document.getElementById(btnId);
+        img.src = e.target.result;
+        img.style.display = "block";
+        btn.style.display = "inline-block";
+        input.style.display = "none";
+      };
+      if (file) reader.readAsDataURL(file);
     }
 
-    function guardarPDF() {
-      alert("Funcionalidad de guardado aún no implementada.");
+    function eliminarImagen(inputId, imgId, btnId) {
+      document.getElementById(inputId).value = "";
+      document.getElementById(imgId).src = "";
+      document.getElementById(imgId).style.display = "none";
+      document.getElementById(btnId).style.display = "none";
+      document.getElementById(inputId).style.display = "block";
     }
   </script>
 </body>

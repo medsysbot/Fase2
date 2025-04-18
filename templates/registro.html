@@ -167,6 +167,13 @@
     <input type="text" id="institucion" name="institucion" value="metsys001" readonly>
   </form>
 
+  <!-- Mensaje de éxito -->
+  {% if request.query_params.get('exito') == '1' %}
+    <div class="mensaje-exito">
+      Paciente registrado con éxito. Vista previa del PDF generada abajo.
+    </div>
+  {% endif %}
+
   <!-- Visor PDF -->
   <div class="visor-pdf">
     <h3>Vista previa del documento PDF:</h3>
@@ -177,8 +184,6 @@
   <div class="confirmacion" id="confirmacion-borrado">
     <p>¿Desea borrar este paciente de la base de datos?</p>
   </div>
-
-  <div class="mensaje-exito" id="mensaje-exito"></div>
 
   <script src="/static/js/registro_voz.js"></script>
   <script src="/static/js/registro_formulario.js"></script>

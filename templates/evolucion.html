@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Historia Clínica - Evolución</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@0,400;0,600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
   <style>
     body {
       background: linear-gradient(to bottom left, #0a2a3d, #155f82);
@@ -121,7 +121,7 @@
 <body>
   <header>
     <img src="/static/icons/icono-historia.png" alt="Logo Evolución" class="logo-grande" />
-    <h2>Historia Clínica - Evolución</h2>
+    <h2 style="text-align: center;">Historia Clínica<br>Evolución</h2>
   </header>
 
   <form class="formulario" id="form-evolucion">
@@ -163,7 +163,7 @@
     <iframe id="pdf-visor" src="/static/doc/historia-evolucion-generada.pdf" type="application/pdf"></iframe>
   </div>
 
-  <!-- Botones flotantes -->
+  <!-- Botones flotantes sin el botón de buscar -->
   <div class="botones-flotantes">
     <button type="button" onclick="guardarPDF()" title="Guardar">
       <img src="/static/icons/guardar.png" alt="Guardar" />
@@ -179,9 +179,6 @@
     </button>
     <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
       <img src="/static/icons/microfono.png" alt="Voz" />
-    </button>
-    <button type="button" title="Buscar">
-      <img src="/static/icons/busquedas.png" alt="Buscar" />
     </button>
   </div>
 

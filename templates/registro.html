@@ -2,14 +2,14 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+  <title>Registro de Pacientes</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Registro de Pacientes - MedSys</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
   <style>
     body {
-      background-color: #083C4A;
+      background: linear-gradient(to bottom left, #0a2a3d, #155f82);
       font-family: 'Poppins', sans-serif;
-      color: white;
+      color: #d3d3d3;
       margin: 0;
       padding: 0;
     }
@@ -20,7 +20,7 @@
     }
 
     .logo-grande {
-      width: 120px;
+      width: 204px;
       height: auto;
       margin-bottom: 10px;
     }
@@ -31,11 +31,11 @@
       font-weight: 600;
       font-size: 28px;
       margin-top: 10px;
-      color: white;
+      color: #d3d3d3;
     }
 
     form {
-      max-width: 600px;
+      max-width: 700px;
       margin: 0 auto;
       padding: 20px;
     }
@@ -44,69 +44,41 @@
       display: block;
       margin-top: 15px;
       font-weight: 500;
-      font-size: 17.6px;
+      font-size: 17px;
+      color: #d3d3d3;
     }
 
-    input {
+    input, textarea {
       width: 100%;
       padding: 6px 10px;
       border-radius: 8px;
       border: none;
       background-color: white;
-      font-size: 17.6px;
+      font-size: 16px;
       color: black;
       margin-top: 5px;
       box-sizing: border-box;
-      height: 36px;
     }
 
-    .botones-flotantes {
-      position: fixed;
-      right: 20px;
-      top: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      z-index: 1000;
+    textarea {
+      resize: vertical;
+      height: auto;
     }
 
-    .boton {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background-color: #4A90E2;
+    .vista-previa {
+      display: block;
+      margin-top: 10px;
+      max-height: 100px;
+    }
+
+    .btn-eliminar {
+      margin-top: 5px;
+      background-color: crimson;
       border: none;
-      background-size: 60%;
-      background-repeat: no-repeat;
-      background-position: center;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
       cursor: pointer;
-    }
-
-    .boton.grande {
-      width: 70px;
-      height: 70px;
-      display: none;
-    }
-
-    .confirmacion {
-      display: none;
-      position: fixed;
-      top: 45%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: #142f42;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-      text-align: center;
-      z-index: 1000;
-    }
-
-    .mensaje-exito {
-      text-align: center;
-      margin-top: 20px;
-      color: #4ef58c;
-      font-weight: bold;
     }
 
     .visor-pdf {
@@ -120,72 +92,136 @@
       border: 2px solid #09394f;
       border-radius: 10px;
     }
+
+    .botones-flotantes {
+      position: fixed;
+      right: 20px;
+      top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      z-index: 1000;
+    }
+
+    .botones-flotantes button {
+      background-color: #4A90E2;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .botones-flotantes img {
+      width: 30px;
+      height: 30px;
+    }
   </style>
 </head>
 <body>
   <header>
-    <img src="/static/icons/icono-registro.png" alt="Logo" class="logo-grande" />
-    <h2>Registro de Pacientes</h2>
+    <img src="/static/icons/icono-registro.png" alt="Logo Registro" class="logo-grande" />
+    <h2 style="text-align: center;">Registro de<br>Pacientes</h2>
   </header>
 
-  <!-- Botones flotantes -->
-  <div class="botones-flotantes">
-    <button class="boton" id="btn-guardar" style="background-image: url('/static/icons/guardar.png');"></button>
-    <button class="boton" id="btn-enviar" style="background-image: url('/static/icons/enviar.png');"></button>
-    <button class="boton" id="btn-imprimir" style="background-image: url('/static/icons/imprimir.png');"></button>
-    <button class="boton" id="btn-borrar" style="background-image: url('/static/icons/borrar.png');"></button>
-    <button class="boton" id="btn-voz" ondblclick="activarDictado()" style="background-image: url('/static/icons/microfono.png');"></button>
+  <form class="formulario" id="form-registro">
+    <label>Nombre y Apellido:</label>
+    <input type="text" name="nombre" required />
 
-    <button class="boton grande" id="btn-close" style="background-image: url('/static/icons/close.png'); display: none;"></button>
-    <button class="boton grande" id="btn-confirmar" style="background-image: url('/static/icons/confirmar-borrado.png'); display: none;"></button>
-  </div>
+    <label>DNI:</label>
+    <input type="text" name="dni" required />
 
-  <!-- Formulario -->
-  <form id="formulario" method="post" action="/registro-paciente">
-    <label for="nombre">Nombre completo</label>
-    <input type="text" id="nombre" name="nombre" required>
+    <label>Fecha de Nacimiento:</label>
+    <input type="date" name="fecha_nacimiento" required />
 
-    <label for="dni">DNI</label>
-    <input type="text" id="dni" name="dni">
+    <label>Teléfono:</label>
+    <input type="text" name="telefono" />
 
-    <label for="fecha_nacimiento">Fecha de Nacimiento</label>
-    <input type="date" id="fecha_nacimiento" name="fecha_nacimiento">
+    <label>Correo Electrónico:</label>
+    <input type="email" name="email" />
 
-    <label for="telefono">Teléfono</label>
-    <input type="text" id="telefono" name="telefono">
+    <label>Domicilio:</label>
+    <input type="text" name="domicilio" />
 
-    <label for="direccion">Dirección</label>
-    <input type="text" id="direccion" name="direccion">
+    <label>Obra Social / Prepaga:</label>
+    <input type="text" name="obra_social" />
 
-    <label for="obra_social">Obra Social</label>
-    <input type="text" id="obra_social" name="obra_social">
+    <label>Contacto de Emergencia:</label>
+    <input type="text" name="contacto_emergencia" />
 
-    <label for="emergencia">Contacto de Emergencia</label>
-    <input type="text" id="emergencia" name="emergencia">
+    <label>Firma del Profesional:</label>
+    <input type="file" id="firma" name="firma" accept="image/*" onchange="mostrarVistaPrevia(this, 'firma-preview', 'firma-delete')" />
+    <img id="firma-preview" class="vista-previa" style="display:none;" />
+    <button type="button" id="firma-delete" class="btn-eliminar" onclick="eliminarImagen('firma', 'firma-preview', 'firma-delete')" style="display:none;">Eliminar</button>
 
-    <label for="institucion">Institución</label>
-    <input type="text" id="institucion" name="institucion" value="metsys001" readonly>
+    <label>Sello del Profesional:</label>
+    <input type="file" id="sello" name="sello" accept="image/*" onchange="mostrarVistaPrevia(this, 'sello-preview', 'sello-delete')" />
+    <img id="sello-preview" class="vista-previa" style="display:none;" />
+    <button type="button" id="sello-delete" class="btn-eliminar" onclick="eliminarImagen('sello', 'sello-preview', 'sello-delete')" style="display:none;">Eliminar</button>
   </form>
 
-  <!-- Mensaje de éxito -->
-  {% if request.query_params.get('exito') == '1' %}
-    <div class="mensaje-exito">
-      Paciente registrado con éxito. Vista previa del PDF generada abajo.
-    </div>
-  {% endif %}
-
-  <!-- Visor PDF -->
   <div class="visor-pdf">
     <h3>Vista previa del documento PDF:</h3>
     <iframe id="pdf-visor" src="/static/doc/paciente-generado.pdf" type="application/pdf"></iframe>
   </div>
 
-  <!-- Confirmación -->
-  <div class="confirmacion" id="confirmacion-borrado">
-    <p>¿Desea borrar este paciente de la base de datos?</p>
+  <div class="botones-flotantes">
+    <button type="button" onclick="guardarPDF()" title="Guardar">
+      <img src="/static/icons/guardar.png" alt="Guardar" />
+    </button>
+    <button type="submit" form="form-registro" title="Enviar">
+      <img src="/static/icons/enviar.png" alt="Enviar" />
+    </button>
+    <button type="button" onclick="imprimirPDF()" title="Imprimir">
+      <img src="/static/icons/imprimir.png" alt="Imprimir" />
+    </button>
+    <button type="button" onclick="document.getElementById('form-registro').reset()" title="Borrar">
+      <img src="/static/icons/borrar.png" alt="Borrar" />
+    </button>
+    <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
+      <img src="/static/icons/microfono.png" alt="Voz" />
+    </button>
   </div>
 
-  <script src="/static/js/registro_voz.js"></script>
-  <script src="/static/js/registro_formulario.js"></script>
+  <script>
+    function activarVoz() {
+      const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+      recognition.lang = "es-ES";
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.onresult = function(event) {
+        const texto = event.results[0][0].transcript;
+        const campo = document.activeElement;
+        if (campo && (campo.tagName === "INPUT" || campo.tagName === "TEXTAREA")) {
+          campo.value += (campo.value ? " " : "") + texto;
+        }
+      };
+      recognition.start();
+    }
+
+    function mostrarVistaPrevia(input, imgId, btnId) {
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = document.getElementById(imgId);
+        const btn = document.getElementById(btnId);
+        img.src = e.target.result;
+        img.style.display = "block";
+        btn.style.display = "inline-block";
+        input.style.display = "none";
+      };
+      if (file) reader.readAsDataURL(file);
+    }
+
+    function eliminarImagen(inputId, imgId, btnId) {
+      document.getElementById(inputId).value = "";
+      document.getElementById(imgId).src = "";
+      document.getElementById(imgId).style.display = "none";
+      document.getElementById(btnId).style.display = "none";
+      document.getElementById(inputId).style.display = "block";
+    }
+  </script>
 </body>
 </html>

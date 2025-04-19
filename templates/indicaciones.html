@@ -1,76 +1,76 @@
-<!-- Archivo: templates/indicaciones.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Indicaciones</title>
+  <title>Indicaciones Médicas</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="/static/styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
   <style>
     body {
-      background-color: #083C4A;
+      background: linear-gradient(to bottom left, #0a2a3d, #155f82);
       font-family: 'Poppins', sans-serif;
-      color: white;
+      color: #d3d3d3;
       margin: 0;
       padding: 0;
     }
+
     header {
       text-align: center;
       margin-top: 20px;
     }
+
     .logo-grande {
-      width: 120px;
+      width: 204px;
       height: auto;
       margin-bottom: 10px;
     }
+
     h2 {
       text-align: center;
       font-style: italic;
       font-weight: 600;
       font-size: 28px;
-      color: white;
       margin-top: 10px;
+      color: #d3d3d3;
     }
-    .formulario {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      max-width: 600px;
+
+    form {
+      max-width: 700px;
       margin: 0 auto;
       padding: 20px;
-      align-items: center;
     }
-    .etiqueta-campo {
-      width: 100%;
-      max-width: 400px;
-    }
-    .etiqueta-campo span {
-      font-weight: 400;
-      font-size: 17.6px;
-      color: white;
+
+    label {
       display: block;
-      margin-bottom: 5px;
+      margin-top: 15px;
+      font-weight: 500;
+      font-size: 17px;
+      color: #d3d3d3;
     }
-    .formulario input,
-    .formulario textarea {
+
+    input, textarea {
       width: 100%;
       padding: 6px 10px;
       border-radius: 8px;
       border: none;
-      font-size: 17.6px;
-      font-weight: 400;
+      background-color: white;
+      font-size: 16px;
       color: black;
+      margin-top: 5px;
       box-sizing: border-box;
     }
-    .formulario textarea {
+
+    textarea {
       resize: vertical;
+      height: auto;
     }
+
     .vista-previa {
       display: block;
       margin-top: 10px;
       max-height: 100px;
     }
+
     .btn-eliminar {
       margin-top: 5px;
       background-color: crimson;
@@ -80,25 +80,29 @@
       border-radius: 6px;
       cursor: pointer;
     }
+
     .visor-pdf {
       margin-top: 40px;
       text-align: center;
     }
+
     .visor-pdf iframe {
       width: 90%;
       height: 500px;
       border: 2px solid #09394f;
       border-radius: 10px;
     }
+
     .botones-flotantes {
       position: fixed;
       right: 20px;
-      bottom: 20px;
+      top: 20px;
       display: flex;
       flex-direction: column;
       gap: 15px;
       z-index: 1000;
     }
+
     .botones-flotantes button {
       background-color: #4A90E2;
       border: none;
@@ -109,6 +113,7 @@
       align-items: center;
       justify-content: center;
     }
+
     .botones-flotantes img {
       width: 30px;
       height: 30px;
@@ -118,39 +123,40 @@
 <body>
   <header>
     <img src="/static/icons/icono-indicaciones.png" alt="Logo Indicaciones" class="logo-grande" />
-    <h2>Indicaciones</h2>
+    <h2 style="text-align: center;">Indicaciones<br>Médicas</h2>
   </header>
 
-  <main>
-    <form class="formulario" id="form-indicaciones">
-      <label class="etiqueta-campo"><span>Nombre del Paciente:</span>
-        <input type="text" id="nombre" name="nombre" required />
-      </label>
-      <label class="etiqueta-campo"><span>Fecha:</span>
-        <input type="date" id="fecha" name="fecha" required />
-      </label>
-      <label class="etiqueta-campo"><span>Indicaciones:</span>
-        <textarea id="indicaciones" name="indicaciones" rows="6" required></textarea>
-      </label>
+  <form class="formulario" id="form-indicaciones">
+    <label>Nombre del Paciente:</label>
+    <input type="text" name="nombre" required />
 
-      <label class="etiqueta-campo"><span>Firma del Profesional:</span>
-        <input type="file" id="firma" name="firma" accept="image/*" onchange="mostrarVistaPrevia(this, 'firma-preview', 'firma-delete')" />
-        <img id="firma-preview" class="vista-previa" style="display:none;" />
-        <button type="button" id="firma-delete" class="btn-eliminar" onclick="eliminarImagen('firma', 'firma-preview', 'firma-delete')" style="display:none;">Eliminar</button>
-      </label>
+    <label>DNI:</label>
+    <input type="text" name="dni" required />
 
-      <label class="etiqueta-campo"><span>Sello del Profesional:</span>
-        <input type="file" id="sello" name="sello" accept="image/*" onchange="mostrarVistaPrevia(this, 'sello-preview', 'sello-delete')" />
-        <img id="sello-preview" class="vista-previa" style="display:none;" />
-        <button type="button" id="sello-delete" class="btn-eliminar" onclick="eliminarImagen('sello', 'sello-preview', 'sello-delete')" style="display:none;">Eliminar</button>
-      </label>
-    </form>
+    <label>Fecha:</label>
+    <input type="date" name="fecha" required />
 
-    <div class="visor-pdf">
-      <h3>Vista previa del documento PDF:</h3>
-      <iframe id="pdf-visor" src="/static/doc/indicaciones-generado.pdf" type="application/pdf"></iframe>
-    </div>
-  </main>
+    <label>Diagnóstico:</label>
+    <textarea name="diagnostico" rows="3" required></textarea>
+
+    <label>Indicaciones:</label>
+    <textarea name="indicaciones" rows="6" required></textarea>
+
+    <label>Firma del Profesional:</label>
+    <input type="file" id="firma" name="firma" accept="image/*" onchange="mostrarVistaPrevia(this, 'firma-preview', 'firma-delete')" />
+    <img id="firma-preview" class="vista-previa" style="display:none;" />
+    <button type="button" id="firma-delete" class="btn-eliminar" onclick="eliminarImagen('firma', 'firma-preview', 'firma-delete')" style="display:none;">Eliminar</button>
+
+    <label>Sello del Profesional:</label>
+    <input type="file" id="sello" name="sello" accept="image/*" onchange="mostrarVistaPrevia(this, 'sello-preview', 'sello-delete')" />
+    <img id="sello-preview" class="vista-previa" style="display:none;" />
+    <button type="button" id="sello-delete" class="btn-eliminar" onclick="eliminarImagen('sello', 'sello-preview', 'sello-delete')" style="display:none;">Eliminar</button>
+  </form>
+
+  <div class="visor-pdf">
+    <h3>Vista previa del documento PDF:</h3>
+    <iframe id="pdf-visor" src="/static/doc/indicaciones-generadas.pdf" type="application/pdf"></iframe>
+  </div>
 
   <div class="botones-flotantes">
     <button type="button" onclick="guardarPDF()" title="Guardar">
@@ -170,7 +176,6 @@
     </button>
   </div>
 
-  <script src="/static/js/funciones-pdf.js"></script>
   <script>
     function activarVoz() {
       const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
@@ -211,4 +216,3 @@
   </script>
 </body>
 </html>
-

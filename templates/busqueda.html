@@ -60,6 +60,19 @@
       box-sizing: border-box;
     }
 
+    .resultados {
+      margin: 30px auto;
+      max-width: 700px;
+      background-color: rgba(255, 255, 255, 0.05);
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .resultados h3 {
+      color: #d3d3d3;
+      margin-top: 0;
+    }
+
     .visor-pdf {
       margin-top: 40px;
       text-align: center;
@@ -101,14 +114,28 @@
 </head>
 <body>
   <header>
-    <img src="/static/icons/icono-busqueda.png" alt="Logo Búsqueda" class="logo-grande" />
+    <img src="/static/icons/busqueda.png" alt="Logo Búsqueda" class="logo-grande" />
     <h2 style="text-align: center;">Búsqueda<br>de Pacientes</h2>
   </header>
 
   <form class="formulario" id="form-busqueda">
     <label>Buscar por DNI:</label>
     <input type="text" name="dni" required />
+
+    <label>Buscar por Nombre y Apellido:</label>
+    <input type="text" name="nombre" />
+
+    <label>Buscar por Fecha:</label>
+    <input type="date" name="fecha" />
   </form>
+
+  <div class="resultados">
+    <h3>Resultados:</h3>
+    <p><strong>Paciente:</strong> Lucía Fernández</p>
+    <p><strong>DNI:</strong> 28456789</p>
+    <p><strong>Turno:</strong> 2024-06-25 – 10:30hs</p>
+    <p><strong>Profesional:</strong> Dra. Martínez</p>
+  </div>
 
   <div class="visor-pdf">
     <h3>Vista previa del documento PDF:</h3>

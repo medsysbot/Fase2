@@ -4,12 +4,13 @@
   <meta charset="UTF-8" />
   <title>Búsqueda</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/static/styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
   <style>
     body {
-      background: linear-gradient(to bottom left, #0a2a3d, #155f82);
+      background-color: #083C4A;
       font-family: 'Poppins', sans-serif;
-      color: #d3d3d3;
+      color: white;
       margin: 0;
       padding: 0;
     }
@@ -20,57 +21,87 @@
     }
 
     .logo-grande {
-      width: 204px;
+      width: 120px;
       height: auto;
       margin-bottom: 10px;
     }
 
     h2 {
       text-align: center;
-      font-style: italic;
       font-weight: 600;
+      font-style: italic;
       font-size: 28px;
       margin-top: 10px;
-      color: #d3d3d3;
     }
 
-    form {
-      max-width: 700px;
-      margin: 0 auto;
-      padding: 20px;
+    .campo-busqueda {
+      margin: 20px auto;
+      max-width: 400px;
+      width: 90%;
     }
 
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: 500;
-      font-size: 17px;
-      color: #d3d3d3;
+    .campo-busqueda label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 17.6px;
+      font-weight: 400;
+      color: white;
+      margin-bottom: 5px;
     }
 
-    input {
+    .campo-busqueda label img {
+      width: 24px;
+      height: 24px;
+    }
+
+    .campo-busqueda input[type="search"] {
       width: 100%;
       padding: 6px 10px;
-      border-radius: 8px;
+      font-size: 17.6px;
       border: none;
-      background-color: white;
-      font-size: 16px;
+      border-radius: 8px;
       color: black;
-      margin-top: 5px;
       box-sizing: border-box;
     }
 
-    .resultados {
-      margin: 30px auto;
-      max-width: 700px;
-      background-color: rgba(255, 255, 255, 0.05);
-      padding: 20px;
+    .resultado-seccion {
+      margin: 20px auto;
+      padding: 0;
       border-radius: 10px;
+      max-width: 400px;
+      width: 90%;
+      text-align: left;
     }
 
-    .resultados h3 {
-      color: #d3d3d3;
-      margin-top: 0;
+    .resultado-titulo {
+      background-color: #09394f;
+      padding: 10px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: white;
+    }
+
+    .resultado-titulo img {
+      width: 24px;
+      height: 24px;
+    }
+
+    .resultado-contenido {
+      background-color: white;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 17.6px;
+      font-weight: 400;
+      color: black;
+      height: 36px;
+      box-sizing: border-box;
+      margin-bottom: 10px;
     }
 
     .visor-pdf {
@@ -88,14 +119,15 @@
     .botones-flotantes {
       position: fixed;
       right: 20px;
-      top: 20px;
+      bottom: 20px;
       display: flex;
       flex-direction: column;
       gap: 15px;
       z-index: 1000;
     }
 
-    .botones-flotantes button {
+    .botones-flotantes button,
+    .botones-flotantes a {
       background-color: #4A90E2;
       border: none;
       border-radius: 50%;
@@ -114,45 +146,60 @@
 </head>
 <body>
   <header>
-    <img src="/static/icons/busqueda.png" alt="Logo Búsqueda" class="logo-grande" />
-    <h2 style="text-align: center;">Búsqueda<br>de Pacientes</h2>
+    <img src="/static/icons/busqueda.png" alt="Buscar" class="logo-grande" />
+    <h2>Búsqueda</h2>
   </header>
 
-  <form class="formulario" id="form-busqueda">
-    <label>Buscar por DNI:</label>
-    <input type="text" name="dni" required />
+  <main>
+    <div class="campo-busqueda">
+      <label for="busqueda">
+        <img src="/static/icons/busqueda.png" alt="Buscar" />
+        <span>Buscar por Nombre o DNI:</span>
+      </label>
+      <input type="search" id="busqueda" name="busqueda" placeholder="Ej: Juan Pérez o 12345678" />
+    </div>
 
-    <label>Buscar por Nombre y Apellido:</label>
-    <input type="text" name="nombre" />
+    <section class="resultado-seccion">
+      <div class="resultado-titulo">
+        <img src="/static/icons/icono-historia.png" alt="Historia" />
+        Historia Clínica
+      </div>
+      <div class="resultado-contenido">None</div>
+    </section>
 
-    <label>Buscar por Fecha:</label>
-    <input type="date" name="fecha" />
-  </form>
+    <section class="resultado-seccion">
+      <div class="resultado-titulo">
+        <img src="/static/icons/icono-turnos.png" alt="Turnos" />
+        Turnos
+      </div>
+      <div class="resultado-contenido">None</div>
+    </section>
 
-  <div class="resultados">
-    <h3>Resultados:</h3>
-    <p><strong>Paciente:</strong> Lucía Fernández</p>
-    <p><strong>DNI:</strong> 28456789</p>
-    <p><strong>Turno:</strong> 2024-06-25 – 10:30hs</p>
-    <p><strong>Profesional:</strong> Dra. Martínez</p>
-  </div>
+    <section class="resultado-seccion">
+      <div class="resultado-titulo">
+        <img src="/static/icons/icono-receta.png" alt="Recetas" />
+        Recetas Electrónicas
+      </div>
+      <div class="resultado-contenido">None</div>
+    </section>
 
-  <div class="visor-pdf">
-    <h3>Vista previa del documento PDF:</h3>
-    <iframe id="pdf-visor" src="/static/doc/busqueda-resultados.pdf" type="application/pdf"></iframe>
-  </div>
+    <div class="visor-pdf">
+      <h3>Vista previa del documento PDF:</h3>
+      <iframe id="pdf-visor" src="/static/doc/busqueda-generada.pdf" type="application/pdf"></iframe>
+    </div>
+  </main>
 
   <div class="botones-flotantes">
-    <button type="button" onclick="guardarPDF()" title="Guardar">
-      <img src="/static/icons/guardar.png" alt="Guardar" />
+    <button title="Buscar">
+      <img src="/static/icons/busquedas.png" alt="Buscar" />
     </button>
-    <button type="submit" form="form-busqueda" title="Enviar">
+    <button title="Enviar">
       <img src="/static/icons/enviar.png" alt="Enviar" />
     </button>
-    <button type="button" onclick="imprimirPDF()" title="Imprimir">
+    <button title="Imprimir" onclick="imprimirPDF()">
       <img src="/static/icons/imprimir.png" alt="Imprimir" />
     </button>
-    <button type="button" onclick="document.getElementById('form-busqueda').reset()" title="Borrar">
+    <button title="Limpiar" onclick="document.getElementById('busqueda').value=''">
       <img src="/static/icons/borrar.png" alt="Borrar" />
     </button>
     <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
@@ -160,19 +207,20 @@
     </button>
   </div>
 
+  <script src="/static/js/funciones-pdf.js"></script>
   <script>
     function activarVoz() {
       const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
       recognition.lang = "es-ES";
       recognition.continuous = false;
       recognition.interimResults = false;
+
       recognition.onresult = function(event) {
         const texto = event.results[0][0].transcript;
-        const campo = document.activeElement;
-        if (campo && (campo.tagName === "INPUT" || campo.tagName === "TEXTAREA")) {
-          campo.value += (campo.value ? " " : "") + texto;
-        }
+        const campo = document.getElementById("busqueda");
+        if (campo) campo.value += (campo.value ? ' ' : '') + texto;
       };
+
       recognition.start();
     }
   </script>

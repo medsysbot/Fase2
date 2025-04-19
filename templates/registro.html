@@ -60,27 +60,6 @@
       box-sizing: border-box;
     }
 
-    textarea {
-      resize: vertical;
-      height: auto;
-    }
-
-    .vista-previa {
-      display: block;
-      margin-top: 10px;
-      max-height: 100px;
-    }
-
-    .btn-eliminar {
-      margin-top: 5px;
-      background-color: crimson;
-      border: none;
-      color: white;
-      padding: 4px 8px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
     .visor-pdf {
       margin-top: 40px;
       text-align: center;
@@ -148,18 +127,11 @@
     <label>Obra Social / Prepaga:</label>
     <input type="text" name="obra_social" />
 
+    <label>Número de Afiliado:</label>
+    <input type="text" name="numero_afiliado" />
+
     <label>Contacto de Emergencia:</label>
     <input type="text" name="contacto_emergencia" />
-
-    <label>Firma del Profesional:</label>
-    <input type="file" id="firma" name="firma" accept="image/*" onchange="mostrarVistaPrevia(this, 'firma-preview', 'firma-delete')" />
-    <img id="firma-preview" class="vista-previa" style="display:none;" />
-    <button type="button" id="firma-delete" class="btn-eliminar" onclick="eliminarImagen('firma', 'firma-preview', 'firma-delete')" style="display:none;">Eliminar</button>
-
-    <label>Sello del Profesional:</label>
-    <input type="file" id="sello" name="sello" accept="image/*" onchange="mostrarVistaPrevia(this, 'sello-preview', 'sello-delete')" />
-    <img id="sello-preview" class="vista-previa" style="display:none;" />
-    <button type="button" id="sello-delete" class="btn-eliminar" onclick="eliminarImagen('sello', 'sello-preview', 'sello-delete')" style="display:none;">Eliminar</button>
   </form>
 
   <div class="visor-pdf">
@@ -199,28 +171,6 @@
         }
       };
       recognition.start();
-    }
-
-    function mostrarVistaPrevia(input, imgId, btnId) {
-      const file = input.files[0];
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        const img = document.getElementById(imgId);
-        const btn = document.getElementById(btnId);
-        img.src = e.target.result;
-        img.style.display = "block";
-        btn.style.display = "inline-block";
-        input.style.display = "none";
-      };
-      if (file) reader.readAsDataURL(file);
-    }
-
-    function eliminarImagen(inputId, imgId, btnId) {
-      document.getElementById(inputId).value = "";
-      document.getElementById(imgId).src = "";
-      document.getElementById(imgId).style.display = "none";
-      document.getElementById(btnId).style.display = "none";
-      document.getElementById(inputId).style.display = "block";
     }
   </script>
 </body>

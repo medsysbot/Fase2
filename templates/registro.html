@@ -77,7 +77,7 @@
       right: 20px;
       bottom: 20px;
       display: flex;
-      flex-direction: column-reverse;
+      flex-direction: column;
       gap: 15px;
       z-index: 1000;
     }
@@ -143,17 +143,17 @@
     <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
       <img src="/static/icons/microfono.png" alt="Voz" />
     </button>
-    <button type="button" onclick="document.getElementById('form-registro').reset()" title="Borrar">
-      <img src="/static/icons/borrar.png" alt="Borrar" />
-    </button>
-    <button type="button" onclick="imprimirPDF()" title="Imprimir">
-      <img src="/static/icons/imprimir.png" alt="Imprimir" />
+    <button type="button" onclick="guardarPDF()" title="Guardar">
+      <img src="/static/icons/guardar.png" alt="Guardar" />
     </button>
     <button type="submit" form="form-registro" title="Enviar">
       <img src="/static/icons/enviar.png" alt="Enviar" />
     </button>
-    <button type="button" onclick="guardarPDF()" title="Guardar">
-      <img src="/static/icons/guardar.png" alt="Guardar" />
+    <button type="button" onclick="imprimirPDF()" title="Imprimir">
+      <img src="/static/icons/imprimir.png" alt="Imprimir" />
+    </button>
+    <button type="button" onclick="document.getElementById('form-registro').reset()" title="Borrar">
+      <img src="/static/icons/borrar.png" alt="Borrar" />
     </button>
   </div>
 

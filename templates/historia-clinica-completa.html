@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Registro de Pacientes</title>
+  <title>Historia Clínica Completa</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
   <style>
@@ -45,7 +45,6 @@
       margin-top: 15px;
       font-weight: 500;
       font-size: 17px;
-      color: #d3d3d3;
     }
 
     input, textarea {
@@ -97,32 +96,54 @@
       width: 30px;
       height: 30px;
     }
+
+    .vista-previa {
+      display: block;
+      margin-top: 10px;
+      max-height: 100px;
+    }
+
+    .btn-eliminar {
+      margin-top: 5px;
+      background-color: crimson;
+      border: none;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <header>
-    <img src="/static/icons/icono-registro.png" alt="Logo Registro" class="logo-grande" />
-    <h2>Registro de Pacientes</h2>
+    <img src="/static/icons/icono-historia.png" alt="Logo Historia Clínica" class="logo-grande" />
+    <h2>Historia Clínica Completa</h2>
   </header>
 
-  <form class="formulario" id="form-registro">
-    <label>Nombre y Apellido:</label>
-    <input type="text" name="nombre" required />
+  <form id="form-historia">
+    <label>Paciente:</label>
+    <input type="text" name="nombre" />
+
+    <label>Fecha de nacimiento:</label>
+    <input type="date" name="fecha_nacimiento" />
+
+    <label>Edad:</label>
+    <input type="text" name="edad" />
+
+    <label>Sexo:</label>
+    <input type="text" name="sexo" />
 
     <label>DNI:</label>
-    <input type="text" name="dni" required />
+    <input type="text" name="dni" />
 
-    <label>Fecha de Nacimiento:</label>
-    <input type="date" name="fecha_nacimiento" required />
+    <label>Domicilio:</label>
+    <input type="text" name="domicilio" />
 
     <label>Teléfono:</label>
     <input type="text" name="telefono" />
 
-    <label>Correo Electrónico:</label>
+    <label>Correo electrónico:</label>
     <input type="email" name="email" />
-
-    <label>Domicilio:</label>
-    <input type="text" name="domicilio" />
 
     <label>Obra Social / Prepaga:</label>
     <input type="text" name="obra_social" />
@@ -130,13 +151,53 @@
     <label>Número de Afiliado:</label>
     <input type="text" name="numero_afiliado" />
 
-    <label>Contacto de Emergencia:</label>
-    <input type="text" name="contacto_emergencia" />
+    <label>Antecedentes personales:</label>
+    <textarea name="antecedentes_personales" rows="3"></textarea>
+
+    <label>Antecedentes familiares:</label>
+    <textarea name="antecedentes_familiares" rows="3"></textarea>
+
+    <label>Hábitos:</label>
+    <textarea name="habitos" rows="3"></textarea>
+
+    <label>Enfermedades crónicas:</label>
+    <textarea name="enfermedades_cronicas" rows="3"></textarea>
+
+    <label>Cirugías y Hospitalizaciones:</label>
+    <textarea name="cirugias" rows="3"></textarea>
+
+    <label>Medicación Actual:</label>
+    <textarea name="medicacion" rows="3"></textarea>
+
+    <label>Estudios Complementarios:</label>
+    <textarea name="estudios" rows="3"></textarea>
+
+    <label>Motivo de consulta:</label>
+    <textarea name="motivo" rows="3"></textarea>
+
+    <label>Diagnóstico actual:</label>
+    <textarea name="diagnostico" rows="3"></textarea>
+
+    <label>Tratamiento indicado:</label>
+    <textarea name="tratamiento" rows="3"></textarea>
+
+    <label>Instrucciones / Recomendaciones:</label>
+    <textarea name="recomendaciones" rows="3"></textarea>
+
+    <label>Firma del Profesional:</label>
+    <input type="file" id="firma" name="firma" accept="image/*" onchange="mostrarVistaPrevia(this, 'firma-preview', 'firma-delete')" />
+    <img id="firma-preview" class="vista-previa" style="display:none;" />
+    <button type="button" id="firma-delete" class="btn-eliminar" onclick="eliminarImagen('firma', 'firma-preview', 'firma-delete')" style="display:none;">Eliminar</button>
+
+    <label>Sello del Profesional:</label>
+    <input type="file" id="sello" name="sello" accept="image/*" onchange="mostrarVistaPrevia(this, 'sello-preview', 'sello-delete')" />
+    <img id="sello-preview" class="vista-previa" style="display:none;" />
+    <button type="button" id="sello-delete" class="btn-eliminar" onclick="eliminarImagen('sello', 'sello-preview', 'sello-delete')" style="display:none;">Eliminar</button>
   </form>
 
   <div class="visor-pdf">
     <h3>Vista previa del documento PDF:</h3>
-    <iframe id="pdf-visor" src="/static/doc/paciente-generado.pdf" type="application/pdf"></iframe>
+    <iframe id="pdf-visor" src="/static/doc/historia-clinica-generada.pdf" type="application/pdf"></iframe>
   </div>
 
   <div class="botones-flotantes">
@@ -146,13 +207,13 @@
     <button type="button" onclick="guardarPDF()" title="Guardar">
       <img src="/static/icons/guardar.png" alt="Guardar" />
     </button>
-    <button type="submit" form="form-registro" title="Enviar">
+    <button type="submit" form="form-historia" title="Enviar">
       <img src="/static/icons/enviar.png" alt="Enviar" />
     </button>
     <button type="button" onclick="imprimirPDF()" title="Imprimir">
       <img src="/static/icons/imprimir.png" alt="Imprimir" />
     </button>
-    <button type="button" onclick="document.getElementById('form-registro').reset()" title="Borrar">
+    <button type="button" onclick="document.getElementById('form-historia').reset()" title="Borrar">
       <img src="/static/icons/borrar.png" alt="Borrar" />
     </button>
   </div>
@@ -163,6 +224,7 @@
       recognition.lang = "es-ES";
       recognition.continuous = false;
       recognition.interimResults = false;
+
       recognition.onresult = function(event) {
         const texto = event.results[0][0].transcript;
         const campo = document.activeElement;
@@ -170,7 +232,31 @@
           campo.value += (campo.value ? " " : "") + texto;
         }
       };
+
       recognition.start();
+    }
+
+    function mostrarVistaPrevia(input, imgId, btnId) {
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = document.getElementById(imgId);
+        const btn = document.getElementById(btnId);
+        img.src = e.target.result;
+        img.style.display = "block";
+        btn.style.display = "inline-block";
+        input.style.display = "none";
+      };
+      if (file) reader.readAsDataURL(file);
+    }
+
+    function eliminarImagen(inputId, imgId, btnId) {
+      document.getElementById(inputId).value = "";
+      document.getElementById(imgId).src = "";
+      document.getElementById(imgId).style.display = "none";
+      document.getElementById(btnId).style.display = "none";
+      document.getElementById(inputId).style.display = "block";
     }
   </script>
 </body>
+</html>

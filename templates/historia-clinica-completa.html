@@ -107,13 +107,13 @@
 
   <form class="formulario" id="form-historia-completa">
     <label>Nombre y Apellido:</label>
-    <input type="text" name="nombre" required />
+    <input type="text" name="nombre" />
 
     <label>DNI:</label>
-    <input type="text" name="dni" required />
+    <input type="text" name="dni" />
 
     <label>Fecha de Nacimiento:</label>
-    <input type="date" name="fecha_nacimiento" required />
+    <input type="date" name="fecha_nacimiento" />
 
     <label>Edad:</label>
     <input type="text" name="edad" />
@@ -194,18 +194,304 @@
   </div>
 
   <script>
-    function activarVoz() {
+    async function activarVoz() {
       const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
       recognition.lang = "es-ES";
       recognition.continuous = false;
       recognition.interimResults = false;
-      recognition.onresult = function(event) {
-        const texto = event.results[0][0].transcript;
-        const campo = document.activeElement;
-        if (campo && (campo.tagName === "INPUT" || campo.tagName === "TEXTAREA")) {
-          campo.value += (campo.value ? " " : "") + texto;
+
+      recognition.onresult = async function(event) {
+        const textoDictado = event.results[0][0].transcript;
+
+        const prompt = `
+Extraé del siguiente texto los datos clínicos y devolveme un JSON con estos campos:
+nombre, dni, fecha_nacimiento, edad, sexo, domicilio, telefono, email, obra_social, numero_afiliado,
+antecedentes_personales, antecedentes_familiares, habitos, enfermedades_cronicas, cirugias,
+medicacion, estudios, motivo, diagnostico, tratamiento, recomendaciones.
+
+Texto del dictado: """${textoDictado}"""  
+Solo devolvé el JSON plano.
+        `.trim();
+
+        const apiKey = "<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Historia Clínica Completa</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      background: linear-gradient(to bottom left, #0a2a3d, #155f82);
+      font-family: 'Poppins', sans-serif;
+      color: #d3d3d3;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .logo-grande {
+      width: 180px;
+      height: auto;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      text-align: center;
+      font-style: italic;
+      font-weight: 600;
+      font-size: 28px;
+      margin-top: 10px;
+      color: #d3d3d3;
+    }
+
+    form {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 500;
+      font-size: 17px;
+      color: #d3d3d3;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: none;
+      background-color: white;
+      font-size: 16px;
+      color: black;
+      margin-top: 5px;
+      box-sizing: border-box;
+    }
+
+    .visor-pdf {
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    .visor-pdf iframe {
+      width: 90%;
+      height: 500px;
+      border: 2px solid #09394f;
+      border-radius: 10px;
+    }
+
+    .botones-flotantes {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      z-index: 1000;
+    }
+
+    .botones-flotantes button {
+      background-color: #4A90E2;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .botones-flotantes img {
+      width: 30px;
+      height: 30px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="/static/icons/icono-historia.png" alt="Logo Historia Clínica" class="logo-grande" />
+    <h2>Historia Clínica Completa</h2>
+  </header>
+
+  <form class="formulario" id="form-historia-completa">
+    <label>Nombre y Apellido:</label>
+    <input type="text" name="nombre" />
+
+    <label>DNI:</label>
+    <input type="text" name="dni" />
+
+    <label>Fecha de Nacimiento:</label>
+    <input type="date" name="fecha_nacimiento" />
+
+    <label>Edad:</label>
+    <input type="text" name="edad" />
+
+    <label>Sexo:</label>
+    <input type="text" name="sexo" />
+
+    <label>Domicilio:</label>
+    <input type="text" name="domicilio" />
+
+    <label>Teléfono:</label>
+    <input type="text" name="telefono" />
+
+    <label>Correo electrónico:</label>
+    <input type="email" name="email" />
+
+    <label>Obra Social / Prepaga:</label>
+    <input type="text" name="obra_social" />
+
+    <label>Número de Afiliado:</label>
+    <input type="text" name="numero_afiliado" />
+
+    <label>Antecedentes personales:</label>
+    <textarea name="antecedentes_personales" rows="3"></textarea>
+
+    <label>Antecedentes familiares:</label>
+    <textarea name="antecedentes_familiares" rows="3"></textarea>
+
+    <label>Hábitos:</label>
+    <textarea name="habitos" rows="3"></textarea>
+
+    <label>Enfermedades crónicas:</label>
+    <textarea name="enfermedades_cronicas" rows="3"></textarea>
+
+    <label>Cirugías y Hospitalizaciones:</label>
+    <textarea name="cirugias" rows="3"></textarea>
+
+    <label>Medicación Actual:</label>
+    <textarea name="medicacion" rows="3"></textarea>
+
+    <label>Estudios Complementarios:</label>
+    <textarea name="estudios" rows="3"></textarea>
+
+    <label>Motivo de consulta:</label>
+    <textarea name="motivo" rows="3"></textarea>
+
+    <label>Diagnóstico actual:</label>
+    <textarea name="diagnostico" rows="3"></textarea>
+
+    <label>Tratamiento indicado:</label>
+    <textarea name="tratamiento" rows="3"></textarea>
+
+    <label>Instrucciones / Recomendaciones:</label>
+    <textarea name="recomendaciones" rows="3"></textarea>
+  </form>
+
+  <div class="visor-pdf">
+    <h3>Vista previa del documento PDF:</h3>
+    <iframe id="pdf-visor" src="/static/doc/historia-clinica-completa.pdf" type="application/pdf"></iframe>
+  </div>
+
+  <div class="botones-flotantes">
+    <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
+      <img src="/static/icons/microfono.png" alt="Voz" />
+    </button>
+    <button type="button" onclick="guardarPDF()" title="Guardar">
+      <img src="/static/icons/guardar.png" alt="Guardar" />
+    </button>
+    <button type="submit" form="form-historia-completa" title="Enviar">
+      <img src="/static/icons/enviar.png" alt="Enviar" />
+    </button>
+    <button type="button" onclick="imprimirPDF()" title="Imprimir">
+      <img src="/static/icons/imprimir.png" alt="Imprimir" />
+    </button>
+    <button type="button" onclick="document.getElementById('form-historia-completa').reset()" title="Borrar">
+      <img src="/static/icons/borrar.png" alt="Borrar" />
+    </button>
+  </div>
+
+  <script>
+    async function activarVoz() {
+      const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+      recognition.lang = "es-ES";
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      recognition.onresult = async function(event) {
+        const textoDictado = event.results[0][0].transcript;
+
+        const prompt = `
+Extraé del siguiente texto los datos clínicos y devolveme un JSON con estos campos:
+nombre, dni, fecha_nacimiento, edad, sexo, domicilio, telefono, email, obra_social, numero_afiliado,
+antecedentes_personales, antecedentes_familiares, habitos, enfermedades_cronicas, cirugias,
+medicacion, estudios, motivo, diagnostico, tratamiento, recomendaciones.
+
+Texto del dictado: """${textoDictado}"""  
+Solo devolvé el JSON plano.
+        `.trim();
+
+        const apiKey = "sk-proj-_x0z1wgOA8IM0FlAFTTLTyOur5vHjp3JkFvNx_NhDhAnzjo8AS7OxGeTpQLuvFJlSoyxT7Xz9YT3BlbkFJKyeQ8wfzOy8CBusi_gePDcBPY-sOyZBeiTSyopXCKL22jMSH-1Xh6fagZ7wgL492CGzagYBzsA"; // <--- Pegá aquí tu clave de OpenAI
+
+        const respuesta = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            model: "gpt-3.5-turbo",
+            messages: [{ role: "user", content: prompt }],
+            temperature: 0.3
+          })
+        });
+
+        const data = await respuesta.json();
+        const textoIA = data.choices[0].message.content;
+
+        try {
+          const json = JSON.parse(textoIA);
+          for (const campo in json) {
+            const input = document.querySelector(`[name="${campo}"]`);
+            if (input) input.value = json[campo];
+          }
+        } catch (err) {
+          alert("No se pudo interpretar correctamente la respuesta de la IA.");
+          console.error("Respuesta recibida:", textoIA);
         }
       };
+
+      recognition.start();
+    }
+  </script>
+</body>
+</html>AQUÍ"; // <--- Pegá aquí tu clave de OpenAI
+
+        const respuesta = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            model: "gpt-3.5-turbo",
+            messages: [{ role: "user", content: prompt }],
+            temperature: 0.3
+          })
+        });
+
+        const data = await respuesta.json();
+        const textoIA = data.choices[0].message.content;
+
+        try {
+          const json = JSON.parse(textoIA);
+          for (const campo in json) {
+            const input = document.querySelector(`[name="${campo}"]`);
+            if (input) input.value = json[campo];
+          }
+        } catch (err) {
+          alert("No se pudo interpretar correctamente la respuesta de la IA.");
+          console.error("Respuesta recibida:", textoIA);
+        }
+      };
+
       recognition.start();
     }
   </script>

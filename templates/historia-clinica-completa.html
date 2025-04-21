@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Historia Clínica Completa</title>
+  <title>Registro de Pacientes</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
   <style>
@@ -101,11 +101,11 @@
 </head>
 <body>
   <header>
-    <img src="/static/icons/icono-historia.png" alt="Logo Historia Clínica" class="logo-grande" />
-    <h2>Historia Clínica Completa</h2>
+    <img src="/static/icons/icono-registro.png" alt="Logo Registro" class="logo-grande" />
+    <h2>Registro de Pacientes</h2>
   </header>
 
-  <form class="formulario" id="form-historia-completa">
+  <form class="formulario" id="form-registro">
     <label>Nombre y Apellido:</label>
     <input type="text" name="nombre" required />
 
@@ -115,20 +115,14 @@
     <label>Fecha de Nacimiento:</label>
     <input type="date" name="fecha_nacimiento" required />
 
-    <label>Edad:</label>
-    <input type="text" name="edad" />
-
-    <label>Sexo:</label>
-    <input type="text" name="sexo" />
-
-    <label>Domicilio:</label>
-    <input type="text" name="domicilio" />
-
     <label>Teléfono:</label>
     <input type="text" name="telefono" />
 
-    <label>Correo electrónico:</label>
+    <label>Correo Electrónico:</label>
     <input type="email" name="email" />
+
+    <label>Domicilio:</label>
+    <input type="text" name="domicilio" />
 
     <label>Obra Social / Prepaga:</label>
     <input type="text" name="obra_social" />
@@ -136,43 +130,13 @@
     <label>Número de Afiliado:</label>
     <input type="text" name="numero_afiliado" />
 
-    <label>Antecedentes personales:</label>
-    <textarea name="antecedentes_personales" rows="3"></textarea>
-
-    <label>Antecedentes familiares:</label>
-    <textarea name="antecedentes_familiares" rows="3"></textarea>
-
-    <label>Hábitos:</label>
-    <textarea name="habitos" rows="3"></textarea>
-
-    <label>Enfermedades crónicas:</label>
-    <textarea name="enfermedades_cronicas" rows="3"></textarea>
-
-    <label>Cirugías y Hospitalizaciones:</label>
-    <textarea name="cirugias" rows="3"></textarea>
-
-    <label>Medicación Actual:</label>
-    <textarea name="medicacion" rows="3"></textarea>
-
-    <label>Estudios Complementarios:</label>
-    <textarea name="estudios" rows="3"></textarea>
-
-    <label>Motivo de consulta:</label>
-    <textarea name="motivo" rows="3"></textarea>
-
-    <label>Diagnóstico actual:</label>
-    <textarea name="diagnostico" rows="3"></textarea>
-
-    <label>Tratamiento indicado:</label>
-    <textarea name="tratamiento" rows="3"></textarea>
-
-    <label>Instrucciones / Recomendaciones:</label>
-    <textarea name="recomendaciones" rows="3"></textarea>
+    <label>Contacto de Emergencia:</label>
+    <input type="text" name="contacto_emergencia" />
   </form>
 
   <div class="visor-pdf">
     <h3>Vista previa del documento PDF:</h3>
-    <iframe id="pdf-visor" src="/static/doc/historia-clinica-completa.pdf" type="application/pdf"></iframe>
+    <iframe id="pdf-visor" src="/static/doc/paciente-generado.pdf" type="application/pdf"></iframe>
   </div>
 
   <div class="botones-flotantes">
@@ -182,13 +146,13 @@
     <button type="button" onclick="guardarPDF()" title="Guardar">
       <img src="/static/icons/guardar.png" alt="Guardar" />
     </button>
-    <button type="submit" form="form-historia-completa" title="Enviar">
+    <button type="submit" form="form-registro" title="Enviar">
       <img src="/static/icons/enviar.png" alt="Enviar" />
     </button>
     <button type="button" onclick="imprimirPDF()" title="Imprimir">
       <img src="/static/icons/imprimir.png" alt="Imprimir" />
     </button>
-    <button type="button" onclick="document.getElementById('form-historia-completa').reset()" title="Borrar">
+    <button type="button" onclick="document.getElementById('form-registro').reset()" title="Borrar">
       <img src="/static/icons/borrar.png" alt="Borrar" />
     </button>
   </div>
@@ -210,4 +174,3 @@
     }
   </script>
 </body>
-</html>

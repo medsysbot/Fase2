@@ -13,7 +13,6 @@
       color: #d3d3d3;
       margin: 0;
       padding: 0;
-      text-align: center;
       min-height: 100vh;
     }
 
@@ -34,7 +33,6 @@
       font-weight: 600;
       font-size: 28px;
       margin-top: 10px;
-      color: #d3d3d3;
     }
 
     .campo-busqueda {
@@ -46,7 +44,6 @@
     .campo-busqueda label {
       display: flex;
       align-items: center;
-      gap: 8px;
       font-size: 17.5px;
       font-weight: 400;
       color: #d3d3d3;
@@ -56,6 +53,7 @@
     .campo-busqueda label img {
       width: 24px;
       height: 24px;
+      margin-right: 8px;
     }
 
     .campo-busqueda input[type="search"] {
@@ -73,34 +71,31 @@
       margin: 20px auto;
       max-width: 700px;
       width: 90%;
-      text-align: center;
     }
 
     .resultado-titulo {
-      padding: 10px 0;
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 10px;
       font-weight: 400;
       font-size: 17.5px;
       color: #d3d3d3;
+      margin-bottom: 5px;
     }
 
     .resultado-titulo img {
       width: 24px;
       height: 24px;
+      margin-right: 10px;
     }
 
     .resultado-contenido {
       padding: 6px 10px;
-      font-family: 'Poppins', sans-serif;
       font-size: 17.5px;
       font-weight: 400;
       color: #d3d3d3;
-      margin-bottom: 10px;
       border: 1px solid #ffffff33;
       border-radius: 8px;
+      text-align: left;
     }
 
     .visor-pdf {
@@ -153,7 +148,7 @@
     <div class="campo-busqueda">
       <label for="busqueda">
         <img src="/static/icons/busqueda.png" alt="Buscar" />
-        <span>Buscar por Nombre o DNI:</span>
+        Buscar por Nombre o DNI:
       </label>
       <input type="search" id="busqueda" name="busqueda" placeholder="Ej: Juan Pérez o 12345678" />
     </div>

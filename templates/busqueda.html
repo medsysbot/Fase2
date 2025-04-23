@@ -9,11 +9,12 @@
   <style>
     body {
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(225deg, #031f2b, #083a51);
+      background: linear-gradient(to bottom left, #0A2A3D, #155F82);
       color: #d3d3d3;
       margin: 0;
       padding: 0;
       text-align: center;
+      min-height: 100vh;
     }
 
     header {
@@ -29,10 +30,11 @@
 
     h2 {
       text-align: center;
-      font-weight: 600;
       font-style: italic;
+      font-weight: 600;
       font-size: 28px;
       margin-top: 10px;
+      color: #d3d3d3;
     }
 
     .campo-busqueda {
@@ -45,9 +47,9 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 17.6px;
+      font-size: 17.5px;
       font-weight: 400;
-      color: white;
+      color: #d3d3d3;
       margin-bottom: 5px;
     }
 
@@ -59,32 +61,29 @@
     .campo-busqueda input[type="search"] {
       width: 100%;
       padding: 6px 10px;
-      font-size: 17.6px;
+      font-size: 17.5px;
       border: none;
       border-radius: 8px;
+      background-color: white;
       color: black;
       box-sizing: border-box;
     }
 
     .resultado-seccion {
       margin: 20px auto;
-      padding: 0;
-      border-radius: 10px;
-      max-width: 400px;
+      max-width: 700px;
       width: 90%;
       text-align: left;
     }
 
     .resultado-titulo {
-      background-color: #09394f;
-      padding: 10px;
-      border-radius: 10px;
+      padding: 10px 0;
       display: flex;
       align-items: center;
       gap: 10px;
       font-weight: bold;
       font-size: 1.2rem;
-      color: white;
+      color: #d3d3d3;
     }
 
     .resultado-titulo img {
@@ -93,16 +92,14 @@
     }
 
     .resultado-contenido {
-      background-color: white;
       padding: 6px 10px;
-      border-radius: 8px;
       font-family: 'Poppins', sans-serif;
-      font-size: 17.6px;
+      font-size: 17.5px;
       font-weight: 400;
-      color: black;
-      height: 36px;
-      box-sizing: border-box;
+      color: #d3d3d3;
       margin-bottom: 10px;
+      border: 1px solid #ffffff33;
+      border-radius: 8px;
     }
 
     .visor-pdf {
@@ -191,20 +188,23 @@
   </main>
 
   <div class="botones-flotantes">
-    <button title="Buscar">
-      <img src="/static/icons/busquedas.png" alt="Buscar" />
-    </button>
-    <button title="Enviar">
-      <img src="/static/icons/enviar.png" alt="Enviar" />
-    </button>
-    <button title="Imprimir" onclick="imprimirPDF()">
-      <img src="/static/icons/imprimir.png" alt="Imprimir" />
-    </button>
-    <button title="Limpiar" onclick="document.getElementById('busqueda').value=''">
-      <img src="/static/icons/borrar.png" alt="Borrar" />
-    </button>
     <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
       <img src="/static/icons/microfono.png" alt="Voz" />
+    </button>
+    <button type="button" title="Buscar">
+      <img src="/static/icons/busquedas.png" alt="Buscar" />
+    </button>
+    <button type="button" title="Guardar">
+      <img src="/static/icons/guardar.png" alt="Guardar" />
+    </button>
+    <button type="button" title="Enviar">
+      <img src="/static/icons/enviar.png" alt="Enviar" />
+    </button>
+    <button type="button" onclick="imprimirPDF()" title="Imprimir">
+      <img src="/static/icons/imprimir.png" alt="Imprimir" />
+    </button>
+    <button type="button" onclick="document.getElementById('busqueda').value=''" title="Limpiar">
+      <img src="/static/icons/borrar.png" alt="Borrar" />
     </button>
   </div>
 
@@ -215,13 +215,11 @@
       recognition.lang = "es-ES";
       recognition.continuous = false;
       recognition.interimResults = false;
-
       recognition.onresult = function(event) {
         const texto = event.results[0][0].transcript;
         const campo = document.getElementById("busqueda");
         if (campo) campo.value += (campo.value ? ' ' : '') + texto;
       };
-
       recognition.start();
     }
   </script>

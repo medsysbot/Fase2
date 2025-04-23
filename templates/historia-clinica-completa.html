@@ -74,7 +74,7 @@
     .botones-flotantes {
       position: fixed;
       right: 20px;
-      bottom: 20px;
+      top: 20px;
       display: flex;
       flex-direction: column;
       gap: 15px;
@@ -172,17 +172,11 @@
     <label>Estudios Complementarios:</label>
     <textarea name="estudios" rows="3"></textarea>
 
-    <label>Motivo de consulta:</label>
-    <textarea name="motivo" rows="3"></textarea>
+    <label>Historial de tratamientos:</label>
+    <textarea name="historial_tratamientos" rows="3"></textarea>
 
-    <label>Diagnóstico actual:</label>
-    <textarea name="diagnostico" rows="3"></textarea>
-
-    <label>Tratamiento indicado:</label>
-    <textarea name="tratamiento" rows="3"></textarea>
-
-    <label>Instrucciones / Recomendaciones:</label>
-    <textarea name="recomendaciones" rows="3"></textarea>
+    <label>Historial de consultas:</label>
+    <textarea name="historial_consultas" rows="3"></textarea>
 
     <label>Firma del Profesional:</label>
     <input type="file" id="firma" name="firma" accept="image/*" onchange="mostrarVistaPrevia(this, 'firma-preview', 'firma-delete')" />

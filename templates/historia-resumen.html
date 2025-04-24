@@ -136,7 +136,7 @@ textarea {
 <body>
   <header>
     <img src="/static/icons/icono-historia-clinica-resumida.png" alt="Logo Historia Clínica" class="logo-grande" />
-    <h2 style="text-align: center;">Historia Clínica<br>Resumida</h2>
+    <h2 style="text-align: center;">Historia Clínica Resumida</h2>
   </header>
 
   <form class="formulario" id="form-resumen">
@@ -180,23 +180,23 @@ textarea {
     <iframe id="pdf-visor" src="/static/doc/historia-resumen-generada.pdf" type="application/pdf"></iframe>
   </div>
 
-  <div class="botones-flotantes">
-    <button type="button" onclick="guardarPDF()" title="Guardar">
-      <img src="/static/icons/guardar.png" alt="Guardar" />
-    </button>
-    <button type="submit" form="form-resumen" title="Enviar">
-      <img src="/static/icons/enviar.png" alt="Enviar" />
-    </button>
-    <button type="button" onclick="imprimirPDF()" title="Imprimir">
-      <img src="/static/icons/imprimir.png" alt="Imprimir" />
-    </button>
-    <button type="button" onclick="document.getElementById('form-resumen').reset()" title="Borrar">
-      <img src="/static/icons/borrar.png" alt="Borrar" />
-    </button>
-    <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
-      <img src="/static/icons/microfono.png" alt="Voz" />
-    </button>
-  </div>
+<div class="botones-flotantes">
+  <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
+    <img src="/static/icons/microfono.png" alt="Voz" />
+  </button>
+  <button type="button" onclick="guardarPDF()" title="Guardar">
+    <img src="/static/icons/guardar.png" alt="Guardar" />
+  </button>
+  <button type="submit" form="form-resumen" title="Enviar">
+    <img src="/static/icons/enviar.png" alt="Enviar" />
+  </button>
+  <button type="button" onclick="imprimirPDF()" title="Imprimir">
+    <img src="/static/icons/imprimir.png" alt="Imprimir" />
+  </button>
+  <button type="button" onclick="document.getElementById('form-resumen').reset()" title="Borrar">
+    <img src="/static/icons/borrar.png" alt="Borrar" />
+  </button>
+</div>
 
   <script>
     function activarVoz() {

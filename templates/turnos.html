@@ -20,7 +20,7 @@
     }
 
     .logo-grande {
-      width: 204px;
+      width: 180px;
       height: auto;
       margin-bottom: 10px;
     }
@@ -34,11 +34,12 @@
       color: #d3d3d3;
     }
 
-    form {
-      max-width: 700px;
-      margin: 0 auto;
-      padding: 20px;
-    }
+form {
+  max-width: 400px;   
+  width: 90%;
+  margin: 0 auto;
+  padding: 20px;
+}
 
     label {
       display: block;
@@ -48,17 +49,31 @@
       color: #d3d3d3;
     }
 
-    input, select {
-      width: 100%;
-      padding: 6px 10px;
-      border-radius: 8px;
-      border: none;
-      background-color: white;
-      font-size: 16px;
-      color: black;
-      margin-top: 5px;
-      box-sizing: border-box;
-    }
+input {
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 17.5px;
+  border: none;
+  border-radius: 8px;
+  background-color: white;
+  color: black;
+  box-sizing: border-box;
+  min-height: 45px;
+}
+
+textarea {
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 17.5px;
+  border: none;
+  border-radius: 8px;
+  background-color: white;
+  color: black;
+  box-sizing: border-box;
+  min-height: 45px;
+  resize: vertical;
+  line-height: 1.4;
+}
 
     .visor-pdf {
       margin-top: 40px;
@@ -72,15 +87,15 @@
       border-radius: 10px;
     }
 
-    .botones-flotantes {
-      position: fixed;
-      right: 20px;
-      top: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      z-index: 1000;
-    }
+.botones-flotantes {
+  position: fixed;
+  right: 20px;
+  bottom: 20px; /* cambio clave */
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  z-index: 1000;
+}
 
     .botones-flotantes button {
       background-color: #4A90E2;
@@ -102,7 +117,7 @@
 <body>
   <header>
     <img src="/static/icons/icono-turnos.png" alt="Logo Turnos" class="logo-grande" />
-    <h2 style="text-align: center;">Turnos<br>Médicos</h2>
+    <h2 style="text-align: center;">Turnos Médicos</h2>
   </header>
 
   <form class="formulario" id="form-turnos">
@@ -131,22 +146,22 @@
   </div>
 
   <div class="botones-flotantes">
-    <button type="button" onclick="guardarPDF()" title="Guardar">
-      <img src="/static/icons/guardar.png" alt="Guardar" />
-    </button>
-    <button type="submit" form="form-turnos" title="Enviar">
-      <img src="/static/icons/enviar.png" alt="Enviar" />
-    </button>
-    <button type="button" onclick="imprimirPDF()" title="Imprimir">
-      <img src="/static/icons/imprimir.png" alt="Imprimir" />
-    </button>
-    <button type="button" onclick="document.getElementById('form-turnos').reset()" title="Borrar">
-      <img src="/static/icons/borrar.png" alt="Borrar" />
-    </button>
-    <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
-      <img src="/static/icons/microfono.png" alt="Voz" />
-    </button>
-  </div>
+  <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
+    <img src="/static/icons/microfono.png" alt="Voz" />
+  </button>
+  <button type="button" onclick="guardarPDF()" title="Guardar">
+    <img src="/static/icons/guardar.png" alt="Guardar" />
+  </button>
+  <button type="submit" form="form-resumen" title="Enviar">
+    <img src="/static/icons/enviar.png" alt="Enviar" />
+  </button>
+  <button type="button" onclick="imprimirPDF()" title="Imprimir">
+    <img src="/static/icons/imprimir.png" alt="Imprimir" />
+  </button>
+  <button type="button" onclick="document.getElementById('form-resumen').reset()" title="Borrar">
+    <img src="/static/icons/borrar.png" alt="Borrar" />
+  </button>
+</div>
 
   <script>
     function activarVoz() {

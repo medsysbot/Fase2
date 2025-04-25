@@ -7,54 +7,56 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
   <style>
     body {
-      font-family: 'Poppins', sans-serif;
       background: linear-gradient(to bottom left, #0a2a3d, #155f82);
+      font-family: 'Poppins', sans-serif;
       color: #d3d3d3;
       margin: 0;
       padding: 0;
       min-height: 100vh;
-      text-align: center;
     }
 
     header {
+      text-align: center;
       margin-top: 20px;
     }
 
     .logo-grande {
       width: 180px;
-      height: auto;
       margin-bottom: 10px;
     }
 
     h2 {
+      text-align: center;
       font-style: italic;
       font-weight: 600;
       font-size: 28px;
       margin-top: 10px;
-      margin-bottom: 30px;
     }
 
     .busqueda-area {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      max-width: 600px;
+      margin: 30px auto 20px auto;
+      max-width: 400px;
       width: 90%;
-      margin: 0 auto 20px;
+      text-align: left;
     }
 
     .busqueda-area label {
-      font-size: 17.5px;
-      font-weight: 400;
       display: flex;
       align-items: center;
-      gap: 6px;
+      font-size: 17.5px;
+      font-weight: 400;
       color: #d3d3d3;
+      margin-bottom: 5px;
     }
 
-    .busqueda-area input[type="text"] {
-      flex: 1;
+    .busqueda-area label img {
+      width: 24px;
+      height: 24px;
+      margin-right: 8px;
+    }
+
+    .busqueda-area input[type="search"] {
+      width: 100%;
       padding: 6px 10px;
       font-size: 17.5px;
       border: none;
@@ -66,6 +68,7 @@
 
     .visor-pdf {
       margin-top: 30px;
+      text-align: center;
     }
 
     .visor-pdf iframe {
@@ -80,7 +83,7 @@
       right: 20px;
       bottom: 20px;
       display: flex;
-      flex-direction: column-reverse;
+      flex-direction: column;
       gap: 15px;
       z-index: 1000;
     }
@@ -104,26 +107,29 @@
   </style>
 </head>
 <body>
+
   <header>
-    <img src="/static/icons/icono-estudios.png" alt="Logo Estudios Médicos" class="logo-grande" />
+    <img src="/static/icons/estudios.png" alt="Estudios Médicos" class="logo-grande" />
     <h2>Estudios Médicos</h2>
   </header>
 
-  <div class="busqueda-area">
-    <label>
-      <img src="/static/icons/busqueda.png" alt="Buscar" />
-      Buscar
-    </label>
-    <input type="text" placeholder="Buscar estudio por nombre..." />
-  </div>
+  <main>
+    <div class="busqueda-area">
+      <label for="busqueda">
+        <img src="/static/icons/busqueda.png" alt="Buscar" />
+        Buscar estudio por nombre:
+      </label>
+      <input type="search" id="busqueda" name="busqueda" placeholder="Ej: Laboratorio, Tomografía..." />
+    </div>
 
-  <div class="visor-pdf">
-    <h3>Vista previa del estudio:</h3>
-    <iframe id="pdf-visor" src="/static/doc/estudio-generado.pdf" type="application/pdf"></iframe>
-  </div>
+    <div class="visor-pdf">
+      <h3>Vista previa del estudio:</h3>
+      <iframe id="pdf-visor" src="/static/doc/estudio-generado.pdf" type="application/pdf"></iframe>
+    </div>
+  </main>
 
   <div class="botones-flotantes">
-    <button type="button" title="Reconocimiento por voz" ondblclick="activarVoz()">
+    <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
       <img src="/static/icons/microfono.png" alt="Voz" />
     </button>
     <button type="button" title="Buscar">
@@ -135,10 +141,10 @@
     <button type="button" title="Enviar">
       <img src="/static/icons/enviar.png" alt="Enviar" />
     </button>
-    <button type="button" title="Imprimir" onclick="imprimirPDF()">
+    <button type="button" onclick="imprimirPDF()" title="Imprimir">
       <img src="/static/icons/imprimir.png" alt="Imprimir" />
     </button>
-    <button type="button" title="Borrar" onclick="document.querySelector('.busqueda-area input').value = ''">
+    <button type="button" onclick="document.getElementById('busqueda').value=''" title="Limpiar">
       <img src="/static/icons/borrar.png" alt="Borrar" />
     </button>
   </div>
@@ -151,14 +157,15 @@
       recognition.interimResults = false;
       recognition.onresult = function(event) {
         const texto = event.results[0][0].transcript;
-        const campo = document.querySelector('.busqueda-area input');
+        const campo = document.getElementById("busqueda");
         if (campo) campo.value += (campo.value ? ' ' : '') + texto;
       };
       recognition.start();
     }
 
     function imprimirPDF() {
-      const iframe = document.getElementById('pdf-visor');
+      const iframe = document.getElementById("pdf-visor");
+      iframe.focus();
       iframe.contentWindow.print();
     }
   </script>

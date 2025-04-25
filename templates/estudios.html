@@ -4,63 +4,87 @@
   <meta charset="UTF-8" />
   <title>Estudios Médicos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="/static/styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
   <style>
     body {
-      background-color: #083C4A;
       font-family: 'Poppins', sans-serif;
-      color: white;
+      background: linear-gradient(to bottom left, #0a2a3d, #155f82);
+      color: #d3d3d3;
       margin: 0;
       padding: 0;
-    }
-    header {
+      min-height: 100vh;
       text-align: center;
+    }
+
+    header {
       margin-top: 20px;
     }
+
     .logo-grande {
-      width: 120px;
+      width: 180px;
       height: auto;
       margin-bottom: 10px;
     }
+
     h2 {
-      text-align: center;
       font-style: italic;
       font-weight: 600;
       font-size: 28px;
-      color: white;
       margin-top: 10px;
+      margin-bottom: 30px;
     }
-    .etiqueta-campo {
+
+    .busqueda-area {
       display: flex;
-      flex-direction: column;
-      align-items: left;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      max-width: 600px;
+      width: 90%;
+      margin: 0 auto 20px;
+    }
+
+    .busqueda-area label {
+      font-size: 17.5px;
+      font-weight: 400;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #d3d3d3;
+    }
+
+    .busqueda-area input[type="text"] {
+      flex: 1;
+      padding: 6px 10px;
+      font-size: 17.5px;
+      border: none;
+      border-radius: 8px;
+      background-color: white;
+      color: black;
+      box-sizing: border-box;
+    }
+
+    .visor-pdf {
       margin-top: 30px;
     }
-    .etiqueta-campo img {
-      width: 28px;
-      height: 28px;
-      margin-bottom: 5px;
-    }
-    .visor-pdf {
-      margin-top: 40px;
-      text-align: center;
-    }
+
     .visor-pdf iframe {
       width: 90%;
       height: 500px;
       border: 2px solid #09394f;
       border-radius: 10px;
     }
+
     .botones-flotantes {
       position: fixed;
       right: 20px;
       bottom: 20px;
       display: flex;
-      flex-direction: column;
+      flex-direction: column-reverse;
       gap: 15px;
       z-index: 1000;
     }
+
     .botones-flotantes button {
       background-color: #4A90E2;
       border: none;
@@ -72,61 +96,50 @@
       justify-content: center;
       cursor: pointer;
     }
+
     .botones-flotantes img {
       width: 30px;
       height: 30px;
-    }
-    .busqueda {
-      text-align: center;
-      margin-top: 10px;
-    }
-    .busqueda input[type="text"] {
-      padding: 8px;
-      width: 300px;
-      border-radius: 8px;
-      border: none;
-      font-size: 16px;
     }
   </style>
 </head>
 <body>
   <header>
-    <img src="/static/icons/estudios.png" alt="Estudios Médicos" class="logo-grande" />
+    <img src="/static/icons/icono-estudios.png" alt="Logo Estudios Médicos" class="logo-grande" />
     <h2>Estudios Médicos</h2>
   </header>
 
-  <div class="etiqueta-campo">
-    <img src="/static/icons/busqueda.png" alt="Buscar" />
-    <span style="font-size: 18px; color: white;">Buscar</span>
-  </div>
-
-  <div class="busqueda">
-    <input type="text" id="busqueda" placeholder="Buscar estudio por nombre..." />
+  <div class="busqueda-area">
+    <label>
+      <img src="/static/icons/busqueda.png" alt="Buscar" />
+      Buscar
+    </label>
+    <input type="text" placeholder="Buscar estudio por nombre..." />
   </div>
 
   <div class="visor-pdf">
     <h3>Vista previa del estudio:</h3>
-    <iframe id="pdf-visor" src="" type="application/pdf"></iframe>
+    <iframe id="pdf-visor" src="/static/doc/estudio-generado.pdf" type="application/pdf"></iframe>
   </div>
 
   <div class="botones-flotantes">
-    <button type="button" onclick="guardarPDF()" title="Guardar">
-      <img src="/static/icons/guardar.png" alt="Guardar" />
-    </button>
-    <button type="button" onclick="document.getElementById('busqueda').value = ''" title="Borrar">
-      <img src="/static/icons/borrar.png" alt="Borrar" />
-    </button>
-    <button type="button" onclick="imprimirPDF()" title="Imprimir">
-      <img src="/static/icons/imprimir.png" alt="Imprimir" />
-    </button>
-    <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
+    <button type="button" title="Reconocimiento por voz" ondblclick="activarVoz()">
       <img src="/static/icons/microfono.png" alt="Voz" />
     </button>
-    <button type="button" onclick="buscarEstudio()" title="Buscar">
+    <button type="button" title="Buscar">
       <img src="/static/icons/busquedas.png" alt="Buscar" />
     </button>
-    <button type="button" onclick="enviarFormulario()" title="Enviar">
+    <button type="button" title="Guardar">
+      <img src="/static/icons/guardar.png" alt="Guardar" />
+    </button>
+    <button type="button" title="Enviar">
       <img src="/static/icons/enviar.png" alt="Enviar" />
+    </button>
+    <button type="button" title="Imprimir" onclick="imprimirPDF()">
+      <img src="/static/icons/imprimir.png" alt="Imprimir" />
+    </button>
+    <button type="button" title="Borrar" onclick="document.querySelector('.busqueda-area input').value = ''">
+      <img src="/static/icons/borrar.png" alt="Borrar" />
     </button>
   </div>
 
@@ -138,35 +151,15 @@
       recognition.interimResults = false;
       recognition.onresult = function(event) {
         const texto = event.results[0][0].transcript;
-        const campo = document.activeElement;
-        if (campo && (campo.tagName === "INPUT" || campo.tagName === "TEXTAREA")) {
-          campo.value += (campo.value ? " " : "") + texto;
-        }
+        const campo = document.querySelector('.busqueda-area input');
+        if (campo) campo.value += (campo.value ? ' ' : '') + texto;
       };
       recognition.start();
     }
 
     function imprimirPDF() {
-      const visor = document.getElementById("pdf-visor");
-      if (visor) visor.contentWindow.print();
-    }
-
-    function guardarPDF() {
-      alert("Funcionalidad de guardado aún no implementada.");
-    }
-
-    function enviarFormulario() {
-      alert("Formulario enviado correctamente.");
-    }
-
-    function buscarEstudio() {
-      const nombre = document.getElementById("busqueda").value.trim();
-      const visor = document.getElementById("pdf-visor");
-      if (nombre) {
-        visor.src = `/static/doc/${nombre}.pdf`;
-      } else {
-        alert("Por favor, introduce un nombre de archivo.");
-      }
+      const iframe = document.getElementById('pdf-visor');
+      iframe.contentWindow.print();
     }
   </script>
 </body>

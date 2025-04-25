@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Historia Clínica - Evolución</title>
+  <title>Consulta Diaria</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
   <style>
@@ -34,7 +34,7 @@
     }
 
 form {
-  max-width: 400px;   /* mismo ancho que en búsqueda */
+  max-width: 400px;   
   width: 90%;
   margin: 0 auto;
   padding: 20px;
@@ -106,15 +106,15 @@ textarea {
       border-radius: 10px;
     }
 
-    .botones-flotantes {
-      position: fixed;
-      right: 20px;
-      top: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      z-index: 1000;
-    }
+.botones-flotantes {
+  position: fixed;
+  right: 20px;
+  bottom: 20px; /* cambio clave */
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  z-index: 1000;
+}
 
     .botones-flotantes button {
       background-color: #4A90E2;
@@ -136,7 +136,7 @@ textarea {
 <body>
   <header>
     <img src="/static/icons/icono-historia.png" alt="Logo Evolución" class="logo-grande" />
-    <h2 style="text-align: center;">Historia Clínica<br>Evolución</h2>
+    <h2 style="text-align: center;">Consulta Diaria</h2>
   </header>
 
   <form class="formulario" id="form-evolucion">
@@ -158,7 +158,6 @@ textarea {
     <label>Indicaciones:</label>
     <textarea name="indicaciones"></textarea>
 
-    <!-- Firma y sello con vista previa -->
     <label><span>Firma del Profesional:</span>
       <input type="file" id="firma" name="firma" accept="image/*" onchange="mostrarVistaPrevia(this, 'firma-preview', 'firma-delete')" />
       <img id="firma-preview" class="vista-previa" style="display:none;" />
@@ -172,30 +171,28 @@ textarea {
     </label>
   </form>
 
-  <!-- Visor PDF -->
   <div class="visor-pdf">
     <h3>Vista previa del documento PDF:</h3>
     <iframe id="pdf-visor" src="/static/doc/historia-evolucion-generada.pdf" type="application/pdf"></iframe>
   </div>
 
-  <!-- Botones flotantes sin el botón de buscar -->
-  <div class="botones-flotantes">
-    <button type="button" onclick="guardarPDF()" title="Guardar">
-      <img src="/static/icons/guardar.png" alt="Guardar" />
-    </button>
-    <button type="submit" form="form-evolucion" title="Enviar">
-      <img src="/static/icons/enviar.png" alt="Enviar" />
-    </button>
-    <button type="button" onclick="imprimirPDF()" title="Imprimir">
-      <img src="/static/icons/imprimir.png" alt="Imprimir" />
-    </button>
-    <button type="button" onclick="document.getElementById('form-evolucion').reset()" title="Borrar">
-      <img src="/static/icons/borrar.png" alt="Borrar" />
-    </button>
-    <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
-      <img src="/static/icons/microfono.png" alt="Voz" />
-    </button>
-  </div>
+<div class="botones-flotantes">
+  <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
+    <img src="/static/icons/microfono.png" alt="Voz" />
+  </button>
+  <button type="button" onclick="guardarPDF()" title="Guardar">
+    <img src="/static/icons/guardar.png" alt="Guardar" />
+  </button>
+  <button type="submit" form="form-resumen" title="Enviar">
+    <img src="/static/icons/enviar.png" alt="Enviar" />
+  </button>
+  <button type="button" onclick="imprimirPDF()" title="Imprimir">
+    <img src="/static/icons/imprimir.png" alt="Imprimir" />
+  </button>
+  <button type="button" onclick="document.getElementById('form-resumen').reset()" title="Borrar">
+    <img src="/static/icons/borrar.png" alt="Borrar" />
+  </button>
+</div>
 
   <script>
     function activarVoz() {

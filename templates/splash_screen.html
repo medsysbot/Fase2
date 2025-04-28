@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MedSys - Inicio</title>
+  <meta charset="UTF-8">
+  <title>MEDSYS - Bienvenido</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
   <style>
     body {
@@ -11,54 +11,62 @@
       padding: 0;
       height: 100vh;
       font-family: 'Poppins', sans-serif;
+      background: url('/static/splash-fondo.png') no-repeat center center;
+      background-size: cover;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      color: #d3d3d3;
+      overflow: hidden;
       text-align: center;
-      background: linear-gradient(135deg, #0a2a3d, #155f82); /* gradiente actualizado */
-      color: #d3d3d3; /* gris claro */
       animation: fadeout 1s ease-in-out forwards;
-      animation-delay: 4s;
+      animation-delay: 5s;
     }
 
     .logo {
-      width: 250px;
-      margin-bottom: 25px;
-      animation: zoomin 2s ease-in-out;
+      width: 220px;
+      opacity: 0;
+      animation: aparecer 1.5s forwards;
+      animation-delay: 0.5s;
     }
 
     .eslogan {
-      font-size: 22px;
-      font-weight: 500;
-      letter-spacing: 0.3px;
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: 300;
+      color: #d3d3d3;
       opacity: 0;
-      animation: fadein 2s ease-in-out forwards;
-      animation-delay: 1,6s;
+      animation: aparecer 1.5s forwards;
+      animation-delay: 1.5s;
     }
 
-    @keyframes zoomin {
-      from { transform: scale(0.3); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    @keyframes fadein {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    @keyframes aparecer {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
     }
 
     @keyframes fadeout {
-      to { opacity: 0; }
+      to {
+        opacity: 0;
+      }
     }
   </style>
+
   <script>
     setTimeout(() => {
       window.location.href = "/login";
-    }, 4000);
+    }, 5000);
   </script>
 </head>
 <body>
-  <img src="/static/icons/logo-medsys.png" alt="Logo MedSys" class="logo">
-  <div class="eslogan">Salud inteligente para un mundo real.</div>
+  <img src="/static/icons/logo-medicis-gris.png" alt="Logo MedCIS" class="logo">
+  <div class="eslogan">Salud Inteligente para un Mundo Real</div>
 </body>
 </html>

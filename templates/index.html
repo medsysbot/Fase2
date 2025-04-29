@@ -8,20 +8,21 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;0,300;1,300&display=swap" rel="stylesheet">
   <style>
     body {
-  min-height: 100vh;
-  background: linear-gradient(225deg, #0a1c27, #10323f);
-  color: #d3d3d3;
-  font-family: 'Poppins', sans-serif;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background: url('/static/index-fondo.png') no-repeat center center;
+      background-size: cover;
+      color: #595959;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
 
     .logo-medsys {
-      width: 200px; /* 20% más grande que 180px */
+      width: 200px;
       margin: 20px auto 10px auto;
       display: block;
     }
@@ -32,7 +33,7 @@
       font-size: 28px;
       margin-top: 10px;
       margin-bottom: 25px;
-      color: #d3d3d3;
+      color: #595959;
     }
 
     .menu-principal {
@@ -47,8 +48,8 @@
       display: flex;
       align-items: center;
       justify-content: flex-start;
-      background-color: #062e39;
-      color: #d3d3d3;
+      background-color: #ffffff10;
+      color: #595959;
       text-decoration: none;
       font-weight: 400;
       font-size: 1.1rem;
@@ -61,7 +62,7 @@
     }
 
     .menu-principal a:hover {
-      background-color: #0d4352;
+      background-color: #ffffff20;
     }
 
     .menu-principal img {
@@ -69,12 +70,11 @@
       height: 56px;
       margin-right: 12px;
       object-fit: contain;
-      align-self: center;
     }
   </style>
 </head>
 <body>
-  <img src="/static/icons/logo-medsys.png" alt="Logo MedSys" class="logo-medsys">
+  <img src="/static/icons/logo-medsys-gris.png" alt="Logo MedSys" class="logo-medsys">
   <h1>Menú Principal</h1>
 
   <div class="menu-principal">

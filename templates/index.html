@@ -36,39 +36,39 @@
       color: #595959;
     }
 
-    .menu-principal {
-      display: flex;
-      flex-direction: column;
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 20px;
-      align-items: center;
-      margin-top: 30px;
+      max-width: 750px;
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
     }
 
-    .menu-principal a {
+    .menu-button {
       display: flex;
       align-items: center;
-      justify-content: flex-start;
-      background-color: #ffffff10;
-      color: #595959;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      color: #ffffff;
       text-decoration: none;
       font-weight: 400;
       font-size: 1.1rem;
-      height: 50px;
+      height: 60px;
       padding: 0 15px;
       border-radius: 12px;
-      width: 360px;
-      max-width: 90vw;
       transition: background-color 0.3s ease;
     }
 
-    .menu-principal a:hover {
-      background-color: #ffffff20;
+    .menu-button:hover {
+      background-color: rgba(0, 0, 0, 0.5);
     }
 
-    .menu-principal img {
-      width: 56px;
-      height: 56px;
-      margin-right: 12px;
+    .menu-button img {
+      width: 40px;
+      height: 40px;
+      margin-right: 15px;
       object-fit: contain;
     }
   </style>
@@ -77,32 +77,36 @@
   <img src="/static/icons/logo-medsys-gris.png" alt="Logo MedSys" class="logo-medsys">
   <h1>Menú Principal</h1>
 
-  <div class="menu-principal">
-    <a href="/registro?rol=secretaria">
+  <div class="menu-grid">
+    <a href="/registro?rol=secretaria" class="menu-button">
       <img src="/static/icons/icono-registro.png" alt="Registro">
       Registro de Pacientes
     </a>
-    <a href="/historia?rol=medico">
+    <a href="/historia?rol=medico" class="menu-button">
       <img src="/static/icons/icono-historia.png" alt="Historia">
       Historia Clínica
     </a>
-    <a href="/receta?rol=medico">
+    <a href="/receta?rol=medico" class="menu-button">
       <img src="/static/icons/icono-receta.png" alt="Receta">
       Receta Médica
     </a>
-    <a href="/indicaciones?rol=medico">
+    <a href="/indicaciones?rol=medico" class="menu-button">
       <img src="/static/icons/icono-indicaciones.png" alt="Indicaciones">
       Indicaciones Médicas
     </a>
-    <a href="/turnos?rol=secretaria">
+    <a href="/turnos?rol=secretaria" class="menu-button">
       <img src="/static/icons/icono-turnos.png" alt="Turnos">
       Turnos Médicos
     </a>
-    <a href="/busqueda?rol=secretaria">
+    <a href="/busqueda?rol=secretaria" class="menu-button">
       <img src="/static/icons/busqueda.png" alt="Buscar">
       Búsqueda de Pacientes
     </a>
-    <a href="/estudios?rol=director">
+    <a href="#" class="menu-button" onclick="alert('Próximamente disponible')">
+      <img src="/static/icons/icono-enfermeria.png" alt="Enfermería">
+      Enfermería
+    </a>
+    <a href="/estudios?rol=director" class="menu-button">
       <img src="/static/icons/estudios.png" alt="Estudios">
       Estudios Médicos
     </a>

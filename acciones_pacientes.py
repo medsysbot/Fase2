@@ -41,12 +41,12 @@ async def generar_pdf_paciente(
     pdf = FPDF()
     pdf.add_page()
 
-    # LOGO mejor posicionado y mÃ¡s grande
+    # Logo (más grande y más arriba)
     logo_path = "static/icons/logo-medsys-gris.png"
     if os.path.exists(logo_path):
-        pdf.image(logo_path, x=10, y=1, w=45)  # MÃ¡s grande y elevado
+        pdf.image(logo_path, x=10, y=4, w=45)
 
-    # TÃTULO Y SUBTÃTULO CENTRADOS
+    # Título y subtítulo centrados
     pdf.set_y(10)
     pdf.set_font("Arial", "B", 16)
     pdf.set_text_color(90, 90, 90)
@@ -55,31 +55,31 @@ async def generar_pdf_paciente(
     pdf.set_font("Arial", "I", 12)
     pdf.cell(0, 10, txt="Registro de Pacientes", ln=1, align="C")
 
-    # LÃ­nea con mÃ¡rgenes parejos y bajada
+    # Línea superior con márgenes iguales
     pdf.set_draw_color(90, 90, 90)
     pdf.set_line_width(0.5)
     pdf.line(15, 38, 195, 38)
     pdf.ln(20)
 
-    # CONTENIDO
+    # Contenido codificado correctamente
     pdf.set_font("Arial", size=12)
     pdf.set_text_color(0, 0, 0)
     pdf.cell(200, 10, txt=f"Nombre y Apellido: {nombre}", ln=True)
     pdf.cell(200, 10, txt=f"DNI: {dni}", ln=True)
     pdf.cell(200, 10, txt=f"Fecha de Nacimiento: {fecha_nacimiento}", ln=True)
-    pdf.cell(200, 10, txt=f"TelÃ©fono: {telefono}", ln=True)
-    pdf.cell(200, 10, txt=f"Correo ElectrÃ³nico: {email}", ln=True)
+    pdf.cell(200, 10, txt=f"Teléfono: {telefono}", ln=True)
+    pdf.cell(200, 10, txt=f"Correo Electrónico: {email}", ln=True)
     pdf.cell(200, 10, txt=f"Domicilio: {domicilio}", ln=True)
     pdf.cell(200, 10, txt=f"Obra Social / Prepaga: {obra_social}", ln=True)
-    pdf.cell(200, 10, txt=f"NÃºmero de Afiliado: {numero_afiliado}", ln=True)
+    pdf.cell(200, 10, txt=f"Número de Afiliado: {numero_afiliado}", ln=True)
     pdf.cell(200, 10, txt=f"Contacto de Emergencia: {contacto_emergencia}", ln=True)
 
-    # PIE
+    # Pie de página con línea y eslogan
     pdf.set_draw_color(90, 90, 90)
     pdf.line(15, 265, 195, 265)
+    pdf.set_y(-15)
     pdf.set_font("Arial", "I", 10)
     pdf.set_text_color(90, 90, 90)
-    pdf.set_y(-15)
     pdf.cell(0, 10, "Salud Inteligente Para Un Mundo Real", 0, 0, "C")
 
     safe_name = nombre.strip().replace(" ", "_")

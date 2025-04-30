@@ -112,6 +112,37 @@ textarea {
       width: 30px;
       height: 30px;
     }
+
+    @media print {
+  body {
+    background: white;
+    color: black;
+  }
+
+  header img,
+  .visor-pdf,
+  .botones-flotantes {
+    display: none !important;
+  }
+
+  form {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  input, textarea {
+    border: 1px solid #000;
+    background: white;
+    color: black;
+  }
+
+  label {
+    color: black;
+    font-weight: bold;
+  }
+}
   </style>
 </head>
 <body>

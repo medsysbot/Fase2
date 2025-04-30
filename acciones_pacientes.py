@@ -41,40 +41,41 @@ async def generar_pdf_paciente(
     pdf = FPDF(format="A4")
     pdf.add_page()
 
-    # LOGO más grande
+    # LOGO grande
     logo_path = "static/icons/logo-medsys-gris.png"
     if os.path.exists(logo_path):
         pdf.image(logo_path, x=10, y=5, w=80)
 
-    # TÍTULO centrado (sólo el subtítulo)
+    # TÍTULO principal
     pdf.set_y(30)
     pdf.set_font("Arial", "B", 18)
     pdf.set_text_color(90, 90, 90)
     pdf.cell(0, 10, txt="Registro de Pacientes", ln=True, align="C")
 
-    # LÍNEA horizontal pareja
+    # LÍNEA horizontal
     pdf.set_draw_color(90, 90, 90)
     pdf.set_line_width(0.5)
-    pdf.line(15, 50, 195, 50)
+    pdf.line(15, 48, 195, 48)
     pdf.ln(15)
 
-    # CONTENIDO
+    # CONTENIDO del paciente
     pdf.set_font("Arial", size=12)
     pdf.set_text_color(0, 0, 0)
-    pdf.cell(0, 10, txt=f"Nombre y Apellido: {nombre}", ln=True)
-    pdf.cell(0, 10, txt=f"DNI: {dni}", ln=True)
-    pdf.cell(0, 10, txt=f"Fecha de Nacimiento: {fecha_nacimiento}", ln=True)
-    pdf.cell(0, 10, txt=f"Teléfono: {telefono}", ln=True)
-    pdf.cell(0, 10, txt=f"Correo Electrónico: {email}", ln=True)
-    pdf.cell(0, 10, txt=f"Domicilio: {domicilio}", ln=True)
-    pdf.cell(0, 10, txt=f"Obra Social / Prepaga: {obra_social}", ln=True)
-    pdf.cell(0, 10, txt=f"Número de Afiliado: {numero_afiliado}", ln=True)
-    pdf.cell(0, 10, txt=f"Contacto de Emergencia: {contacto_emergencia}", ln=True)
+    pdf.cell(0, 10, f"Nombre y Apellido: {nombre}", ln=True)
+    pdf.cell(0, 10, f"DNI: {dni}", ln=True)
+    pdf.cell(0, 10, f"Fecha de Nacimiento: {fecha_nacimiento}", ln=True)
+    pdf.cell(0, 10, f"Teléfono: {telefono}", ln=True)
+    pdf.cell(0, 10, f"Correo Electrónico: {email}", ln=True)
+    pdf.cell(0, 10, f"Domicilio: {domicilio}", ln=True)
+    pdf.cell(0, 10, f"Obra Social / Prepaga: {obra_social}", ln=True)
+    pdf.cell(0, 10, f"Número de Afiliado: {numero_afiliado}", ln=True)
+    pdf.cell(0, 10, f"Contacto de Emergencia: {contacto_emergencia}", ln=True)
 
-    # GUARDAR PDF
+    # GUARDAR
     safe_name = nombre.strip().replace(" ", "_")
     filename = f"paciente_{safe_name}.pdf"
     output_path = os.path.join("static/doc", filename)
-    pdf.output(output_path, "F", True)
+
+    pdf.output(output_path, dest="F").encode('latin-1')
 
     return JSONResponse({"filename": filename})

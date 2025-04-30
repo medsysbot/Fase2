@@ -3,11 +3,16 @@ from fastapi.responses import RedirectResponse, JSONResponse
 from fpdf import FPDF
 import sqlite3
 import os
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication
 from respaldo.backup_handler import guardar_respaldo_completo
 
 router = APIRouter()
 DB_PATH = "static/doc/medsys.db"
 
+# ---------- ELIMINAR PACIENTE ----------
 @router.post("/eliminar-paciente")
 async def eliminar_paciente(dni: str = Form(...), usuario: str = Form(...)):
     respaldo_exitoso = guardar_respaldo_completo(dni_paciente=dni, eliminado_por=usuario)
@@ -26,6 +31,7 @@ async def eliminar_paciente(dni: str = Form(...), usuario: str = Form(...)):
     else:
         return {"error": "Paciente no encontrado o respaldo fallido"}
 
+# ---------- GENERAR PDF ----------
 @router.post("/generar_pdf_paciente")
 async def generar_pdf_paciente(
     nombre: str = Form(...),
@@ -41,18 +47,18 @@ async def generar_pdf_paciente(
     pdf = FPDF(format="A4")
     pdf.add_page()
 
-    # LOGO (reducción 2% final)
+    # LOGO
     logo_path = "static/icons/logo-medsys-gris.png"
     if os.path.exists(logo_path):
         pdf.image(logo_path, x=10, y=1, w=62.7)
 
-    # TÍTULO centrado
+    # TÍTULO
     pdf.set_y(22)
     pdf.set_font("Arial", "B", 18)
     pdf.set_text_color(90, 90, 90)
     pdf.cell(0, 10, txt="Registro de Pacientes", ln=True, align="C")
 
-    # LÍNEA horizontal (bajada 2mm)
+    # LÍNEA
     pdf.set_draw_color(90, 90, 90)
     pdf.set_line_width(0.5)
     pdf.line(15, 47, 195, 47)
@@ -78,3 +84,47 @@ async def generar_pdf_paciente(
     pdf.output(output_path, dest="F").encode('latin-1')
 
     return JSONResponse({"filename": filename})
+
+# ---------- ENVIAR PDF POR EMAIL ----------
+@router.post("/enviar_pdf_paciente")
+async def enviar_pdf_paciente(
+    email: str = Form(...),
+    nombre: str = Form(...)
+):
+    safe_name = nombre.strip().replace(" ", "_")
+    filename = f"paciente_{safe_name}.pdf"
+    filepath = os.path.join("static/doc", filename)
+
+    if not os.path.exists(filepath):
+        return JSONResponse({"error": "PDF no encontrado"}, status_code=404)
+
+    # CONFIGURACIÓN SMTP
+    remitente = "medisys.bot@gmail.com"
+    contraseña = "yeuaugaxmdvydcou"
+    asunto = "Registro de Pacientes – MEDSYS"
+    cuerpo = (
+        f"Estimado/a {nombre},\n\n"
+        "Adjuntamos el PDF correspondiente a su registro de paciente.\n\n"
+        "Este documento contiene sus datos personales y será utilizado para futuras gestiones médicas.\n\n"
+        "Saludos cordiales,\n\n"
+        "Equipo MedSys"
+    )
+
+    mensaje = MIMEMultipart()
+    mensaje["From"] = remitente
+    mensaje["To"] = email
+    mensaje["Subject"] = asunto
+    mensaje.attach(MIMEText(cuerpo, "plain"))
+
+    with open(filepath, "rb") as archivo_pdf:
+        parte = MIMEApplication(archivo_pdf.read(), _subtype="pdf")
+        parte.add_header("Content-Disposition", "attachment", filename=filename)
+        mensaje.attach(parte)
+
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
+            servidor.login(remitente, contraseña)
+            servidor.send_message(mensaje)
+        return JSONResponse({"mensaje": "Correo enviado exitosamente"})
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)

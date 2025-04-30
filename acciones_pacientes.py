@@ -38,50 +38,43 @@ async def generar_pdf_paciente(
     numero_afiliado: str = Form(...),
     contacto_emergencia: str = Form(...)
 ):
-    pdf = FPDF()
+    pdf = FPDF(format="A4")
     pdf.add_page()
 
-    # LOGO
+    # LOGO más grande
     logo_path = "static/icons/logo-medsys-gris.png"
     if os.path.exists(logo_path):
-        pdf.image(logo_path, x=10, y=5, w=45)
+        pdf.image(logo_path, x=10, y=5, w=80)
 
-    # TÃTULO CENTRADO: solo el subtÃ­tulo con fuente mÃ¡s grande
-    pdf.set_y(10)
-    pdf.set_font("Arial", "B", 16)
+    # TÍTULO centrado (sólo el subtítulo)
+    pdf.set_y(30)
+    pdf.set_font("Arial", "B", 18)
     pdf.set_text_color(90, 90, 90)
-    pdf.cell(0, 10, txt="Registro de Pacientes", ln=1, align="C")
+    pdf.cell(0, 10, txt="Registro de Pacientes", ln=True, align="C")
 
-    # LÃNEA DE SEPARACIÃN
+    # LÍNEA horizontal pareja
     pdf.set_draw_color(90, 90, 90)
     pdf.set_line_width(0.5)
-    pdf.line(15, 42, 195, 42)
-    pdf.ln(20)
+    pdf.line(15, 50, 195, 50)
+    pdf.ln(15)
 
-    # CUERPO
+    # CONTENIDO
     pdf.set_font("Arial", size=12)
     pdf.set_text_color(0, 0, 0)
-    pdf.cell(200, 10, txt=f"Nombre y Apellido: {nombre}", ln=True)
-    pdf.cell(200, 10, txt=f"DNI: {dni}", ln=True)
-    pdf.cell(200, 10, txt=f"Fecha de Nacimiento: {fecha_nacimiento}", ln=True)
-    pdf.cell(200, 10, txt=f"TelÃ©fono: {telefono}", ln=True)
-    pdf.cell(200, 10, txt=f"Correo ElectrÃ³nico: {email}", ln=True)
-    pdf.cell(200, 10, txt=f"Domicilio: {domicilio}", ln=True)
-    pdf.cell(200, 10, txt=f"Obra Social / Prepaga: {obra_social}", ln=True)
-    pdf.cell(200, 10, txt=f"NÃºmero de Afiliado: {numero_afiliado}", ln=True)
-    pdf.cell(200, 10, txt=f"Contacto de Emergencia: {contacto_emergencia}", ln=True)
+    pdf.cell(0, 10, txt=f"Nombre y Apellido: {nombre}", ln=True)
+    pdf.cell(0, 10, txt=f"DNI: {dni}", ln=True)
+    pdf.cell(0, 10, txt=f"Fecha de Nacimiento: {fecha_nacimiento}", ln=True)
+    pdf.cell(0, 10, txt=f"Teléfono: {telefono}", ln=True)
+    pdf.cell(0, 10, txt=f"Correo Electrónico: {email}", ln=True)
+    pdf.cell(0, 10, txt=f"Domicilio: {domicilio}", ln=True)
+    pdf.cell(0, 10, txt=f"Obra Social / Prepaga: {obra_social}", ln=True)
+    pdf.cell(0, 10, txt=f"Número de Afiliado: {numero_afiliado}", ln=True)
+    pdf.cell(0, 10, txt=f"Contacto de Emergencia: {contacto_emergencia}", ln=True)
 
-    # PIE DE PÃGINA visible
-    pdf.set_y(270)  # PosiciÃ³n mÃ¡s arriba para asegurar visibilidad
-    pdf.set_draw_color(90, 90, 90)
-    pdf.line(15, 270, 195, 270)
-    pdf.set_font("Arial", "I", 10)
-    pdf.set_text_color(90, 90, 90)
-    pdf.cell(0, 10, "Salud Inteligente Para Un Mundo Real", 0, 0, "C")
-
+    # GUARDAR PDF
     safe_name = nombre.strip().replace(" ", "_")
     filename = f"paciente_{safe_name}.pdf"
     output_path = os.path.join("static/doc", filename)
-    pdf.output(output_path)
+    pdf.output(output_path, "F", True)
 
     return JSONResponse({"filename": filename})

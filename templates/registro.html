@@ -13,18 +13,15 @@
       margin: 0;
       padding: 0;
     }
-
     header {
       text-align: center;
       margin-top: 20px;
     }
-
     .logo-grande {
       width: 180px;
       height: auto;
       margin-bottom: 10px;
     }
-
     h2 {
       text-align: center;
       font-style: italic;
@@ -33,14 +30,12 @@
       margin-top: 10px;
       color: #d3d3d3;
     }
-
     form {
       max-width: 400px;
       width: 90%;
       margin: 0 auto;
       padding: 20px;
     }
-
     label {
       display: block;
       margin-top: 15px;
@@ -48,7 +43,6 @@
       font-size: 17px;
       color: #d3d3d3;
     }
-
     input, textarea {
       width: 100%;
       padding: 6px 10px;
@@ -60,24 +54,20 @@
       box-sizing: border-box;
       min-height: 45px;
     }
-
     textarea {
       resize: vertical;
       line-height: 1.4;
     }
-
     .visor-pdf {
       margin-top: 40px;
       text-align: center;
     }
-
     .visor-pdf iframe {
       width: 90%;
       height: 500px;
       border: 2px solid #09394f;
       border-radius: 10px;
     }
-
     .botones-flotantes {
       position: fixed;
       right: 20px;
@@ -87,7 +77,6 @@
       gap: 15px;
       z-index: 1000;
     }
-
     .botones-flotantes button {
       background-color: #4A90E2;
       border: none;
@@ -98,37 +87,31 @@
       align-items: center;
       justify-content: center;
     }
-
     .botones-flotantes img {
       width: 30px;
       height: 30px;
     }
-
     @media print {
       body {
         background: white;
         color: black;
       }
-
       header img,
       .visor-pdf,
       .botones-flotantes {
         display: none !important;
       }
-
       form {
         width: 100%;
         max-width: 100%;
         margin: 0;
         padding: 0;
       }
-
       input, textarea {
         border: 1px solid #000;
         background: white;
         color: black;
       }
-
       label {
         color: black;
         font-weight: bold;
@@ -145,28 +128,20 @@
   <form class="formulario" id="form-registro">
     <label>Nombre y Apellido:</label>
     <input type="text" name="nombre" required />
-
     <label>DNI:</label>
     <input type="text" name="dni" required />
-
     <label>Fecha de Nacimiento:</label>
     <input type="date" name="fecha_nacimiento" required />
-
     <label>Teléfono:</label>
     <input type="text" name="telefono" />
-
     <label>Correo Electrónico:</label>
     <input type="email" name="email" />
-
     <label>Domicilio:</label>
     <input type="text" name="domicilio" />
-
     <label>Obra Social / Prepaga:</label>
     <input type="text" name="obra_social" />
-
     <label>Número de Afiliado:</label>
     <input type="text" name="numero_afiliado" />
-
     <label>Contacto de Emergencia:</label>
     <input type="text" name="contacto_emergencia" />
   </form>
@@ -183,7 +158,7 @@
     <button type="button" onclick="guardarPDF()" title="Guardar">
       <img src="/static/icons/guardar.png" alt="Guardar" />
     </button>
-    <button type="submit" form="form-registro" title="Enviar">
+    <button type="button" onclick="enviarPorCorreo()" title="Enviar por correo">
       <img src="/static/icons/enviar.png" alt="Enviar" />
     </button>
     <button type="button" onclick="imprimirPDF()" title="Imprimir">
@@ -193,6 +168,11 @@
       <img src="/static/icons/borrar.png" alt="Borrar" />
     </button>
   </div>
+
+  <form id="form-enviar" method="POST" action="/enviar_pdf_paciente" style="display: none;">
+    <input type="hidden" name="nombre" id="nombreOculto">
+    <input type="hidden" name="email" id="emailOculto">
+  </form>
 
   <script>
     function activarVoz() {
@@ -219,9 +199,21 @@
         alert("No se pudo acceder al visor PDF.");
       }
     }
+
+    function enviarPorCorreo() {
+      const nombre = document.querySelector('[name="nombre"]').value.trim();
+      const email = document.querySelector('[name="email"]').value.trim();
+      if (!nombre || !email) {
+        alert("Por favor, completá nombre y correo electrónico.");
+        return;
+      }
+      document.getElementById("nombreOculto").value = nombre;
+      document.getElementById("emailOculto").value = email;
+      document.getElementById("form-enviar").submit();
+      alert("El PDF se está enviando al correo del paciente...");
+    }
   </script>
 
-  <!-- ESTE BLOQUE ES CLAVE PARA GUARDAR PDF -->
   <script src="/static/js/registro_formulario.js"></script>
 </body>
 </html>

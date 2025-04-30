@@ -48,10 +48,29 @@ async def generar_pdf_paciente(
 ):
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_font("Arial", size=12)
 
-    pdf.cell(200, 10, txt="Registro de Paciente", ln=True, align="C")
-    pdf.ln(10)
+    # ENCABEZADO PROFESIONAL
+    logo_path = "static/icons/logo-medicis-gris.png"
+    if os.path.exists(logo_path):
+        pdf.image(logo_path, x=10, y=8, w=30)
+
+    pdf.set_font("Arial", "B", 16)
+    pdf.set_text_color(90, 90, 90)
+    pdf.cell(0, 10, txt="MEDSYS", ln=1, align="R")
+
+    subtitulo = "Registro de Pacientes"
+    pdf.set_font("Arial", "I", 12)
+    pdf.set_text_color(90, 90, 90)
+    pdf.cell(0, 10, txt=subtitulo, ln=1, align="R")
+
+    pdf.set_draw_color(90, 90, 90)
+    pdf.set_line_width(0.5)
+    pdf.line(10, 30, 200, 30)
+    pdf.ln(15)
+
+    # CONTENIDO DEL PDF
+    pdf.set_font("Arial", size=12)
+    pdf.set_text_color(0, 0, 0)
     pdf.cell(200, 10, txt=f"Nombre y Apellido: {nombre}", ln=True)
     pdf.cell(200, 10, txt=f"DNI: {dni}", ln=True)
     pdf.cell(200, 10, txt=f"Fecha de Nacimiento: {fecha_nacimiento}", ln=True)
@@ -62,6 +81,15 @@ async def generar_pdf_paciente(
     pdf.cell(200, 10, txt=f"Número de Afiliado: {numero_afiliado}", ln=True)
     pdf.cell(200, 10, txt=f"Contacto de Emergencia: {contacto_emergencia}", ln=True)
 
+    # PIE DE PÁGINA
+    pdf.set_draw_color(90, 90, 90)
+    pdf.line(10, 265, 200, 265)
+    pdf.set_font("Arial", "I", 10)
+    pdf.set_text_color(90, 90, 90)
+    pdf.set_y(-15)
+    pdf.cell(0, 10, "Salud Inteligente Para Un Mundo Real", 0, 0, "C")
+
+    # GUARDADO
     safe_name = nombre.strip().replace(" ", "_")
     filename = f"paciente_{safe_name}.pdf"
     output_path = os.path.join("static/doc", filename)

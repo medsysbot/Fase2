@@ -41,27 +41,27 @@ async def generar_pdf_paciente(
     pdf = FPDF()
     pdf.add_page()
 
-    # Logo (más grande y más arriba)
+    # LOGO más grande y bien posicionado
     logo_path = "static/icons/logo-medsys-gris.png"
     if os.path.exists(logo_path):
-        pdf.image(logo_path, x=10, y=4, w=45)
+        pdf.image(logo_path, x=10, y=4, w=90)  # Logo duplicado en tamaño
 
-    # Título y subtítulo centrados
+    # TÍTULO y SUBTÍTULO CENTRADOS y más grandes
     pdf.set_y(10)
-    pdf.set_font("Arial", "B", 16)
+    pdf.set_font("Arial", "B", 22)
     pdf.set_text_color(90, 90, 90)
-    pdf.cell(0, 10, txt="MEDSYS", ln=1, align="C")
+    pdf.cell(0, 12, txt="MEDSYS", ln=1, align="C")
 
-    pdf.set_font("Arial", "I", 12)
+    pdf.set_font("Arial", "I", 16)
     pdf.cell(0, 10, txt="Registro de Pacientes", ln=1, align="C")
 
-    # Línea superior con márgenes iguales
+    # LÍNEA superior de borde a borde
     pdf.set_draw_color(90, 90, 90)
     pdf.set_line_width(0.5)
-    pdf.line(15, 38, 195, 38)
-    pdf.ln(20)
+    pdf.line(0, 42, 210, 42)  # línea de punta a punta
+    pdf.ln(18)
 
-    # Contenido codificado correctamente
+    # CONTENIDO
     pdf.set_font("Arial", size=12)
     pdf.set_text_color(0, 0, 0)
     pdf.cell(200, 10, txt=f"Nombre y Apellido: {nombre}", ln=True)
@@ -74,14 +74,16 @@ async def generar_pdf_paciente(
     pdf.cell(200, 10, txt=f"Número de Afiliado: {numero_afiliado}", ln=True)
     pdf.cell(200, 10, txt=f"Contacto de Emergencia: {contacto_emergencia}", ln=True)
 
-    # Pie de página con línea y eslogan
+    # PIE DE PÁGINA con línea completa y frase centrada
     pdf.set_draw_color(90, 90, 90)
-    pdf.line(15, 265, 195, 265)
-    pdf.set_y(-15)
+    pdf.set_line_width(0.4)
+    pdf.line(0, 275, 210, 275)  # línea de lado a lado
+    pdf.set_y(280)
     pdf.set_font("Arial", "I", 10)
     pdf.set_text_color(90, 90, 90)
     pdf.cell(0, 10, "Salud Inteligente Para Un Mundo Real", 0, 0, "C")
 
+    # GUARDAR PDF
     safe_name = nombre.strip().replace(" ", "_")
     filename = f"paciente_{safe_name}.pdf"
     output_path = os.path.join("static/doc", filename)

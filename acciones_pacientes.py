@@ -48,36 +48,41 @@ async def generar_pdf_paciente(
     pdf = FPDF(format="A4")
     pdf.add_page()
 
+    # LOGO
     logo_path = "static/icons/logo-medsys-gris.png"
     if os.path.exists(logo_path):
         pdf.image(logo_path, x=10, y=1, w=62.7)
 
+    # TÍTULO
     pdf.set_y(22)
     pdf.set_font("Arial", "B", 18)
     pdf.set_text_color(90, 90, 90)
     pdf.cell(0, 10, txt="Registro de Pacientes", ln=True, align="C")
 
+    # LÍNEA
     pdf.set_draw_color(90, 90, 90)
     pdf.set_line_width(0.5)
     pdf.line(15, 47, 195, 47)
     pdf.ln(17)
 
+    # CONTENIDO
     pdf.set_font("Arial", size=12)
     pdf.set_text_color(0, 0, 0)
     pdf.cell(0, 10, f"Nombre y Apellido: {nombre}", ln=True)
     pdf.cell(0, 10, f"DNI: {dni}", ln=True)
     pdf.cell(0, 10, f"Fecha de Nacimiento: {fecha_nacimiento}", ln=True)
-    pdf.cell(0, 10, f"TelÃ©fono: {telefono}", ln=True)
-    pdf.cell(0, 10, f"Correo ElectrÃ³nico: {email}", ln=True)
+    pdf.cell(0, 10, f"Teléfono: {telefono}", ln=True)
+    pdf.cell(0, 10, f"Correo Electrónico: {email}", ln=True)
     pdf.cell(0, 10, f"Domicilio: {domicilio}", ln=True)
     pdf.cell(0, 10, f"Obra Social / Prepaga: {obra_social}", ln=True)
-    pdf.cell(0, 10, f"NÃºmero de Afiliado: {numero_afiliado}", ln=True)
+    pdf.cell(0, 10, f"Número de Afiliado: {numero_afiliado}", ln=True)
     pdf.cell(0, 10, f"Contacto de Emergencia: {contacto_emergencia}", ln=True)
 
+    # GUARDADO
     safe_name = nombre.strip().replace(" ", "_")
     filename = f"paciente_{safe_name}.pdf"
     output_path = os.path.join("static/doc", filename)
-    pdf.output(output_path, dest="F").encode('latin-1')
+    pdf.output(output_path)
 
     # GUARDAR EN TABLA PACIENTES
     try:
@@ -112,21 +117,13 @@ async def enviar_pdf_paciente(
         return JSONResponse({"error": "PDF no encontrado"}, status_code=404)
 
     remitente = "medisys.bot@gmail.com"
-    contraseÃ±a = "yeuaugaxmdvydcou"
-    asunto = "Registro de Pacientes â MEDSYS"
+    contrasena = "yeuaugaxmdvydcou"
+    asunto = "Registro de Pacientes – MEDSYS"
     cuerpo = (
-        f"Estimado/a {nombre},
-
-"
-        "Adjuntamos el PDF correspondiente a su registro de paciente.
-
-"
-        "Este documento contiene sus datos personales y serÃ¡ utilizado para futuras gestiones mÃ©dicas.
-
-"
-        "Saludos cordiales,
-
-"
+        f"Estimado/a {nombre},\n\n"
+        "Adjuntamos el PDF correspondiente a su registro de paciente.\n\n"
+        "Este documento contiene sus datos personales y será utilizado para futuras gestiones médicas.\n\n"
+        "Saludos cordiales,\n\n"
         "Equipo MedSys"
     )
 
@@ -143,7 +140,7 @@ async def enviar_pdf_paciente(
 
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
-            servidor.login(remitente, contraseÃ±a)
+            servidor.login(remitente, contrasena)
             servidor.send_message(mensaje)
         return JSONResponse({"mensaje": "Correo enviado exitosamente"})
     except Exception as e:

@@ -41,49 +41,44 @@ async def generar_pdf_paciente(
     pdf = FPDF()
     pdf.add_page()
 
-    # LOGO más grande y bien posicionado
+    # LOGO
     logo_path = "static/icons/logo-medsys-gris.png"
     if os.path.exists(logo_path):
-        pdf.image(logo_path, x=10, y=4, w=90)  # Logo duplicado en tamaño
+        pdf.image(logo_path, x=10, y=5, w=45)
 
-    # TÍTULO y SUBTÍTULO CENTRADOS y más grandes
+    # TÃTULO CENTRADO: solo el subtÃ­tulo con fuente mÃ¡s grande
     pdf.set_y(10)
-    pdf.set_font("Arial", "B", 22)
+    pdf.set_font("Arial", "B", 16)
     pdf.set_text_color(90, 90, 90)
-    pdf.cell(0, 12, txt="MEDSYS", ln=1, align="C")
-
-    pdf.set_font("Arial", "I", 16)
     pdf.cell(0, 10, txt="Registro de Pacientes", ln=1, align="C")
 
-    # LÍNEA superior de borde a borde
+    # LÃNEA DE SEPARACIÃN
     pdf.set_draw_color(90, 90, 90)
     pdf.set_line_width(0.5)
-    pdf.line(0, 42, 210, 42)  # línea de punta a punta
-    pdf.ln(18)
+    pdf.line(15, 42, 195, 42)
+    pdf.ln(20)
 
-    # CONTENIDO
+    # CUERPO
     pdf.set_font("Arial", size=12)
     pdf.set_text_color(0, 0, 0)
     pdf.cell(200, 10, txt=f"Nombre y Apellido: {nombre}", ln=True)
     pdf.cell(200, 10, txt=f"DNI: {dni}", ln=True)
     pdf.cell(200, 10, txt=f"Fecha de Nacimiento: {fecha_nacimiento}", ln=True)
-    pdf.cell(200, 10, txt=f"Teléfono: {telefono}", ln=True)
-    pdf.cell(200, 10, txt=f"Correo Electrónico: {email}", ln=True)
+    pdf.cell(200, 10, txt=f"TelÃ©fono: {telefono}", ln=True)
+    pdf.cell(200, 10, txt=f"Correo ElectrÃ³nico: {email}", ln=True)
     pdf.cell(200, 10, txt=f"Domicilio: {domicilio}", ln=True)
     pdf.cell(200, 10, txt=f"Obra Social / Prepaga: {obra_social}", ln=True)
-    pdf.cell(200, 10, txt=f"Número de Afiliado: {numero_afiliado}", ln=True)
+    pdf.cell(200, 10, txt=f"NÃºmero de Afiliado: {numero_afiliado}", ln=True)
     pdf.cell(200, 10, txt=f"Contacto de Emergencia: {contacto_emergencia}", ln=True)
 
-    # PIE DE PÁGINA con línea completa y frase centrada
+    # PIE DE PÃGINA visible
+    pdf.set_y(270)  # PosiciÃ³n mÃ¡s arriba para asegurar visibilidad
     pdf.set_draw_color(90, 90, 90)
-    pdf.set_line_width(0.4)
-    pdf.line(0, 275, 210, 275)  # línea de lado a lado
-    pdf.set_y(280)
+    pdf.line(15, 270, 195, 270)
     pdf.set_font("Arial", "I", 10)
     pdf.set_text_color(90, 90, 90)
     pdf.cell(0, 10, "Salud Inteligente Para Un Mundo Real", 0, 0, "C")
 
-    # GUARDAR PDF
     safe_name = nombre.strip().replace(" ", "_")
     filename = f"paciente_{safe_name}.pdf"
     output_path = os.path.join("static/doc", filename)

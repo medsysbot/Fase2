@@ -41,24 +41,24 @@ async def generar_pdf_paciente(
     pdf = FPDF(format="A4")
     pdf.add_page()
 
-    # LOGO grande
+    # LOGO (tamaño grande y más arriba)
     logo_path = "static/icons/logo-medsys-gris.png"
     if os.path.exists(logo_path):
-        pdf.image(logo_path, x=10, y=5, w=80)
+        pdf.image(logo_path, x=10, y=2, w=80)  # posición corregida
 
-    # TÍTULO principal
-    pdf.set_y(30)
+    # TÍTULO (centrado a la mitad del logo)
+    pdf.set_y(24)  # descendido para quedar centrado con el logo
     pdf.set_font("Arial", "B", 18)
     pdf.set_text_color(90, 90, 90)
     pdf.cell(0, 10, txt="Registro de Pacientes", ln=True, align="C")
 
-    # LÍNEA horizontal
+    # LÍNEA horizontal justo debajo del logo
     pdf.set_draw_color(90, 90, 90)
     pdf.set_line_width(0.5)
-    pdf.line(15, 48, 195, 48)
-    pdf.ln(15)
+    pdf.line(15, 45, 195, 45)
+    pdf.ln(20)
 
-    # CONTENIDO del paciente
+    # CONTENIDO
     pdf.set_font("Arial", size=12)
     pdf.set_text_color(0, 0, 0)
     pdf.cell(0, 10, f"Nombre y Apellido: {nombre}", ln=True)
@@ -71,11 +71,10 @@ async def generar_pdf_paciente(
     pdf.cell(0, 10, f"Número de Afiliado: {numero_afiliado}", ln=True)
     pdf.cell(0, 10, f"Contacto de Emergencia: {contacto_emergencia}", ln=True)
 
-    # GUARDAR
+    # GUARDAR PDF
     safe_name = nombre.strip().replace(" ", "_")
     filename = f"paciente_{safe_name}.pdf"
     output_path = os.path.join("static/doc", filename)
-
     pdf.output(output_path, dest="F").encode('latin-1')
 
     return JSONResponse({"filename": filename})

@@ -1,3 +1,4 @@
+
 from fastapi import APIRouter, Form
 from fastapi.responses import RedirectResponse, JSONResponse
 from fpdf import FPDF
@@ -41,25 +42,25 @@ async def generar_pdf_paciente(
     pdf = FPDF()
     pdf.add_page()
 
-    # LOGO: MÃ¡s grande y misma posiciÃ³n
+    # LOGO mejor posicionado y mÃ¡s grande
     logo_path = "static/icons/logo-medsys-gris.png"
     if os.path.exists(logo_path):
-        pdf.image(logo_path, x=10, y=5, w=40)  # antes w=30 â ahora 35% mÃ¡s grande
+        pdf.image(logo_path, x=10, y=3, w=45)  # MÃ¡s grande y elevado
 
     # TÃTULO Y SUBTÃTULO CENTRADOS
+    pdf.set_y(10)
     pdf.set_font("Arial", "B", 16)
     pdf.set_text_color(90, 90, 90)
-    pdf.set_y(10)
     pdf.cell(0, 10, txt="MEDSYS", ln=1, align="C")
 
     pdf.set_font("Arial", "I", 12)
     pdf.cell(0, 10, txt="Registro de Pacientes", ln=1, align="C")
 
-    # LÃNEA superior con mÃ¡rgenes parejos (15 px a cada lado)
+    # LÃ­nea con mÃ¡rgenes parejos y bajada
     pdf.set_draw_color(90, 90, 90)
     pdf.set_line_width(0.5)
-    pdf.line(15, 30, 195, 30)
-    pdf.ln(15)
+    pdf.line(15, 35, 195, 35)
+    pdf.ln(20)
 
     # CONTENIDO
     pdf.set_font("Arial", size=12)

@@ -11,7 +11,6 @@ DB_PATH = "static/doc/medsys.db"
 @router.post("/eliminar-paciente")
 async def eliminar_paciente(dni: str = Form(...), usuario: str = Form(...)):
     respaldo_exitoso = guardar_respaldo_completo(dni_paciente=dni, eliminado_por=usuario)
-
     if respaldo_exitoso:
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
@@ -42,11 +41,12 @@ async def generar_pdf_paciente(
     pdf = FPDF()
     pdf.add_page()
 
-    # ENCABEZADO VISUAL CORREGIDO
+    # LOGO: MÃ¡s grande y misma posiciÃ³n
     logo_path = "static/icons/logo-medsys-gris.png"
     if os.path.exists(logo_path):
-        pdf.image(logo_path, x=10, y=5, w=30)  # Logo mÃ¡s arriba
+        pdf.image(logo_path, x=10, y=5, w=40)  # antes w=30 â ahora 35% mÃ¡s grande
 
+    # TÃTULO Y SUBTÃTULO CENTRADOS
     pdf.set_font("Arial", "B", 16)
     pdf.set_text_color(90, 90, 90)
     pdf.set_y(10)
@@ -55,9 +55,10 @@ async def generar_pdf_paciente(
     pdf.set_font("Arial", "I", 12)
     pdf.cell(0, 10, txt="Registro de Pacientes", ln=1, align="C")
 
+    # LÃNEA superior con mÃ¡rgenes parejos (15 px a cada lado)
     pdf.set_draw_color(90, 90, 90)
     pdf.set_line_width(0.5)
-    pdf.line(10, 30, 200, 30)
+    pdf.line(15, 30, 195, 30)
     pdf.ln(15)
 
     # CONTENIDO
@@ -75,7 +76,7 @@ async def generar_pdf_paciente(
 
     # PIE
     pdf.set_draw_color(90, 90, 90)
-    pdf.line(10, 265, 200, 265)
+    pdf.line(15, 265, 195, 265)
     pdf.set_font("Arial", "I", 10)
     pdf.set_text_color(90, 90, 90)
     pdf.set_y(-15)

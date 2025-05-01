@@ -211,3 +211,31 @@ async def eliminar_institucion(id: int = Form(...)):
     conn.commit()
     conn.close()
     return HTMLResponse(content="<script>window.location.href='/admin/control-total'</script>")
+
+# ---------------- ELIMINAR PACIENTE DESDE CONTROL TOTAL ----------------
+@router.post("/admin/eliminar-paciente")
+async def eliminar_paciente_total(dni: str = Form(...)):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    # Validar existencia
+    cursor.execute("SELECT id FROM pacientes WHERE dni=?", (dni,))
+    resultado = cursor.fetchone()
+    if not resultado:
+        conn.close()
+        return HTMLResponse(content="<script>alert('Paciente no encontrado.'); window.location.href='/admin/control-total'</script>")
+
+    paciente_id = resultado[0]
+
+    # Eliminar datos relacionados
+    cursor.execute("DELETE FROM recetas WHERE paciente_id=?", (paciente_id,))
+    cursor.execute("DELETE FROM indicaciones WHERE paciente_id=?", (paciente_id,))
+    cursor.execute("DELETE FROM estudios WHERE paciente_id=?", (paciente_id,))
+    cursor.execute("DELETE FROM historia_clinica WHERE paciente_id=?", (paciente_id,))
+    cursor.execute("DELETE FROM turnos WHERE paciente_id=?", (paciente_id,))
+    cursor.execute("DELETE FROM pacientes WHERE id=?", (paciente_id,))
+
+    conn.commit()
+    conn.close()
+
+    return HTMLResponse(content="<script>alert('Paciente eliminado correctamente.'); window.location.href='/admin/control-total'</script>")

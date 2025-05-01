@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, Form
-from fastapi.responses import HTMLResponse, FileResponse
+from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 import sqlite3
 from fpdf import FPDF
@@ -164,13 +164,14 @@ async def eliminar_paciente_total(dni: str = Form(...)):
     conn.close()
     return HTMLResponse("<script>alert('Paciente eliminado.'); location.href='/admin/control-total'</script>")
 
-# RUTAS PARA FICHA PACIENTE
+# FICHA PACIENTE - HTML
 @router.get("/admin/ficha-paciente", response_class=HTMLResponse)
 async def ficha_paciente_get(request: Request):
-    return templates.TemplateResponse("ficha-paciente.html", {"request": request, "paciente": None})
+    return templates.TemplateResponse("ficha-paciente.html", {"request": request})
 
-@router.post("/admin/ficha-paciente/ver")
-async def ver_paciente(request: Request, dni: str = Form(...)):
+# API para búsqueda visual con botón VER
+@router.get("/api/paciente/{dni}")
+async def api_ver_paciente(dni: str):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM pacientes WHERE dni=?", (dni,))
@@ -178,6 +179,5 @@ async def ver_paciente(request: Request, dni: str = Form(...)):
     columnas = [desc[0] for desc in cursor.description]
     conn.close()
     if not datos:
-        return templates.TemplateResponse("ficha-paciente.html", {"request": request, "paciente": None, "mensaje": "Paciente no encontrado."})
-    paciente = {columnas[i]: datos[i] for i in range(len(columnas))}
-    return templates.TemplateResponse("ficha-paciente.html", {"request": request, "paciente": paciente})
+        return JSONResponse({"error": "Paciente no encontrado"}, status_code=404)
+    return JSONResponse({columnas[i]: datos[i] for i in range(len(columnas))})

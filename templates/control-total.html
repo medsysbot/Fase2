@@ -67,6 +67,11 @@
       color: white;
     }
 
+    .exportar {
+      background-color: #3498db;
+      color: white;
+    }
+
     .titulo-seccion {
       margin-top: 40px;
       border-bottom: 2px solid #0a2a3d;
@@ -109,6 +114,13 @@
           <form method="POST" action="/admin/eliminar-institucion" onsubmit="return confirm('¿Seguro que deseas eliminar esta institución?');">
             <input type="hidden" name="id" value="{{ inst.id }}">
             <button type="submit" class="eliminar">Eliminar</button>
+          </form>
+          <form method="GET" action="/exportar-pacientes/{{ inst.id }}">
+            <button type="submit" class="exportar">Exportar pacientes</button>
+          </form>
+          <form method="POST" action="/admin/eliminar-pacientes" onsubmit="return confirm('¿Eliminar todos los pacientes de esta institución?');">
+            <input type="hidden" name="institucion_id" value="{{ inst.id }}">
+            <button type="submit" class="eliminar">Eliminar pacientes</button>
           </form>
         </td>
       </tr>

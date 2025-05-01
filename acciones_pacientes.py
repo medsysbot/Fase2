@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Form
+from fastapi import APIRouter, Form, Request
 from fastapi.responses import RedirectResponse, JSONResponse
 from fpdf import FPDF
 import sqlite3
@@ -34,6 +34,7 @@ async def eliminar_paciente(dni: str = Form(...), usuario: str = Form(...)):
 # ---------- GENERAR PDF + GUARDAR EN BASE ----------
 @router.post("/generar_pdf_paciente")
 async def generar_pdf_paciente(
+    request: Request,
     nombre: str = Form(...),
     dni: str = Form(...),
     fecha_nacimiento: str = Form(...),
@@ -78,17 +79,33 @@ async def generar_pdf_paciente(
     output_path = os.path.join("static/doc", filename)
     pdf.output(output_path)
 
-    # GUARDAR EN TABLA PACIENTES
+    # GUARDAR EN BASE DE DATOS
     try:
+        usuario = request.session.get("usuario", None)
+        if not usuario:
+            return JSONResponse({"error": "Sesión expirada o no autenticada"}, status_code=401)
+
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
+        cursor.execute("SELECT institucion_id FROM usuarios WHERE usuario=?", (usuario,))
+        resultado = cursor.fetchone()
+        if not resultado:
+            conn.close()
+            return JSONResponse({"error": "Usuario no encontrado o sin institución asignada"}, status_code=404)
+
+        institucion_id = resultado[0]
+
+        partes = nombre.strip().split()
+        nombre_1 = partes[0] if partes else "-"
+        apellido = " ".join(partes[1:]) if len(partes) > 1 else "-"
+
         cursor.execute("""
-            INSERT OR REPLACE INTO pacientes 
-            (dni, nombres, apellido, fecha_nacimiento, telefono, email, direccion, institucion_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, 1)
+            INSERT INTO pacientes 
+            (dni, nombres, apellido, fecha_nacimiento, telefono, email, direccion, obra_social, numero_afiliado, contacto_emergencia, institucion_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
-            dni, nombre.split()[0], " ".join(nombre.split()[1:]) or "-", 
-            fecha_nacimiento, telefono, email, domicilio
+            dni, nombre_1, apellido, fecha_nacimiento, telefono, email,
+            domicilio, obra_social, numero_afiliado, contacto_emergencia, institucion_id
         ))
         conn.commit()
         conn.close()
@@ -99,10 +116,7 @@ async def generar_pdf_paciente(
 
 # ---------- ENVIAR PDF POR EMAIL ----------
 @router.post("/enviar_pdf_paciente")
-async def enviar_pdf_paciente(
-    email: str = Form(...),
-    nombre: str = Form(...)
-):
+async def enviar_pdf_paciente(email: str = Form(...), nombre: str = Form(...)):
     safe_name = nombre.strip().replace(" ", "_")
     filename = f"paciente_{safe_name}.pdf"
     filepath = os.path.join("static/doc", filename)

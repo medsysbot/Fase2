@@ -1,3 +1,5 @@
+Acciones pacientes py  funciona
+
 from fastapi import APIRouter, Form
 from fastapi.responses import RedirectResponse, JSONResponse
 from fpdf import FPDF
@@ -78,22 +80,17 @@ async def generar_pdf_paciente(
     output_path = os.path.join("static/doc", filename)
     pdf.output(output_path)
 
-    # --- AGREGADO: GUARDAR EN BASE DE DATOS ---
+    # GUARDAR EN TABLA PACIENTES
     try:
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
-
-        partes = nombre.strip().split()
-        nombre_1 = partes[0] if partes else "-"
-        apellido = " ".join(partes[1:]) if len(partes) > 1 else "-"
-
         cursor.execute("""
-            INSERT INTO pacientes 
-            (dni, nombres, apellido, fecha_nacimiento, telefono, email, direccion, obra_social, numero_afiliado, contacto_emergencia, institucion_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+            INSERT OR REPLACE INTO pacientes 
+            (dni, nombres, apellido, fecha_nacimiento, telefono, email, direccion, institucion_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, 1)
         """, (
-            dni, nombre_1, apellido, fecha_nacimiento, telefono, email,
-            domicilio, obra_social, numero_afiliado, contacto_emergencia
+            dni, nombre.split()[0], " ".join(nombre.split()[1:]) or "-", 
+            fecha_nacimiento, telefono, email, domicilio
         ))
         conn.commit()
         conn.close()

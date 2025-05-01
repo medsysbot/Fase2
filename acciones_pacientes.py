@@ -19,11 +19,8 @@ async def eliminar_paciente(dni: str = Form(...), usuario: str = Form(...)):
     if respaldo_exitoso:
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM recetas WHERE paciente_id = (SELECT id FROM pacientes WHERE dni=?)", (dni,))
-        cursor.execute("DELETE FROM indicaciones WHERE paciente_id = (SELECT id FROM pacientes WHERE dni=?)", (dni,))
-        cursor.execute("DELETE FROM estudios WHERE paciente_id = (SELECT id FROM pacientes WHERE dni=?)", (dni,))
-        cursor.execute("DELETE FROM historia_clinica WHERE paciente_id = (SELECT id FROM pacientes WHERE dni=?)", (dni,))
-        cursor.execute("DELETE FROM turnos WHERE paciente_id = (SELECT id FROM pacientes WHERE dni=?)", (dni,))
+        for tabla in ["recetas", "indicaciones", "estudios", "historia_clinica", "turnos"]:
+            cursor.execute(f"DELETE FROM {tabla} WHERE paciente_id = (SELECT id FROM pacientes WHERE dni=?)", (dni,))
         cursor.execute("DELETE FROM pacientes WHERE dni=?", (dni,))
         conn.commit()
         conn.close()
@@ -79,21 +76,21 @@ async def generar_pdf_paciente(
     output_path = os.path.join("static/doc", filename)
     pdf.output(output_path)
 
-    # GUARDAR EN BASE DE DATOS
     try:
-        usuario = request.session.get("usuario", None)
+        usuario = request.session.get("usuario")
         if not usuario:
-            return JSONResponse({"error": "Sesión expirada o no autenticada"}, status_code=401)
+            return JSONResponse({"error": "Sesión no iniciada"}, status_code=401)
 
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
-        cursor.execute("SELECT institucion_id FROM usuarios WHERE usuario=?", (usuario,))
-        resultado = cursor.fetchone()
-        if not resultado:
-            conn.close()
-            return JSONResponse({"error": "Usuario no encontrado o sin institución asignada"}, status_code=404)
 
-        institucion_id = resultado[0]
+        cursor.execute("SELECT institucion_id FROM usuarios WHERE usuario=?", (usuario,))
+        institucion = cursor.fetchone()
+        if not institucion:
+            conn.close()
+            return JSONResponse({"error": "Institución no encontrada"}, status_code=404)
+
+        institucion_id = institucion[0]
 
         partes = nombre.strip().split()
         nombre_1 = partes[0] if partes else "-"
@@ -110,7 +107,7 @@ async def generar_pdf_paciente(
         conn.commit()
         conn.close()
     except Exception as e:
-        return JSONResponse({"error": f"No se pudo guardar en la base: {e}"}, status_code=500)
+        return JSONResponse({"error": f"No se pudo guardar en base: {e}"}, status_code=500)
 
     return JSONResponse({"filename": filename})
 

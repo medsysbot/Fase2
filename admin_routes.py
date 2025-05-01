@@ -152,7 +152,7 @@ async def exportar_paciente_ficha(dni: str = Form(...)):
     pdf.output(export_path)
     return FileResponse(export_path, media_type="application/pdf", filename=f"paciente_{dni}.pdf")
 
-# FICHA PACIENTE - ELIMINAR (robusto)
+# FICHA PACIENTE - ELIMINAR COMPLETO
 @router.post("/admin/ficha-paciente/eliminar")
 async def eliminar_paciente_ficha(dni: str = Form(...)):
     conn = sqlite3.connect(DB_PATH)
@@ -163,12 +163,11 @@ async def eliminar_paciente_ficha(dni: str = Form(...)):
         conn.close()
         return HTMLResponse("<script>alert('Paciente no encontrado.'); location.href='/admin/ficha-paciente'</script>")
     pid = paciente[0]
-    tablas = ["recetas", "indicaciones", "estudios", "historia_clinica", "turnos"]
-    for tabla in tablas:
+    for tabla in ["recetas", "indicaciones", "estudios", "historia_clinica", "turnos"]:
         try:
             cursor.execute(f"DELETE FROM {tabla} WHERE paciente_id=?", (pid,))
-        except Exception:
-            pass  # ignora si la tabla no existe
+        except sqlite3.OperationalError:
+            pass  # si la tabla no existe, seguir igual
     cursor.execute("DELETE FROM pacientes WHERE id=?", (pid,))
     conn.commit()
     conn.close()

@@ -125,7 +125,7 @@ async def editar_usuario(usuario: str = Form(...), nombres: str = Form(...),
     conn.close()
     return HTMLResponse("<script>location.href='/admin/control-total'</script>")
 
-# PACIENTES
+# PACIENTES - CONTROL TOTAL
 @router.get("/admin/paciente/exportar/{dni}")
 async def exportar_paciente(dni: str):
     conn = sqlite3.connect(DB_PATH)
@@ -164,12 +164,12 @@ async def eliminar_paciente_total(dni: str = Form(...)):
     conn.close()
     return HTMLResponse("<script>alert('Paciente eliminado.'); location.href='/admin/control-total'</script>")
 
-# FICHA PACIENTE - HTML
+# FICHA PACIENTE
 @router.get("/admin/ficha-paciente", response_class=HTMLResponse)
 async def ficha_paciente_get(request: Request):
     return templates.TemplateResponse("ficha-paciente.html", {"request": request})
 
-# API para búsqueda visual con botón VER
+# API para botón VER
 @router.get("/api/paciente/{dni}")
 async def api_ver_paciente(dni: str):
     conn = sqlite3.connect(DB_PATH)
@@ -181,3 +181,26 @@ async def api_ver_paciente(dni: str):
     if not datos:
         return JSONResponse({"error": "Paciente no encontrado"}, status_code=404)
     return JSONResponse({columnas[i]: datos[i] for i in range(len(columnas))})
+
+# EXPORTAR desde ficha-paciente
+@router.post("/admin/ficha-paciente/exportar")
+async def exportar_paciente_ficha(dni: str = Form(...)):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM pacientes WHERE dni=?", (dni,))
+    datos = cursor.fetchone()
+    columnas = [desc[0] for desc in cursor.description]
+    if not datos:
+        conn.close()
+        return HTMLResponse("<script>alert('Paciente no encontrado.'); location.href='/admin/ficha-paciente'</script>")
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", "B", 14)
+    pdf.cell(0, 10, "Ficha Completa del Paciente", ln=True)
+    pdf.set_font("Arial", "", 12)
+    for i in range(len(columnas)):
+        pdf.cell(0, 8, f"{columnas[i]}: {datos[i]}", ln=True)
+    export_path = f"static/doc/paciente_{dni}_completo.pdf"
+    pdf.output(export_path)
+    conn.close()
+    return FileResponse(export_path, media_type="application/pdf", filename=f"paciente_{dni}.pdf")

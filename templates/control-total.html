@@ -77,12 +77,63 @@
       border-bottom: 2px solid #0a2a3d;
       padding-bottom: 5px;
     }
+
+    .form-agregar {
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin-bottom: 40px;
+      border-radius: 6px;
+    }
+
+    .form-agregar input, .form-agregar select {
+      padding: 6px;
+      width: 100%;
+      margin-bottom: 10px;
+      font-size: 15px;
+    }
+
+    .form-agregar button {
+      background: #2ecc71;
+      color: white;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
   </style>
 </head>
 <body>
 
-  <h2 class="titulo-seccion">Instituciones Registradas</h2>
+  <h2 class="titulo-seccion">Agregar Nuevo Usuario</h2>
+  <form class="form-agregar" method="POST" action="/admin/usuario/agregar">
+    <label>Usuario:</label>
+    <input type="text" name="usuario" required>
 
+    <label>Contrasena:</label>
+    <input type="password" name="contrasena" required>
+
+    <label>Nombres:</label>
+    <input type="text" name="nombres" required>
+
+    <label>Apellido:</label>
+    <input type="text" name="apellido" required>
+
+    <label>Rol:</label>
+    <select name="rol" required>
+      <option value="director">Director</option>
+      <option value="secretaria">Secretaria</option>
+      <option value="medico">Médico</option>
+    </select>
+
+    <label>ID de Institución:</label>
+    <input type="number" name="institucion" required>
+
+    <button type="submit">Agregar Usuario</button>
+  </form>
+
+  <h2 class="titulo-seccion">Instituciones Registradas</h2>
   <table>
     <thead>
       <tr>
@@ -129,7 +180,6 @@
   </table>
 
   <h2 class="titulo-seccion">Usuarios del Sistema</h2>
-
   <table>
     <thead>
       <tr>

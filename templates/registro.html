@@ -125,7 +125,7 @@
     <h2>Registro de Pacientes</h2>
   </header>
 
-  <form class="formulario" id="form-registro">
+  <form class="formulario" id="form-registro" method="POST" action="/admin/paciente/guardar">
     <label>Nombre y Apellido:</label>
     <input type="text" name="nombre" required />
     <label>DNI:</label>
@@ -155,7 +155,7 @@
     <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
       <img src="/static/icons/microfono.png" alt="Voz" />
     </button>
-    <button type="button" onclick="guardarPDF()" title="Guardar">
+    <button type="submit" form="form-registro" title="Guardar">
       <img src="/static/icons/guardar.png" alt="Guardar" />
     </button>
     <button type="button" onclick="enviarPorCorreo()" title="Enviar por correo">

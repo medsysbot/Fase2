@@ -8,46 +8,7 @@ router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 DB_PATH = "static/doc/medsys.db"
 
-# ---------------- PANEL ORIGINAL PACIENTES ----------------
-@router.get("/admin/pacientes", response_class=HTMLResponse)
-async def admin_pacientes(request: Request):
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-
-    cursor.execute("SELECT id, nombre, estado FROM instituciones")
-    instituciones_raw = cursor.fetchall()
-    instituciones = []
-    for inst in instituciones_raw:
-        cursor.execute("SELECT COUNT(*) FROM pacientes WHERE institucion_id=?", (inst[0],))
-        total = cursor.fetchone()[0]
-        instituciones.append({
-            "id": inst[0],
-            "nombre": inst[1],
-            "estado": inst[2],
-            "total": total
-        })
-
-    cursor.execute("SELECT usuario, nombres, apellido, rol, institucion_id, activo FROM usuarios")
-    usuarios_raw = cursor.fetchall()
-    usuarios = []
-    for u in usuarios_raw:
-        usuarios.append({
-            "usuario": u[0],
-            "nombres": u[1],
-            "apellido": u[2],
-            "rol": u[3],
-            "institucion": u[4],
-            "activo": u[5]
-        })
-
-    conn.close()
-    return templates.TemplateResponse("admin-pacientes.html", {
-        "request": request,
-        "instituciones": instituciones,
-        "usuarios": usuarios
-    })
-
-# ---------------- PANEL NUEVO: CONTROL TOTAL ----------------
+# PANEL DE CONTROL TOTAL
 @router.get("/admin/control-total", response_class=HTMLResponse)
 async def control_total(request: Request):
     conn = sqlite3.connect(DB_PATH)
@@ -89,66 +50,83 @@ async def control_total(request: Request):
         "usuarios": usuarios
     })
 
-# ---------------- PANEL NUEVO: SOLO INSTITUCIONES ----------------
-@router.get("/admin/instituciones", response_class=HTMLResponse)
-async def admin_instituciones(request: Request):
+# INSTITUCIONES
+@router.post("/admin/institucion/agregar")
+async def agregar_institucion(nombre: str = Form(...)):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-
-    cursor.execute("SELECT id, nombre, estado FROM instituciones")
-    instituciones_raw = cursor.fetchall()
-    instituciones = []
-    for inst in instituciones_raw:
-        cursor.execute("SELECT COUNT(*) FROM usuarios WHERE institucion_id=?", (inst[0],))
-        total_usuarios = cursor.fetchone()[0]
-        cursor.execute("SELECT COUNT(*) FROM pacientes WHERE institucion_id=?", (inst[0],))
-        total_pacientes = cursor.fetchone()[0]
-        instituciones.append({
-            "id": inst[0],
-            "nombre": inst[1],
-            "estado": inst[2],
-            "total_usuarios": total_usuarios,
-            "total_pacientes": total_pacientes
-        })
-
+    cursor.execute("INSERT INTO instituciones (nombre, estado) VALUES (?, 'activa')", (nombre,))
+    conn.commit()
     conn.close()
-    return templates.TemplateResponse("admin-instituciones.html", {
-        "request": request,
-        "instituciones": instituciones
-    })
+    return HTMLResponse("<script>location.href='/admin/control-total'</script>")
 
-# ---------------- ACCIONES USUARIOS ----------------
+@router.post("/admin/institucion/editar")
+async def editar_institucion(id: int = Form(...), nombre: str = Form(...)):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE instituciones SET nombre=? WHERE id=?", (nombre, id))
+    conn.commit()
+    conn.close()
+    return HTMLResponse("<script>location.href='/admin/control-total'</script>")
+
+@router.post("/admin/institucion/pausar-activar")
+async def pausar_activar_institucion(id: int = Form(...)):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT estado FROM instituciones WHERE id=?", (id,))
+    estado = cursor.fetchone()[0]
+    nuevo = "pausada" if estado == "activa" else "activa"
+    cursor.execute("UPDATE instituciones SET estado=? WHERE id=?", (nuevo, id))
+    conn.commit()
+    conn.close()
+    return HTMLResponse("<script>location.href='/admin/control-total'</script>")
+
+@router.post("/admin/institucion/eliminar")
+async def eliminar_institucion(id: int = Form(...)):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM instituciones WHERE id=?", (id,))
+    conn.commit()
+    conn.close()
+    return HTMLResponse("<script>location.href='/admin/control-total'</script>")
+
+# USUARIOS
 @router.post("/admin/usuario/agregar")
-async def agregar_usuario(
-    usuario: str = Form(...),
-    contrasena: str = Form(...),
-    nombres: str = Form(...),
-    apellido: str = Form(...),
-    rol: str = Form(...),
-    institucion: str = Form(...)
-):
+async def agregar_usuario(usuario: str = Form(...), contrasena: str = Form(...),
+                          nombres: str = Form(...), apellido: str = Form(...),
+                          rol: str = Form(...), institucion: int = Form(...)):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("""
-        INSERT INTO usuarios (usuario, contraseña, nombres, apellido, rol, institucion_id, activo)
+        INSERT INTO usuarios (usuario, contrasena, nombres, apellido, rol, institucion_id, activo)
         VALUES (?, ?, ?, ?, ?, ?, 1)
     """, (usuario, contrasena, nombres, apellido, rol, institucion))
     conn.commit()
     conn.close()
-    return HTMLResponse(content="<script>window.location.href='/admin/pacientes'</script>")
+    return HTMLResponse("<script>location.href='/admin/control-total'</script>")
 
-@router.post("/admin/usuario/activar-desactivar")
-async def activar_desactivar_usuario(usuario: str = Form(...)):
+@router.post("/admin/usuario/editar")
+async def editar_usuario(usuario: str = Form(...), nombres: str = Form(...),
+                         apellido: str = Form(...), rol: str = Form(...)):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE usuarios SET nombres=?, apellido=?, rol=? WHERE usuario=?",
+                   (nombres, apellido, rol, usuario))
+    conn.commit()
+    conn.close()
+    return HTMLResponse("<script>location.href='/admin/control-total'</script>")
+
+@router.post("/admin/usuario/pausar-activar")
+async def pausar_activar_usuario(usuario: str = Form(...)):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("SELECT activo FROM usuarios WHERE usuario=?", (usuario,))
-    actual = cursor.fetchone()
-    if actual:
-        nuevo_estado = 0 if actual[0] == 1 else 1
-        cursor.execute("UPDATE usuarios SET activo=? WHERE usuario=?", (nuevo_estado, usuario))
-        conn.commit()
+    actual = cursor.fetchone()[0]
+    nuevo = 0 if actual == 1 else 1
+    cursor.execute("UPDATE usuarios SET activo=? WHERE usuario=?", (nuevo, usuario))
+    conn.commit()
     conn.close()
-    return HTMLResponse(content="<script>window.location.href='/admin/pacientes'</script>")
+    return HTMLResponse("<script>location.href='/admin/control-total'</script>")
 
 @router.post("/admin/usuario/eliminar")
 async def eliminar_usuario(usuario: str = Form(...)):
@@ -157,85 +135,46 @@ async def eliminar_usuario(usuario: str = Form(...)):
     cursor.execute("DELETE FROM usuarios WHERE usuario=?", (usuario,))
     conn.commit()
     conn.close()
-    return HTMLResponse(content="<script>window.location.href='/admin/pacientes'</script>")
+    return HTMLResponse("<script>location.href='/admin/control-total'</script>")
 
-# ---------------- EXPORTAR PACIENTES PDF ----------------
-@router.get("/exportar-pacientes/{institucion_id}")
-async def exportar_pacientes(institucion_id: str):
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-
-    cursor.execute("SELECT * FROM pacientes WHERE institucion_id=?", (institucion_id,))
-    pacientes = cursor.fetchall()
-    columnas = [desc[0] for desc in cursor.description]
-
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", size=10)
-    pdf.set_auto_page_break(auto=True, margin=10)
-    pdf.set_font("Arial", "B", 12)
-    pdf.cell(200, 10, txt=f"Pacientes de la institución: {institucion_id}", ln=True)
-    pdf.set_font("Arial", size=10)
-
-    for p in pacientes:
-        for i, dato in enumerate(p):
-            linea = f"{columnas[i]}: {dato}"
-            pdf.cell(200, 8, txt=linea.encode('latin-1', 'replace').decode('latin-1'), ln=True)
-        pdf.cell(200, 5, txt="-----------------------------", ln=True)
-
-    conn.close()
-    export_path = f"static/doc/pacientes_export_{institucion_id}.pdf"
-    pdf.output(export_path)
-    return FileResponse(export_path, media_type="application/pdf", filename=f"pacientes_{institucion_id}.pdf")
-
-# ---------------- PAUSAR / ACTIVAR INSTITUCIÓN ----------------
-@router.post("/admin/pausar-institucion")
-async def pausar_institucion(id: int = Form(...)):
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("SELECT estado FROM instituciones WHERE id=?", (id,))
-    estado_actual = cursor.fetchone()
-    if estado_actual:
-        nuevo_estado = "pausada" if estado_actual[0] == "activa" else "activa"
-        cursor.execute("UPDATE instituciones SET estado=? WHERE id=?", (nuevo_estado, id))
-        conn.commit()
-    conn.close()
-    return HTMLResponse(content="<script>window.location.href='/admin/control-total'</script>")
-
-# ---------------- ELIMINAR INSTITUCIÓN ----------------
-@router.post("/admin/eliminar-institucion")
-async def eliminar_institucion(id: int = Form(...)):
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM instituciones WHERE id=?", (id,))
-    conn.commit()
-    conn.close()
-    return HTMLResponse(content="<script>window.location.href='/admin/control-total'</script>")
-
-# ---------------- ELIMINAR PACIENTE DESDE CONTROL TOTAL ----------------
-@router.post("/admin/eliminar-paciente")
+# PACIENTES
+@router.post("/admin/paciente/eliminar")
 async def eliminar_paciente_total(dni: str = Form(...)):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-
-    # Validar existencia
     cursor.execute("SELECT id FROM pacientes WHERE dni=?", (dni,))
-    resultado = cursor.fetchone()
-    if not resultado:
+    paciente = cursor.fetchone()
+    if not paciente:
         conn.close()
-        return HTMLResponse(content="<script>alert('Paciente no encontrado.'); window.location.href='/admin/control-total'</script>")
-
-    paciente_id = resultado[0]
-
-    # Eliminar datos relacionados
-    cursor.execute("DELETE FROM recetas WHERE paciente_id=?", (paciente_id,))
-    cursor.execute("DELETE FROM indicaciones WHERE paciente_id=?", (paciente_id,))
-    cursor.execute("DELETE FROM estudios WHERE paciente_id=?", (paciente_id,))
-    cursor.execute("DELETE FROM historia_clinica WHERE paciente_id=?", (paciente_id,))
-    cursor.execute("DELETE FROM turnos WHERE paciente_id=?", (paciente_id,))
-    cursor.execute("DELETE FROM pacientes WHERE id=?", (paciente_id,))
-
+        return HTMLResponse("<script>alert('Paciente no encontrado.'); location.href='/admin/control-total'</script>")
+    pid = paciente[0]
+    for tabla in ["recetas", "indicaciones", "estudios", "historia_clinica", "turnos"]:
+        cursor.execute(f"DELETE FROM {tabla} WHERE paciente_id=?", (pid,))
+    cursor.execute("DELETE FROM pacientes WHERE id=?", (pid,))
     conn.commit()
     conn.close()
+    return HTMLResponse("<script>alert('Paciente eliminado.'); location.href='/admin/control-total'</script>")
 
-    return HTMLResponse(content="<script>alert('Paciente eliminado correctamente.'); window.location.href='/admin/control-total'</script>")
+@router.get("/admin/paciente/exportar/{dni}")
+async def exportar_paciente(dni: str):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM pacientes WHERE dni=?", (dni,))
+    datos = cursor.fetchone()
+    columnas = [desc[0] for desc in cursor.description]
+    if not datos:
+        return HTMLResponse("<script>alert('Paciente no encontrado.'); location.href='/admin/control-total'</script>")
+
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", "B", 14)
+    pdf.cell(0, 10, "Datos Completos del Paciente", ln=True)
+
+    pdf.set_font("Arial", "", 12)
+    for i in range(len(columnas)):
+        pdf.cell(0, 8, f"{columnas[i]}: {datos[i]}", ln=True)
+
+    export_path = f"static/doc/paciente_{dni}_completo.pdf"
+    pdf.output(export_path)
+    conn.close()
+    return FileResponse(export_path, media_type="application/pdf", filename=f"paciente_{dni}.pdf")

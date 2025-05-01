@@ -78,17 +78,20 @@ async def generar_pdf_paciente(
     output_path = os.path.join("static/doc", filename)
     pdf.output(output_path)
 
-    # GUARDAR EN TABLA PACIENTES
     try:
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
+        # Registrar apellido como todo lo que no sea el primer nombre
+        partes = nombre.strip().split()
+        nombre_1 = partes[0] if partes else "-"
+        apellido = " ".join(partes[1:]) if len(partes) > 1 else "-"
         cursor.execute("""
-            INSERT OR REPLACE INTO pacientes 
-            (dni, nombres, apellido, fecha_nacimiento, telefono, email, direccion, institucion_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, 1)
+            INSERT INTO pacientes 
+            (dni, nombres, apellido, fecha_nacimiento, telefono, email, direccion, obra_social, numero_afiliado, contacto_emergencia, institucion_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
         """, (
-            dni, nombre.split()[0], " ".join(nombre.split()[1:]) or "-", 
-            fecha_nacimiento, telefono, email, domicilio
+            dni, nombre_1, apellido, fecha_nacimiento, telefono, email, domicilio,
+            obra_social, numero_afiliado, contacto_emergencia
         ))
         conn.commit()
         conn.close()
@@ -99,10 +102,7 @@ async def generar_pdf_paciente(
 
 # ---------- ENVIAR PDF POR EMAIL ----------
 @router.post("/enviar_pdf_paciente")
-async def enviar_pdf_paciente(
-    email: str = Form(...),
-    nombre: str = Form(...)
-):
+async def enviar_pdf_paciente(email: str = Form(...), nombre: str = Form(...)):
     safe_name = nombre.strip().replace(" ", "_")
     filename = f"paciente_{safe_name}.pdf"
     filepath = os.path.join("static/doc", filename)

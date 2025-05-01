@@ -13,7 +13,6 @@ DB_PATH = "static/doc/medsys.db"
 async def control_total(request: Request):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-
     cursor.execute("SELECT id, nombre, estado FROM instituciones")
     instituciones_raw = cursor.fetchall()
     instituciones = []
@@ -29,7 +28,6 @@ async def control_total(request: Request):
             "total_usuarios": total_usuarios,
             "total_pacientes": total_pacientes
         })
-
     cursor.execute("SELECT usuario, nombres, apellido, rol, institucion_id, activo FROM usuarios")
     usuarios_raw = cursor.fetchall()
     usuarios = []
@@ -42,7 +40,6 @@ async def control_total(request: Request):
             "institucion": u[4],
             "activo": u[5]
         })
-
     conn.close()
     return templates.TemplateResponse("control-total.html", {
         "request": request,
@@ -218,3 +215,22 @@ async def exportar_paciente_ficha(dni: str = Form(...)):
     pdf.output(export_path)
     conn.close()
     return FileResponse(export_path, media_type="application/pdf", filename=f"paciente_{dni}.pdf")
+
+# VER PACIENTE EN PANTALLA (HTML)
+@router.post("/admin/ficha-paciente/ver", response_class=HTMLResponse)
+async def ver_paciente_ficha(request: Request, dni: str = Form(...)):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM pacientes WHERE dni=?", (dni,))
+    datos = cursor.fetchone()
+    columnas = [desc[0] for desc in cursor.description]
+    conn.close()
+
+    if not datos:
+        return HTMLResponse("<script>alert('Paciente no encontrado.'); location.href='/admin/ficha-paciente'</script>")
+
+    return templates.TemplateResponse("ver-paciente.html", {
+        "request": request,
+        "columnas": columnas,
+        "datos": datos
+    })

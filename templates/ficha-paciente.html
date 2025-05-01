@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Ficha de Paciente - MEDSYS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h2 {
+      color: #0a2a3d;
+    }
+
+    form {
+      background: #fff;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      max-width: 400px;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      padding: 10px 16px;
+      background-color: #0a2a3d;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .acciones {
+      margin-top: 20px;
+    }
+
+    .acciones form {
+      display: inline-block;
+      margin-right: 10px;
+    }
+
+    iframe {
+      width: 100%;
+      height: 500px;
+      border: 1px solid #ccc;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Consultar Ficha de Paciente</h2>
+
+  <form id="form-ficha" method="GET" action="/admin/paciente/exportar">
+    <label for="dni">Ingrese DNI del paciente:</label>
+    <input type="text" id="dni" name="dni" required>
+    <button type="submit">Buscar y Exportar PDF</button>
+  </form>
+
+</body>
+</html>

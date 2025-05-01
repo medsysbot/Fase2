@@ -48,24 +48,20 @@ async def generar_pdf_paciente(
     pdf = FPDF(format="A4")
     pdf.add_page()
 
-    # LOGO
     logo_path = "static/icons/logo-medsys-gris.png"
     if os.path.exists(logo_path):
         pdf.image(logo_path, x=10, y=1, w=62.7)
 
-    # TÍTULO
     pdf.set_y(22)
     pdf.set_font("Arial", "B", 18)
     pdf.set_text_color(90, 90, 90)
     pdf.cell(0, 10, txt="Registro de Pacientes", ln=True, align="C")
 
-    # LÍNEA
     pdf.set_draw_color(90, 90, 90)
     pdf.set_line_width(0.5)
     pdf.line(15, 47, 195, 47)
     pdf.ln(17)
 
-    # CONTENIDO
     pdf.set_font("Arial", size=12)
     pdf.set_text_color(0, 0, 0)
     pdf.cell(0, 10, f"Nombre y Apellido: {nombre}", ln=True)
@@ -78,7 +74,6 @@ async def generar_pdf_paciente(
     pdf.cell(0, 10, f"Número de Afiliado: {numero_afiliado}", ln=True)
     pdf.cell(0, 10, f"Contacto de Emergencia: {contacto_emergencia}", ln=True)
 
-    # GUARDADO
     safe_name = nombre.strip().replace(" ", "_")
     filename = f"paciente_{safe_name}.pdf"
     output_path = os.path.join("static/doc", filename)
@@ -144,4 +139,4 @@ async def enviar_pdf_paciente(
             servidor.send_message(mensaje)
         return JSONResponse({"mensaje": "Correo enviado exitosamente"})
     except Exception as e:
-        return JSONResponse({"error": str(e)}, status_code=500)
+        return JSONResponse({"error": str(e)}, status_code=500})

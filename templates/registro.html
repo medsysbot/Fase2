@@ -126,9 +126,6 @@
   </header>
 
   <form class="formulario" id="form-registro">
-    <!-- CAMPO OCULTO CON ID DE INSTITUCIÓN -->
-    <input type="hidden" name="institucion_id" id="institucion_id" />
-
     <label>Nombre y Apellido:</label>
     <input type="text" name="nombre" required />
     <label>DNI:</label>
@@ -215,19 +212,6 @@
       document.getElementById("form-enviar").submit();
       alert("El PDF se está enviando al correo del paciente...");
     }
-
-    // CARGAR ID DE INSTITUCIÓN AUTOMÁTICAMENTE
-    window.addEventListener("DOMContentLoaded", async () => {
-      try {
-        const res = await fetch("/api/usuario/activo");
-        const data = await res.json();
-        if (data.institucion_id) {
-          document.getElementById("institucion_id").value = data.institucion_id;
-        }
-      } catch (e) {
-        console.error("No se pudo obtener ID de institución.");
-      }
-    });
   </script>
 
   <script src="/static/js/registro_formulario.js"></script>

@@ -164,16 +164,13 @@ async def exportar_paciente(dni: str):
     columnas = [desc[0] for desc in cursor.description]
     if not datos:
         return HTMLResponse("<script>alert('Paciente no encontrado.'); location.href='/admin/control-total'</script>")
-
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", "B", 14)
     pdf.cell(0, 10, "Datos Completos del Paciente", ln=True)
-
     pdf.set_font("Arial", "", 12)
     for i in range(len(columnas)):
         pdf.cell(0, 8, f"{columnas[i]}: {datos[i]}", ln=True)
-
     export_path = f"static/doc/paciente_{dni}_completo.pdf"
     pdf.output(export_path)
     conn.close()

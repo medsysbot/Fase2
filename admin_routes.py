@@ -167,7 +167,7 @@ async def eliminar_paciente_ficha(dni: str = Form(...)):
         try:
             cursor.execute(f"DELETE FROM {tabla} WHERE paciente_id=?", (pid,))
         except sqlite3.OperationalError:
-            pass  # si la tabla no existe, seguir igual
+            pass  # si la tabla no existe
     cursor.execute("DELETE FROM pacientes WHERE id=?", (pid,))
     conn.commit()
     conn.close()
@@ -185,3 +185,31 @@ async def api_ver_paciente(dni: str):
     if not datos:
         return JSONResponse({"error": "Paciente no encontrado"}, status_code=404)
     return JSONResponse({columnas[i]: datos[i] for i in range(len(columnas))})
+
+# REGISTRO DE PACIENTE - GUARDAR EN BASE DE DATOS
+@router.post("/admin/registro-paciente")
+async def registrar_paciente(
+    nombre: str = Form(...),
+    dni: str = Form(...),
+    fecha_nacimiento: str = Form(...),
+    telefono: str = Form(""),
+    email: str = Form(""),
+    domicilio: str = Form(""),
+    obra_social: str = Form(""),
+    numero_afiliado: str = Form(""),
+    contacto_emergencia: str = Form("")
+):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO pacientes (
+            nombre, dni, fecha_nacimiento, telefono, email,
+            domicilio, obra_social, numero_afiliado, contacto_emergencia
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        nombre, dni, fecha_nacimiento, telefono, email,
+        domicilio, obra_social, numero_afiliado, contacto_emergencia
+    ))
+    conn.commit()
+    conn.close()
+    return HTMLResponse("<script>alert('Paciente registrado correctamente.'); window.location.href='/admin/control-total';</script>")

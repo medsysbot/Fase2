@@ -11,7 +11,6 @@ from respaldo.backup_handler import guardar_respaldo_completo
 
 router = APIRouter()
 DB_PATH = "static/doc/medsys.db"
-DB_REGISTRO = "static/doc/medsysactual.db"
 
 # ---------- ELIMINAR PACIENTE ----------
 @router.post("/eliminar-paciente")
@@ -81,7 +80,7 @@ async def generar_pdf_paciente(
 
     # GUARDAR EN TABLA PACIENTES
     try:
-        conn = sqlite3.connect(DB_REGISTRO)
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         cursor.execute("""
             INSERT OR REPLACE INTO pacientes 
@@ -139,4 +138,4 @@ async def enviar_pdf_paciente(
             servidor.send_message(mensaje)
         return JSONResponse({"mensaje": "Correo enviado exitosamente"})
     except Exception as e:
-        return JSONResponse({"error": str(e)}, status_code=500})
+        return JSONResponse({"error": str(e)}, status_code=500)

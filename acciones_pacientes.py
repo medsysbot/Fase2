@@ -1,5 +1,3 @@
-Acciones pacientes py  funciona
-
 from fastapi import APIRouter, Form
 from fastapi.responses import RedirectResponse, JSONResponse
 from fpdf import FPDF

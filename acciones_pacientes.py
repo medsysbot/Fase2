@@ -1,12 +1,8 @@
 from fastapi import APIRouter, Form, Request
-from fastapi.responses import RedirectResponse, JSONResponse
+from fastapi.responses import RedirectResponse
 from fpdf import FPDF
 import sqlite3
 import os
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.mime.application import MIMEApplication
 from respaldo.backup_handler import guardar_respaldo_completo
 
 router = APIRouter()
@@ -28,7 +24,7 @@ async def eliminar_paciente(dni: str = Form(...), usuario: str = Form(...)):
     else:
         return {"error": "Paciente no encontrado o respaldo fallido"}
 
-# ---------- GENERAR PDF + GUARDAR EN BASE ----------
+# ---------- GUARDAR PACIENTE Y GENERAR PDF ----------
 @router.post("/generar_pdf_paciente")
 async def generar_pdf_paciente(
     request: Request,
@@ -42,6 +38,16 @@ async def generar_pdf_paciente(
     numero_afiliado: str = Form(...),
     contacto_emergencia: str = Form(...)
 ):
+    # --- Guardar en base de datos ---
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO pacientes (nombre, dni, fecha_nacimiento, telefono, email, domicilio, obra_social, numero_afiliado, contacto_emergencia)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (nombre, dni, fecha_nacimiento, telefono, email, domicilio, obra_social, numero_afiliado, contacto_emergencia))
+    conn.commit()
+    conn.close()
+
     # --- Generar PDF ---
     pdf = FPDF(format="A4")
     pdf.add_page()
@@ -81,78 +87,4 @@ async def generar_pdf_paciente(
     output_path = os.path.join("static/doc", filename)
     pdf.output(output_path)
 
-    # --- Guardar en Base de Datos ---
-    try:
-        usuario = request.session.get("usuario")
-        if not usuario:
-            return JSONResponse({"error": "Sesión no iniciada"}, status_code=401)
-
-        conn = sqlite3.connect(DB_PATH)
-        cursor = conn.cursor()
-
-        cursor.execute("SELECT institucion_id FROM usuarios WHERE usuario=?", (usuario,))
-        resultado = cursor.fetchone()
-        if not resultado:
-            conn.close()
-            return JSONResponse({"error": "Institución no encontrada para el usuario"}, status_code=404)
-
-        institucion_id = resultado[0]
-        partes = nombre.strip().split()
-        nombre_1 = partes[0] if partes else "-"
-        apellido = " ".join(partes[1:]) if len(partes) > 1 else "-"
-
-        cursor.execute("""
-            INSERT INTO pacientes 
-            (dni, nombres, apellido, fecha_nacimiento, telefono, email, direccion,
-             obra_social, numero_afiliado, contacto_emergencia, institucion_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            dni, nombre_1, apellido, fecha_nacimiento, telefono, email, domicilio,
-            obra_social, numero_afiliado, contacto_emergencia, institucion_id
-        ))
-        conn.commit()
-        conn.close()
-    except Exception as e:
-        return JSONResponse({"error": f"Error al guardar en la base: {e}"}, status_code=500)
-
-    return JSONResponse({"filename": filename})
-
-# ---------- ENVIAR PDF POR EMAIL ----------
-@router.post("/enviar_pdf_paciente")
-async def enviar_pdf_paciente(email: str = Form(...), nombre: str = Form(...)):
-    safe_name = nombre.strip().replace(" ", "_")
-    filename = f"paciente_{safe_name}.pdf"
-    filepath = os.path.join("static/doc", filename)
-
-    if not os.path.exists(filepath):
-        return JSONResponse({"error": "PDF no encontrado"}, status_code=404)
-
-    remitente = "medisys.bot@gmail.com"
-    contrasena = "yeuaugaxmdvydcou"
-    asunto = "Registro de Pacientes – MEDSYS"
-    cuerpo = (
-        f"Estimado/a {nombre},\n\n"
-        "Adjuntamos el PDF correspondiente a su registro de paciente.\n\n"
-        "Este documento contiene sus datos personales y será utilizado para futuras gestiones médicas.\n\n"
-        "Saludos cordiales,\n\n"
-        "Equipo MedSys"
-    )
-
-    mensaje = MIMEMultipart()
-    mensaje["From"] = remitente
-    mensaje["To"] = email
-    mensaje["Subject"] = asunto
-    mensaje.attach(MIMEText(cuerpo, "plain"))
-
-    with open(filepath, "rb") as archivo_pdf:
-        parte = MIMEApplication(archivo_pdf.read(), _subtype="pdf")
-        parte.add_header("Content-Disposition", "attachment", filename=filename)
-        mensaje.attach(parte)
-
-    try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
-            servidor.login(remitente, contrasena)
-            servidor.send_message(mensaje)
-        return JSONResponse({"mensaje": "Correo enviado exitosamente"})
-    except Exception as e:
-        return JSONResponse({"error": str(e)}, status_code=500)
+    return RedirectResponse(url="/registro", status_code=303)

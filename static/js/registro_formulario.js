@@ -1,8 +1,3 @@
-const supabase = supabase.createClient(
-  'https://wolcdduoroiobtadbcup.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvbGNkZHVvcm9pb2J0YWRiY3VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyMDE0OTMsImV4cCI6MjA2MTc3NzQ5M30.rV_1sa8iM8s6eCD-5m_wViCgWpd0d2xRHA_zQxRabHU'
-);
-
 async function guardarPDF() {
   const nombres = document.getElementById("nombres").value;
   const apellido = document.getElementById("apellido").value;
@@ -14,30 +9,6 @@ async function guardarPDF() {
   const obra_social = document.getElementById("obra_social").value;
   const numero_afiliado = document.getElementById("numero_afiliado").value;
   const contacto_emergencia = document.getElementById("contacto_emergencia").value;
-
-  const { data, error } = await supabase
-    .from('pacientes')
-    .insert([
-      {
-        nombres,
-        apellido,
-        dni,
-        fecha_nacimiento,
-        telefono,
-        email,
-        domicilio,
-        obra_social,
-        numero_afiliado,
-        contacto_emergencia,
-        institucion_id: 1
-      }
-    ])
-    .select();
-
-  if (error) {
-    alert("Error al guardar en Supabase: " + error.message);
-    return;
-  }
 
   const formData = new FormData();
   formData.append('nombres', nombres);
@@ -51,22 +22,23 @@ async function guardarPDF() {
   formData.append('numero_afiliado', numero_afiliado);
   formData.append('contacto_emergencia', contacto_emergencia);
 
-  fetch("/generar_pdf_paciente", {
-    method: "POST",
-    body: formData,
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.filename) {
-      document.getElementById("pdf-visor").src = `/static/doc/${data.filename}?t=${Date.now()}`;
-      alert("PDF generado y paciente guardado correctamente.");
+  try {
+    const response = await fetch("/generar_pdf_paciente", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (data.url) {
+      document.getElementById("pdf-visor").src = data.url;
+      alert("Paciente guardado y PDF generado con éxito.");
     } else {
-      alert("No se generó el PDF. Verifica los datos.");
+      alert("No se pudo generar el PDF: " + (data.error || "Error desconocido."));
     }
-  })
-  .catch(error => {
-    alert("Error al generar el PDF: " + error);
-  });
+  } catch (error) {
+    alert("Error al guardar el paciente: " + error.message);
+  }
 }
 
 function imprimirPDF() {

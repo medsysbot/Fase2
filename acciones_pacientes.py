@@ -3,6 +3,8 @@ from fastapi.responses import RedirectResponse
 from fpdf import FPDF
 import sqlite3
 import os
+import smtplib
+from email.message import EmailMessage
 from respaldo.backup_handler import guardar_respaldo_completo
 
 router = APIRouter()
@@ -88,3 +90,29 @@ async def generar_pdf_paciente(
     pdf.output(output_path)
 
     return RedirectResponse(url="/registro", status_code=303)
+
+# ---------- ENVIAR PDF POR CORREO ----------
+@router.post("/enviar_pdf_paciente")
+async def enviar_pdf_paciente(nombre: str = Form(...), email: str = Form(...)):
+    try:
+        safe_name = nombre.strip().replace(" ", "_")
+        file_path = f"static/doc/paciente_{safe_name}.pdf"
+
+        msg = EmailMessage()
+        msg['Subject'] = "Registro de Pacientes – MEDSYS"
+        msg['From'] = "medisys.bot@gmail.com"
+        msg['To'] = email
+        msg.set_content(f"Hola {nombre},\n\nAdjuntamos tu registro en formato PDF.\n\nGracias por utilizar MEDSYS.")
+
+        with open(file_path, "rb") as f:
+            file_data = f.read()
+            msg.add_attachment(file_data, maintype="application", subtype="pdf", filename=os.path.basename(file_path))
+
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+            smtp.login("medisys.bot@gmail.com", "yeuaugaxmdvydcou")
+            smtp.send_message(msg)
+
+        return {"mensaje": "Correo enviado correctamente."}
+
+    except Exception as e:
+        return {"error": str(e)}

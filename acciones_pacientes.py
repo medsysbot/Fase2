@@ -13,7 +13,6 @@ from pathlib import Path
 router = APIRouter()
 DB_PATH = "static/doc/medsys.db"
 
-# ---------- ELIMINAR PACIENTE ----------
 @router.post("/eliminar-paciente")
 async def eliminar_paciente(dni: str = Form(...), usuario: str = Form(...)):
     respaldo_exitoso = guardar_respaldo_completo(dni_paciente=dni, eliminado_por=usuario)
@@ -29,7 +28,6 @@ async def eliminar_paciente(dni: str = Form(...), usuario: str = Form(...)):
     else:
         return {"error": "Paciente no encontrado o respaldo fallido"}
 
-# ---------- GENERAR PDF + GUARDAR EN BASE ----------
 @router.post("/generar_pdf_paciente")
 async def generar_pdf_paciente(
     nombres: str = Form(...),
@@ -44,7 +42,6 @@ async def generar_pdf_paciente(
     contacto_emergencia: str = Form(...)
 ):
     try:
-        # Crear PDF
         pdf = FPDF(format="A4")
         pdf.add_page()
 
@@ -56,7 +53,6 @@ async def generar_pdf_paciente(
         pdf.set_font("Arial", "B", 18)
         pdf.set_text_color(90, 90, 90)
         pdf.cell(0, 10, txt="Registro de Pacientes", ln=True, align="C")
-
         pdf.set_draw_color(90, 90, 90)
         pdf.set_line_width(0.5)
         pdf.line(15, 47, 195, 47)
@@ -68,11 +64,11 @@ async def generar_pdf_paciente(
             ("Nombre y Apellido", f"{nombres} {apellido}"),
             ("DNI", dni),
             ("Fecha de Nacimiento", fecha_nacimiento),
-            ("Teléfono", telefono),
-            ("Correo Electrónico", email),
+            ("TelÃ©fono", telefono),
+            ("Correo ElectrÃ³nico", email),
             ("Domicilio", domicilio),
             ("Obra Social / Prepaga", obra_social),
-            ("Número de Afiliado", numero_afiliado),
+            ("NÃºmero de Afiliado", numero_afiliado),
             ("Contacto de Emergencia", contacto_emergencia)
         ]
         for label, value in campos:
@@ -85,7 +81,9 @@ async def generar_pdf_paciente(
         output_path = os.path.join(output_dir, filename)
         pdf.output(output_path)
 
-        # Guardar en base de datos
+        if not os.path.exists(output_path):
+            raise Exception(f"No se pudo guardar el PDF en {output_path}")
+
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         cursor.execute("""
@@ -93,8 +91,7 @@ async def generar_pdf_paciente(
             (dni, nombres, apellido, fecha_nacimiento, telefono, email, direccion, institucion_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, 1)
         """, (
-            dni, nombres, apellido,
-            fecha_nacimiento, telefono, email, domicilio
+            dni, nombres, apellido, fecha_nacimiento, telefono, email, domicilio
         ))
         conn.commit()
         conn.close()
@@ -104,7 +101,6 @@ async def generar_pdf_paciente(
     except Exception as e:
         return HTMLResponse(f"<h2>ERROR al generar PDF:</h2><pre>{str(e)}</pre>", status_code=500)
 
-# ---------- ENVIAR PDF POR EMAIL ----------
 @router.post("/enviar_pdf_paciente")
 async def enviar_pdf_paciente(email: str = Form(...), nombres: str = Form(...), apellido: str = Form(...)):
     safe_name = f"{nombres.strip().replace(' ', '_')}_{apellido.strip().replace(' ', '_')}"
@@ -116,11 +112,11 @@ async def enviar_pdf_paciente(email: str = Form(...), nombres: str = Form(...), 
 
     remitente = "medisys.bot@gmail.com"
     contrasena = "yeuaugaxmdvydcou"
-    asunto = "Registro de Pacientes – MEDSYS"
+    asunto = "Registro de Pacientes â MEDSYS"
     cuerpo = (
         f"Estimado/a {nombres} {apellido},\n\n"
         "Adjuntamos el PDF correspondiente a su registro de paciente.\n\n"
-        "Este documento contiene sus datos personales y será utilizado para futuras gestiones médicas.\n\n"
+        "Este documento contiene sus datos personales y serÃ¡ utilizado para futuras gestiones mÃ©dicas.\n\n"
         "Saludos cordiales,\n\n"
         "Equipo MedSys"
     )

@@ -4,8 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
-import sqlite3
 import os
+from supabase import create_client
 
 app = FastAPI()
 
@@ -19,6 +19,11 @@ app.add_middleware(
 
 # ---------------- Sesiones ----------------
 app.add_middleware(SessionMiddleware, secret_key="clave-super-secreta")
+
+# ---------------- Supabase Client ----------------
+SUPABASE_URL = "https://wolcdduoroiobtadbcup.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvbGNkZHVvcm9pb2J0YWRiY3VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyMDE0OTMsImV4cCI6MjA2MTc3NzQ5M30.rV_1sa8iM8s6eCD-5m_wViCgWpd0d2xRHA_zQxRabHU"
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # ---------------- Archivos estáticos ----------------
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -35,32 +40,30 @@ async def root_redirect(request: Request):
 async def splash_inicio(request: Request):
     return templates.TemplateResponse("splash_screen.html", {"request": request})
 
-# ---------------- LOGIN ----------------
+# ---------------- LOGIN usando SUPABASE ----------------
 @app.get("/login", response_class=HTMLResponse)
 async def login_get(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 @app.post("/login")
 async def login_post(request: Request, usuario: str = Form(...), contrasena: str = Form(...), rol: str = Form(...)):
-    conn = sqlite3.connect("static/doc/medsys.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM usuarios WHERE usuario=? AND contrasena=? AND rol=? AND activo=1", (usuario, contrasena, rol))
-    user = cursor.fetchone()
-    conn.close()
+    data, error = supabase.table("usuarios").select("*").eq("usuario", usuario).eq("contrasena", contrasena).eq("rol", rol).eq("activo", True).single().execute()
 
-    if user:
+    if data.data:
+        user = data.data
         request.session["usuario"] = usuario
         request.session["rol"] = rol
-        request.session["nombres"] = user[3]
-        request.session["apellido"] = user[4]
+        request.session["nombres"] = user["nombres"]
+        request.session["apellido"] = user["apellido"]
+        request.session["institucion_id"] = user["institucion_id"]
         return RedirectResponse(url="/splash-final", status_code=303)
     else:
         return templates.TemplateResponse("login.html", {
             "request": request,
-            "error": "Usuario o contrasena incorrectos"
+            "error": "Usuario o contraseña incorrectos"
         })
 
-# ---------------- SPLASH FINAL ----------------
+# ---------------- SPLASH FINAL usando SUPABASE ----------------
 @app.get("/splash-final", response_class=HTMLResponse)
 async def splash_final(request: Request):
     usuario_logueado = request.session.get("usuario")
@@ -72,14 +75,10 @@ async def splash_final(request: Request):
             "titulo": ""
         })
 
-    conn = sqlite3.connect("static/doc/medsys.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT nombres, apellido, rol FROM usuarios WHERE usuario=?", (usuario_logueado,))
-    resultado = cursor.fetchone()
-    conn.close()
+    data, error = supabase.table("usuarios").select("nombres, apellido, rol").eq("usuario", usuario_logueado).single().execute()
 
-    if resultado:
-        nombres, apellido, rol = resultado
+    if data.data:
+        nombres, apellido, rol = data.data["nombres"], data.data["apellido"], data.data["rol"]
     else:
         nombres, apellido, rol = "Invitado", "", "desconocido"
 
@@ -91,7 +90,7 @@ async def splash_final(request: Request):
         "titulo": titulo
     })
 
-# ---------------- RUTAS HTML ----------------
+# ---------------- RUTAS HTML ---------------- (sin cambios)
 @app.get("/index", response_class=HTMLResponse)
 async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
@@ -136,14 +135,14 @@ async def busqueda(request: Request):
 async def estudios(request: Request):
     return templates.TemplateResponse("estudios.html", {"request": request})
 
-# ---------------- ARCHIVOS MÉDICOS ----------------
+# ---------------- ARCHIVOS MÉDICOS ---------------- (sin cambios)
 @app.get("/listar-estudios")
 async def listar_estudios():
     carpeta = "static/estudios"
     if os.path.exists(carpeta):
         return {"archivos": os.listdir(carpeta)}
     else:
-        raise HTTPException(status_code=404, detail="Directorio de estudios no encontrado")
+        raise HTTPException(status_code=404, detail="Directorio no encontrado")
 
 @app.post("/eliminar-estudio")
 async def eliminar_estudio(nombre_archivo: str = Form(...)):
@@ -166,18 +165,15 @@ async def descargar_estudio(nombre_archivo: str):
 async def subir_estudio(archivo: UploadFile = File(...)):
     extensiones_permitidas = [".pdf", ".jpg", ".jpeg", ".png"]
     extension = os.path.splitext(archivo.filename)[1].lower()
-
     if extension not in extensiones_permitidas:
-        raise HTTPException(status_code=400, detail="Formato de archivo no permitido")
-
+        raise HTTPException(status_code=400, detail="Formato no permitido")
     ruta_guardado = f"static/estudios/{archivo.filename}"
     with open(ruta_guardado, "wb") as f:
         contenido = await archivo.read()
         f.write(contenido)
+    return {"status": "success", "message": "Archivo subido"}
 
-    return {"status": "success", "message": "Archivo subido correctamente"}
-
-# ---------------- RUTAS EXTERNAS ----------------
+# ---------------- RUTAS EXTERNAS ---------------- (ya adaptadas antes)
 from admin_routes import router as admin_router
 app.include_router(admin_router)
 

@@ -3,18 +3,22 @@ from fastapi.responses import JSONResponse
 from fpdf import FPDF
 from pathlib import Path
 import os
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication
 from supabase import create_client
 
 router = APIRouter()
 
-# Supabase config
+# Configuración de Supabase
 SUPABASE_URL = "https://wolcdduoroiobtadbcup.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvbGNkZHVvcm9pb2J0YWRiY3VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyMDE0OTMsImV4cCI6MjA2MTc3NzQ5M30.rV_1sa8iM8s6eCD-5m_wViCgWpd0d2xRHA_zQxRabHU"
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 BUCKET_PDFS = "pdfs"
 BUCKET_BACKUPS = "backups"
 
-# ---------- GENERAR PDF Y SUBIR A SUPABASE ----------
+# ---------- GENERAR PDF, GUARDAR Y SUBIR A SUPABASE ----------
 @router.post("/generar_pdf_paciente")
 async def generar_pdf_paciente(
     nombres: str = Form(...),
@@ -68,8 +72,6 @@ async def generar_pdf_paciente(
                 filename, file_data, {"content-type": "application/pdf", "upsert": True}
             )
 
-        public_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_PDFS}/{filename}"
-
         paciente = {
             "dni": dni,
             "nombres": nombres,
@@ -85,38 +87,10 @@ async def generar_pdf_paciente(
         }
         supabase.table("pacientes").upsert(paciente, on_conflict="dni").execute()
 
+        public_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_PDFS}/{filename}"
+
         return JSONResponse({"filename": filename, "url": public_url})
 
-    except Exception as e:
-        return JSONResponse({"error": str(e)}, status_code=500)
-
-# ---------- ENVIAR PDF POR EMAIL ----------
-@router.post("/enviar_pdf_paciente")
-async def enviar_pdf_paciente(email: str = Form(...), nombres: str = Form(...), apellido: str = Form(...)):
-    from smtplib import SMTP_SSL
-    from email.mime.text import MIMEText
-    from email.mime.multipart import MIMEMultipart
-
-    safe_name = f"{nombres.strip().replace(' ', '_')}_{apellido.strip().replace(' ', '_')}"
-    filename = f"paciente_{safe_name}.pdf"
-    public_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_PDFS}/{filename}"
-
-    remitente = "medisys.bot@gmail.com"
-    contrasena = "yeuaugaxmdvydcou"
-    asunto = "Registro de Pacientes – MEDSYS"
-    cuerpo = f"Estimado/a {nombres} {apellido},\n\nAdjuntamos el PDF de su registro:\n{public_url}\n\nSaludos,\nMedSys"
-
-    mensaje = MIMEMultipart()
-    mensaje["From"] = remitente
-    mensaje["To"] = email
-    mensaje["Subject"] = asunto
-    mensaje.attach(MIMEText(cuerpo, "plain"))
-
-    try:
-        with SMTP_SSL("smtp.gmail.com", 465) as servidor:
-            servidor.login(remitente, contrasena)
-            servidor.send_message(mensaje)
-        return JSONResponse({"mensaje": "Correo enviado exitosamente"})
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
 

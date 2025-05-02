@@ -18,9 +18,9 @@
     .logo-grande { width: 180px; margin-bottom: 10px; }
     h2 { font-style: italic; font-weight: 600; font-size: 28px; }
     .selector-area { max-width: 400px; margin: 30px auto; }
-    select {
+    input, select {
       width: 100%; padding: 10px; border-radius: 8px; border: none;
-      background-color: white; color: black; font-size: 17px;
+      background-color: white; color: black; font-size: 17px; margin-top: 8px;
     }
     .visor-pdf { text-align: center; margin-top: 30px; }
     iframe {
@@ -36,10 +36,8 @@
 </header>
 
 <div class="selector-area">
-  <label>Seleccionar Paciente:</label>
-  <select id="pacientes" onchange="cargarEstudios(this.value)">
-    <option value="">Seleccione un paciente...</option>
-  </select>
+  <label for="dni">Ingresar DNI del Paciente:</label>
+  <input type="text" id="dni" placeholder="Ingrese DNI..." onchange="buscarPacientePorDNI()" />
 
   <label style="margin-top:15px;">Seleccionar Estudio:</label>
   <select id="estudios" onchange="mostrarEstudio(this.value)">
@@ -57,20 +55,28 @@
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvbGNkZHVvcm9pb2J0YWRiY3VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyMDE0OTMsImV4cCI6MjA2MTc3NzQ5M30.rV_1sa8iM8s6eCD-5m_wViCgWpd0d2xRHA_zQxRabHU'
   );
 
-  async function cargarPacientes() {
-    const { data, error } = await supabase.from('pacientes').select('id, nombres, apellido');
-    const selectPacientes = document.getElementById('pacientes');
-    data.forEach(p => {
-      const opcion = new Option(`${p.nombres} ${p.apellido}`, p.id);
-      selectPacientes.add(opcion);
-    });
+  async function buscarPacientePorDNI() {
+    const dni = document.getElementById('dni').value;
+    const { data, error } = await supabase.from('pacientes').select('id').eq('dni', dni).single();
+
+    if (data) {
+      cargarEstudios(data.id);
+    } else {
+      alert('Paciente no encontrado. Verifique el DNI ingresado.');
+      document.getElementById('estudios').innerHTML = '<option value="">Seleccione un estudio...</option>';
+      document.getElementById('pdf-visor').src = '';
+    }
   }
 
   async function cargarEstudios(pacienteId) {
-    document.getElementById('estudios').innerHTML = '<option value="">Cargando estudios...</option>';
-    const { data, error } = await supabase.from('estudios').select('id, tipo_estudio').eq('paciente_id', pacienteId);
+    const { data, error } = await supabase
+      .from('estudios')
+      .select('id, tipo_estudio')
+      .eq('paciente_id', pacienteId);
+
     const selectEstudios = document.getElementById('estudios');
     selectEstudios.innerHTML = '<option value="">Seleccione un estudio...</option>';
+
     data.forEach(e => {
       const opcion = new Option(e.tipo_estudio, e.id);
       selectEstudios.add(opcion);
@@ -78,15 +84,18 @@
   }
 
   async function mostrarEstudio(estudioId) {
-    const { data, error } = await supabase.from('estudios').select('pdf_url').eq('id', estudioId).single();
+    const { data, error } = await supabase
+      .from('estudios')
+      .select('pdf_url')
+      .eq('id', estudioId)
+      .single();
+
     if (data && data.pdf_url) {
       document.getElementById('pdf-visor').src = data.pdf_url;
     } else {
       document.getElementById('pdf-visor').src = '';
     }
   }
-
-  cargarPacientes();
 </script>
 </body>
 </html>

@@ -173,6 +173,7 @@
 
   <form id="form-enviar" method="POST" action="/enviar_pdf_paciente" style="display: none;">
     <input type="hidden" name="nombres" id="nombreOculto">
+    <input type="hidden" name="apellido" id="apellidoOculto">
     <input type="hidden" name="email" id="emailOculto">
   </form>
 
@@ -204,13 +205,18 @@
 
     function enviarPorCorreo() {
       const nombre = document.querySelector('[name="nombres"]').value.trim();
+      const apellido = document.querySelector('[name="apellido"]').value.trim();
       const email = document.querySelector('[name="email"]').value.trim();
-      if (!nombre || !email) {
-        alert("Por favor, completá nombre y correo electrónico.");
+
+      if (!nombre || !apellido || !email) {
+        alert("Por favor, completá nombre, apellido y correo electrónico.");
         return;
       }
+
       document.getElementById("nombreOculto").value = nombre;
+      document.getElementById("apellidoOculto").value = apellido;
       document.getElementById("emailOculto").value = email;
+
       document.getElementById("form-enviar").submit();
       alert("El PDF se está enviando al correo del paciente...");
     }

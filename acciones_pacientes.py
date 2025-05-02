@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Form
-from fastapi.responses import RedirectResponse, JSONResponse, HTMLResponse
+from fastapi.responses import JSONResponse
 from fpdf import FPDF
 import sqlite3
 import os
@@ -13,6 +13,7 @@ from pathlib import Path
 router = APIRouter()
 DB_PATH = "static/doc/medsys.db"
 
+# ----------------- ELIMINAR PACIENTE -----------------
 @router.post("/eliminar-paciente")
 async def eliminar_paciente(dni: str = Form(...), usuario: str = Form(...)):
     respaldo_exitoso = guardar_respaldo_completo(dni_paciente=dni, eliminado_por=usuario)
@@ -24,56 +25,55 @@ async def eliminar_paciente(dni: str = Form(...), usuario: str = Form(...)):
         cursor.execute("DELETE FROM pacientes WHERE dni=?", (dni,))
         conn.commit()
         conn.close()
-        return RedirectResponse(url="/registro", status_code=303)
+        return JSONResponse({"mensaje": "Paciente eliminado y respaldo exitoso"})
     else:
-        return {"error": "Paciente no encontrado o respaldo fallido"}
+        return JSONResponse({"error": "Respaldo fallido o paciente no encontrado"}, status_code=404)
 
+# ----------------- GENERAR PDF + GUARDAR EN BASE -----------------
 @router.post("/generar_pdf_paciente")
 async def generar_pdf_paciente(
     nombres: str = Form(...),
     apellido: str = Form(...),
     dni: str = Form(...),
     fecha_nacimiento: str = Form(...),
-    telefono: str = Form(...),
-    email: str = Form(...),
-    domicilio: str = Form(...),
-    obra_social: str = Form(...),
-    numero_afiliado: str = Form(...),
-    contacto_emergencia: str = Form(...)
+    telefono: str = Form(""),
+    email: str = Form(""),
+    domicilio: str = Form(""),
+    obra_social: str = Form(""),
+    numero_afiliado: str = Form(""),
+    contacto_emergencia: str = Form("")
 ):
     try:
+        # Preparar PDF
         pdf = FPDF(format="A4")
         pdf.add_page()
 
         logo_path = "static/icons/logo-medsys-gris.png"
         if os.path.exists(logo_path):
-            pdf.image(logo_path, x=10, y=1, w=62.7)
+            pdf.image(logo_path, x=10, y=8, w=60)
 
-        pdf.set_y(22)
+        pdf.set_y(30)
         pdf.set_font("Arial", "B", 18)
-        pdf.set_text_color(90, 90, 90)
-        pdf.cell(0, 10, txt="Registro de Pacientes", ln=True, align="C")
-        pdf.set_draw_color(90, 90, 90)
-        pdf.set_line_width(0.5)
-        pdf.line(15, 47, 195, 47)
-        pdf.ln(17)
+        pdf.cell(0, 10, "Registro de Pacientes", ln=True, align="C")
+        pdf.ln(10)
 
-        pdf.set_font("Arial", size=12)
-        pdf.set_text_color(0, 0, 0)
+        pdf.set_font("Arial", "", 12)
         campos = [
             ("Nombre y Apellido", f"{nombres} {apellido}"),
             ("DNI", dni),
             ("Fecha de Nacimiento", fecha_nacimiento),
-            ("TelÃ©fono", telefono),
-            ("Correo ElectrÃ³nico", email),
+            ("Teléfono", telefono),
+            ("Correo Electrónico", email),
             ("Domicilio", domicilio),
             ("Obra Social / Prepaga", obra_social),
-            ("NÃºmero de Afiliado", numero_afiliado),
+            ("Número de Afiliado", numero_afiliado),
             ("Contacto de Emergencia", contacto_emergencia)
         ]
+
         for label, value in campos:
             pdf.cell(0, 10, f"{label}: {value}", ln=True)
 
+        # Guardar PDF correctamente
         safe_name = f"{nombres.strip().replace(' ', '_')}_{apellido.strip().replace(' ', '_')}"
         output_dir = "static/doc"
         Path(output_dir).mkdir(parents=True, exist_ok=True)
@@ -82,12 +82,14 @@ async def generar_pdf_paciente(
         pdf.output(output_path)
 
         if not os.path.exists(output_path):
-            raise Exception(f"No se pudo guardar el PDF en {output_path}")
+            return JSONResponse({"error": "PDF no se generó correctamente."}, status_code=500)
 
+        # Guardar en la base de datos
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
+
         cursor.execute("""
-            INSERT OR REPLACE INTO pacientes 
+            INSERT INTO pacientes 
             (dni, nombres, apellido, fecha_nacimiento, telefono, email, direccion, institucion_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, 1)
         """, (
@@ -96,28 +98,32 @@ async def generar_pdf_paciente(
         conn.commit()
         conn.close()
 
-        return RedirectResponse(url="/registro", status_code=303)
+        return JSONResponse({"filename": filename})
 
     except Exception as e:
-        return HTMLResponse(f"<h2>ERROR al generar PDF:</h2><pre>{str(e)}</pre>", status_code=500)
+        return JSONResponse({"error": str(e)}, status_code=500)
 
+# ----------------- ENVIAR PDF POR EMAIL -----------------
 @router.post("/enviar_pdf_paciente")
-async def enviar_pdf_paciente(email: str = Form(...), nombres: str = Form(...), apellido: str = Form(...)):
+async def enviar_pdf_paciente(
+    email: str = Form(...), 
+    nombres: str = Form(...), 
+    apellido: str = Form(...)
+):
     safe_name = f"{nombres.strip().replace(' ', '_')}_{apellido.strip().replace(' ', '_')}"
     filename = f"paciente_{safe_name}.pdf"
     filepath = os.path.join("static/doc", filename)
 
     if not os.path.exists(filepath):
-        return JSONResponse({"error": "PDF no encontrado"}, status_code=404)
+        return JSONResponse({"error": "PDF no encontrado. Verifica que esté generado."}, status_code=404)
 
     remitente = "medisys.bot@gmail.com"
     contrasena = "yeuaugaxmdvydcou"
-    asunto = "Registro de Pacientes â MEDSYS"
+    asunto = "Registro de Pacientes – MEDSYS"
     cuerpo = (
         f"Estimado/a {nombres} {apellido},\n\n"
         "Adjuntamos el PDF correspondiente a su registro de paciente.\n\n"
-        "Este documento contiene sus datos personales y serÃ¡ utilizado para futuras gestiones mÃ©dicas.\n\n"
-        "Saludos cordiales,\n\n"
+        "Saludos cordiales,\n"
         "Equipo MedSys"
     )
 
@@ -136,6 +142,8 @@ async def enviar_pdf_paciente(email: str = Form(...), nombres: str = Form(...), 
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
             servidor.login(remitente, contrasena)
             servidor.send_message(mensaje)
-        return JSONResponse({"mensaje": "Correo enviado exitosamente"})
+
+        return JSONResponse({"mensaje": "Correo enviado exitosamente."})
+
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)

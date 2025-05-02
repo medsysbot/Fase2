@@ -90,6 +90,23 @@
       width: 30px;
       height: 30px;
     }
+    .confirmacion-borrado {
+      display: none;
+      position: fixed;
+      bottom: 100px;
+      right: 20px;
+      background-color: rgba(10, 42, 61, 0.9);
+      padding: 15px;
+      border-radius: 12px;
+      text-align: center;
+      z-index: 1001;
+    }
+    .confirmacion-borrado img {
+      width: 50px;
+      height: 50px;
+      margin: 10px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -139,12 +156,48 @@
   <button type="button" onclick="imprimirPDF()" title="Imprimir">
     <img src="/static/icons/imprimir.png" alt="Imprimir" />
   </button>
-  <button type="button" onclick="document.getElementById('form-registro').reset()" title="Borrar">
+  <button type="button" ondblclick="prepararBorradoPaciente()" title="Borrar paciente">
     <img src="/static/icons/borrar.png" alt="Borrar" />
   </button>
 </div>
 
+<div id="confirmacion-borrado" class="confirmacion-borrado">
+  <p>¿Confirmar borrado del paciente?</p>
+  <img src="/static/icons/confirmar-borrado.png" alt="Confirmar" onclick="confirmarBorradoPaciente()" />
+  <img src="/static/icons/cerrar.png" alt="Cancelar" onclick="cancelarBorradoPaciente()" />
+</div>
+
 <script src="/static/js/registro_formulario.js"></script>
+<script>
+  function prepararBorradoPaciente() {
+    document.getElementById("confirmacion-borrado").style.display = "block";
+  }
+  function cancelarBorradoPaciente() {
+    document.getElementById("confirmacion-borrado").style.display = "none";
+  }
+  function confirmarBorradoPaciente() {
+    const dni = document.getElementById("dni").value;
+    if (!dni) {
+      alert("Primero debes completar el DNI");
+      return;
+    }
+    fetch("/eliminar-paciente", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ dni })
+    })
+    .then(res => res.json())
+    .then(res => {
+      alert(res.message || "Paciente eliminado con respaldo");
+      document.getElementById("confirmacion-borrado").style.display = "none";
+      document.getElementById("form-registro").reset();
+    })
+    .catch(err => {
+      alert("Error al eliminar paciente");
+      console.error(err);
+    });
+  }
+</script>
 
 </body>
 </html>

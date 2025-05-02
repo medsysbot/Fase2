@@ -1,3 +1,27 @@
+function guardarPDF() {
+  const form = document.getElementById("form-registro");
+  const formData = new FormData(form);
+
+  fetch("/generar_pdf_paciente", {
+    method: "POST",
+    body: formData,
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.filename) {
+      const visor = document.getElementById("pdf-visor");
+      visor.src = `/static/doc/${data.filename}?t=${new Date().getTime()}`;
+      alert("PDF generado y paciente guardado correctamente.");
+    } else {
+      alert("No se generó el PDF. Verificá los datos.");
+    }
+  })
+  .catch(error => {
+    console.error("Error al guardar:", error);
+    alert("Ocurrió un problema al generar el PDF.");
+  });
+}
+
 function imprimirPDF() {
   const iframe = document.getElementById('pdf-visor');
   if (iframe && iframe.contentWindow) {

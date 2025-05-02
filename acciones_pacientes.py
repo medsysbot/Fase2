@@ -44,8 +44,6 @@ async def generar_pdf_paciente(
     contacto_emergencia: str = Form(...)
 ):
     try:
-        nombre_completo = f"{nombres} {apellido}".strip()
-
         # Crear PDF
         pdf = FPDF(format="A4")
         pdf.add_page()
@@ -67,7 +65,7 @@ async def generar_pdf_paciente(
         pdf.set_font("Arial", size=12)
         pdf.set_text_color(0, 0, 0)
         campos = [
-            ("Nombre y Apellido", nombre_completo),
+            ("Nombre y Apellido", f"{nombres} {apellido}"),
             ("DNI", dni),
             ("Fecha de Nacimiento", fecha_nacimiento),
             ("Teléfono", telefono),
@@ -80,7 +78,7 @@ async def generar_pdf_paciente(
         for label, value in campos:
             pdf.cell(0, 10, f"{label}: {value}", ln=True)
 
-        safe_name = nombre_completo.replace(" ", "_")
+        safe_name = f"{nombres.strip().replace(' ', '_')}_{apellido.strip().replace(' ', '_')}"
         output_dir = "static/doc"
         Path(output_dir).mkdir(parents=True, exist_ok=True)
         filename = f"paciente_{safe_name}.pdf"
@@ -101,15 +99,15 @@ async def generar_pdf_paciente(
         conn.commit()
         conn.close()
 
-        return JSONResponse({"filename": filename})
+        return RedirectResponse(url="/registro", status_code=303)
 
     except Exception as e:
         return HTMLResponse(f"<h2>ERROR al generar PDF:</h2><pre>{str(e)}</pre>", status_code=500)
 
 # ---------- ENVIAR PDF POR EMAIL ----------
 @router.post("/enviar_pdf_paciente")
-async def enviar_pdf_paciente(email: str = Form(...), nombres: str = Form(...)):
-    safe_name = nombres.strip().replace(" ", "_")
+async def enviar_pdf_paciente(email: str = Form(...), nombres: str = Form(...), apellido: str = Form(...)):
+    safe_name = f"{nombres.strip().replace(' ', '_')}_{apellido.strip().replace(' ', '_')}"
     filename = f"paciente_{safe_name}.pdf"
     filepath = os.path.join("static/doc", filename)
 
@@ -120,7 +118,7 @@ async def enviar_pdf_paciente(email: str = Form(...), nombres: str = Form(...)):
     contrasena = "yeuaugaxmdvydcou"
     asunto = "Registro de Pacientes – MEDSYS"
     cuerpo = (
-        f"Estimado/a {nombres},\n\n"
+        f"Estimado/a {nombres} {apellido},\n\n"
         "Adjuntamos el PDF correspondiente a su registro de paciente.\n\n"
         "Este documento contiene sus datos personales y será utilizado para futuras gestiones médicas.\n\n"
         "Saludos cordiales,\n\n"

@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <title>Registro de Pacientes</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
     body {
       background: linear-gradient(to bottom left, #0a2a3d, #155f82);
@@ -19,54 +20,34 @@
     }
     .logo-grande {
       width: 180px;
-      height: auto;
       margin-bottom: 10px;
     }
     h2 {
-      text-align: center;
       font-style: italic;
       font-weight: 600;
       font-size: 28px;
-      margin-top: 10px;
-      color: #d3d3d3;
     }
     form {
       max-width: 400px;
-      width: 90%;
       margin: 0 auto;
       padding: 20px;
     }
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: 500;
-      font-size: 17px;
-      color: #d3d3d3;
-    }
     input, textarea {
       width: 100%;
-      padding: 6px 10px;
-      font-size: 17.5px;
-      border: none;
+      padding: 10px;
       border-radius: 8px;
+      border: none;
       background-color: white;
       color: black;
+      font-size: 17px;
       box-sizing: border-box;
-      min-height: 45px;
-    }
-    textarea {
-      resize: vertical;
-      line-height: 1.4;
-    }
-    .visor-pdf {
-      margin-top: 40px;
-      text-align: center;
+      margin-top: 5px;
     }
     .visor-pdf iframe {
       width: 90%;
       height: 500px;
-      border: 2px solid #09394f;
       border-radius: 10px;
+      border: 2px solid #09394f;
     }
     .botones-flotantes {
       position: fixed;
@@ -86,142 +67,67 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      cursor: pointer;
     }
     .botones-flotantes img {
       width: 30px;
       height: 30px;
     }
-    @media print {
-      body {
-        background: white;
-        color: black;
-      }
-      header img,
-      .visor-pdf,
-      .botones-flotantes {
-        display: none !important;
-      }
-      form {
-        width: 100%;
-        max-width: 100%;
-        margin: 0;
-        padding: 0;
-      }
-      input, textarea {
-        border: 1px solid #000;
-        background: white;
-        color: black;
-      }
-      label {
-        color: black;
-        font-weight: bold;
-      }
-    }
   </style>
 </head>
 <body>
-  <header>
-    <img src="/static/icons/icono-registro.png" alt="Logo Registro" class="logo-grande" />
-    <h2>Registro de Pacientes</h2>
-  </header>
+<header>
+  <img src="/static/icons/icono-registro.png" alt="Logo Registro" class="logo-grande" />
+  <h2>Registro de Pacientes</h2>
+</header>
 
-  <form class="formulario" id="form-registro">
-    <label>Nombres:</label>
-    <input type="text" name="nombres" required />
-    <label>Apellido:</label>
-    <input type="text" name="apellido" required />
-    <label>DNI:</label>
-    <input type="text" name="dni" required />
-    <label>Fecha de Nacimiento:</label>
-    <input type="date" name="fecha_nacimiento" required />
-    <label>Teléfono:</label>
-    <input type="text" name="telefono" />
-    <label>Correo Electrónico:</label>
-    <input type="email" name="email" />
-    <label>Domicilio:</label>
-    <input type="text" name="domicilio" />
-    <label>Obra Social / Prepaga:</label>
-    <input type="text" name="obra_social" />
-    <label>Número de Afiliado:</label>
-    <input type="text" name="numero_afiliado" />
-    <label>Contacto de Emergencia:</label>
-    <input type="text" name="contacto_emergencia" />
-  </form>
+<form id="form-registro">
+  <label>Nombres:</label>
+  <input type="text" id="nombres" required />
+  <label>Apellido:</label>
+  <input type="text" id="apellido" required />
+  <label>DNI:</label>
+  <input type="text" id="dni" required />
+  <label>Fecha de Nacimiento:</label>
+  <input type="date" id="fecha_nacimiento" required />
+  <label>Teléfono:</label>
+  <input type="text" id="telefono" />
+  <label>Correo Electrónico:</label>
+  <input type="email" id="email" />
+  <label>Domicilio:</label>
+  <input type="text" id="domicilio" />
+  <label>Obra Social / Prepaga:</label>
+  <input type="text" id="obra_social" />
+  <label>Número de Afiliado:</label>
+  <input type="text" id="numero_afiliado" />
+  <label>Contacto de Emergencia:</label>
+  <input type="text" id="contacto_emergencia" />
+</form>
 
-  <div class="visor-pdf">
-    <h3>Vista previa del documento PDF:</h3>
-    <iframe id="pdf-visor" src="/static/doc/paciente-generado.pdf" type="application/pdf"></iframe>
-  </div>
+<div class="visor-pdf">
+  <h3>Vista previa del documento PDF:</h3>
+  <iframe id="pdf-visor" src=""></iframe>
+</div>
 
-  <div class="botones-flotantes">
-    <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
-      <img src="/static/icons/microfono.png" alt="Voz" />
-    </button>
-    <button type="button" onclick="guardarPDF()" title="Guardar">
-      <img src="/static/icons/guardar.png" alt="Guardar" />
-    </button>
-    <button type="button" onclick="enviarPorCorreo()" title="Enviar por correo">
-      <img src="/static/icons/enviar.png" alt="Enviar" />
-    </button>
-    <button type="button" onclick="imprimirPDF()" title="Imprimir">
-      <img src="/static/icons/imprimir.png" alt="Imprimir" />
-    </button>
-    <button type="button" onclick="document.getElementById('form-registro').reset()" title="Borrar">
-      <img src="/static/icons/borrar.png" alt="Borrar" />
-    </button>
-  </div>
+<div class="botones-flotantes">
+  <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
+    <img src="/static/icons/microfono.png" alt="Voz" />
+  </button>
+  <button type="button" onclick="guardarPDF()" title="Guardar">
+    <img src="/static/icons/guardar.png" alt="Guardar" />
+  </button>
+  <button type="button" onclick="enviarPorCorreo()" title="Enviar">
+    <img src="/static/icons/enviar.png" alt="Enviar" />
+  </button>
+  <button type="button" onclick="imprimirPDF()" title="Imprimir">
+    <img src="/static/icons/imprimir.png" alt="Imprimir" />
+  </button>
+  <button type="button" onclick="document.getElementById('form-registro').reset()" title="Borrar">
+    <img src="/static/icons/borrar.png" alt="Borrar" />
+  </button>
+</div>
 
-  <form id="form-enviar" method="POST" action="/enviar_pdf_paciente" style="display: none;">
-    <input type="hidden" name="nombres" id="nombreOculto">
-    <input type="hidden" name="apellido" id="apellidoOculto">
-    <input type="hidden" name="email" id="emailOculto">
-  </form>
+<script src="/static/js/registro_formulario.js"></script>
 
-  <script>
-    function activarVoz() {
-      const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
-      recognition.lang = "es-ES";
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.onresult = function(event) {
-        const texto = event.results[0][0].transcript;
-        const campo = document.activeElement;
-        if (campo && (campo.tagName === "INPUT" || campo.tagName === "TEXTAREA")) {
-          campo.value += (campo.value ? " " : "") + texto;
-        }
-      };
-      recognition.start();
-    }
-
-    function imprimirPDF() {
-      const iframe = document.getElementById('pdf-visor');
-      if (iframe && iframe.contentWindow) {
-        iframe.focus();
-        iframe.contentWindow.print();
-      } else {
-        alert("No se pudo acceder al visor PDF.");
-      }
-    }
-
-    function enviarPorCorreo() {
-      const nombre = document.querySelector('[name="nombres"]').value.trim();
-      const apellido = document.querySelector('[name="apellido"]').value.trim();
-      const email = document.querySelector('[name="email"]').value.trim();
-
-      if (!nombre || !apellido || !email) {
-        alert("Por favor, completá nombre, apellido y correo electrónico.");
-        return;
-      }
-
-      document.getElementById("nombreOculto").value = nombre;
-      document.getElementById("apellidoOculto").value = apellido;
-      document.getElementById("emailOculto").value = email;
-
-      document.getElementById("form-enviar").submit();
-      alert("El PDF se está enviando al correo del paciente...");
-    }
-  </script>
-
-  <script src="/static/js/registro_formulario.js"></script>
 </body>
 </html>

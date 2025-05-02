@@ -1,24 +1,23 @@
-from fastapi import APIRouter, Form
+from fastapi import APIRouter, Form, Request
 from fastapi.responses import JSONResponse
 from fpdf import FPDF
 from pathlib import Path
 import os
+from supabase import create_client
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from email.mime.application import MIMEApplication
-from supabase import create_client
 
 router = APIRouter()
 
-# Configuración de Supabase
+# Supabase config
 SUPABASE_URL = "https://wolcdduoroiobtadbcup.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvbGNkZHVvcm9pb2J0YWRiY3VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyMDE0OTMsImV4cCI6MjA2MTc3NzQ5M30.rV_1sa8iM8s6eCD-5m_wViCgWpd0d2xRHA_zQxRabHU"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 BUCKET_PDFS = "pdfs"
 BUCKET_BACKUPS = "backups"
 
-# ---------- GENERAR PDF, GUARDAR Y SUBIR A SUPABASE ----------
+# ---------- GENERAR PDF Y SUBIR A SUPABASE ----------
 @router.post("/generar_pdf_paciente")
 async def generar_pdf_paciente(
     nombres: str = Form(...),
@@ -40,15 +39,13 @@ async def generar_pdf_paciente(
 
         pdf = FPDF()
         pdf.add_page()
-        logo_path = "static/icons/logo-medsys-gris.png"
-        if os.path.exists(logo_path):
-            pdf.image(logo_path, x=10, y=8, w=60)
         pdf.set_font("Arial", "B", 16)
-        pdf.cell(0, 40, "Registro de Pacientes – MEDSYS", ln=True, align="C")
+        pdf.cell(0, 10, "Registro de Pacientes - MEDSYS", ln=True, align="C")
+        pdf.set_draw_color(0, 120, 215)
         pdf.set_line_width(1)
-        pdf.line(10, 50, 200, 50)
+        pdf.line(10, 20, 200, 20)
         pdf.set_font("Arial", size=12)
-        pdf.ln(15)
+        pdf.ln(10)
 
         campos = [
             ("Nombre y Apellido", f"{nombres} {apellido}"),
@@ -63,7 +60,7 @@ async def generar_pdf_paciente(
         ]
 
         for label, value in campos:
-            pdf.cell(0, 10, f"{label}: {value}", ln=True)
+            pdf.cell(0, 10, f"{label}: {value}".encode('latin-1', 'replace').decode('latin-1'), ln=True)
 
         pdf.output(local_path)
 
@@ -90,11 +87,11 @@ async def generar_pdf_paciente(
         public_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_PDFS}/{filename}"
 
         return JSONResponse({"filename": filename, "url": public_url})
-
+    
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
 
-# ---------- ELIMINAR PACIENTE CON RESPALDO EN PDF ----------
+# ---------- ELIMINAR PACIENTE CON RESPALDO PDF ----------
 @router.post("/eliminar-paciente")
 async def eliminar_paciente(data: dict):
     dni = data.get("dni")
@@ -111,11 +108,13 @@ async def eliminar_paciente(data: dict):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", "B", 16)
-    pdf.cell(0, 10, "Backup Completo del Paciente", ln=True, align="C")
+    pdf.cell(0, 10, "Backup del Paciente", ln=True, align="C")
     pdf.set_font("Arial", size=12)
     pdf.ln(10)
+
     for key, value in paciente.items():
-        pdf.cell(0, 10, f"{key.capitalize()}: {value}", ln=True)
+        pdf.cell(0, 10, f"{key}: {str(value)}".encode('latin-1', 'replace').decode('latin-1'), ln=True)
+
     pdf.output(backup_local_path)
 
     with open(backup_local_path, "rb") as file_data:

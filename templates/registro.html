@@ -127,7 +127,7 @@
 
   <form class="formulario" id="form-registro" action="/generar_pdf_paciente" method="post">
     <label>Nombre y Apellido:</label>
-    <input type="text" name="nombre" required />
+    <input type="text" name="nombres" required />
     <label>DNI:</label>
     <input type="text" name="dni" required />
     <label>Fecha de Nacimiento:</label>
@@ -170,7 +170,7 @@
   </div>
 
   <form id="form-enviar" method="POST" action="/enviar_pdf_paciente" style="display: none;">
-    <input type="hidden" name="nombre" id="nombreOculto">
+    <input type="hidden" name="nombres" id="nombreOculto">
     <input type="hidden" name="email" id="emailOculto">
   </form>
 
@@ -201,7 +201,7 @@
     }
 
     function enviarPorCorreo() {
-      const nombre = document.querySelector('[name="nombre"]').value.trim();
+      const nombre = document.querySelector('[name="nombres"]').value.trim();
       const email = document.querySelector('[name="email"]').value.trim();
       if (!nombre || !email) {
         alert("Por favor, completá nombre y correo electrónico.");

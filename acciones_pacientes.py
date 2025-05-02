@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Form
 from fastapi.responses import JSONResponse, RedirectResponse
 from fpdf import FPDF
-import sqlite3
 import os
 import smtplib
 from email.mime.text import MIMEText
@@ -9,11 +8,16 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 from respaldo.backup_handler import guardar_respaldo_completo
 from pathlib import Path
+from supabase import create_client
 
 router = APIRouter()
-DB_PATH = "static/doc/medsys.db"
 
-# ---------- GENERAR PDF + GUARDAR EN BASE ----------
+# Conexión con Supabase
+SUPABASE_URL = "https://wolcdduoroiobtadbcup.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvbGNkZHVvcm9pb2J0YWRiY3VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyMDE0OTMsImV4cCI6MjA2MTc3NzQ5M30.rV_1sa8iM8s6eCD-5m_wViCgWpd0d2xRHA_zQxRabHU"
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+# ---------- GENERAR PDF + GUARDAR EN SUPABASE ----------
 @router.post("/generar_pdf_paciente")
 async def generar_pdf_paciente(
     nombres: str = Form(...),
@@ -67,17 +71,21 @@ async def generar_pdf_paciente(
         output_path = os.path.join(output_dir, filename)
         pdf.output(output_path)
 
-        conn = sqlite3.connect(DB_PATH)
-        cursor = conn.cursor()
-        cursor.execute("""
-            INSERT OR REPLACE INTO pacientes
-            (dni, nombres, apellido, fecha_nacimiento, telefono, email, direccion, institucion_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, 1)
-        """, (
-            dni, nombres, apellido, fecha_nacimiento, telefono, email, domicilio
-        ))
-        conn.commit()
-        conn.close()
+        paciente = {
+            "dni": dni,
+            "nombres": nombres,
+            "apellido": apellido,
+            "fecha_nacimiento": fecha_nacimiento,
+            "telefono": telefono,
+            "email": email,
+            "domicilio": domicilio,
+            "obra_social": obra_social,
+            "numero_afiliado": numero_afiliado,
+            "contacto_emergencia": contacto_emergencia,
+            "institucion_id": 1
+        }
+
+        supabase.table("pacientes").upsert(paciente, on_conflict="dni").execute()
 
         return JSONResponse({"filename": filename})
 
@@ -97,15 +105,7 @@ async def enviar_pdf_paciente(email: str = Form(...), nombres: str = Form(...), 
     remitente = "medisys.bot@gmail.com"
     contrasena = "yeuaugaxmdvydcou"
     asunto = "Registro de Pacientes – MEDSYS"
-    cuerpo = f"""Estimado/a {nombres} {apellido},
-
-Adjuntamos el PDF correspondiente a su registro de paciente.
-
-Este documento contiene sus datos personales y será utilizado para futuras gestiones médicas.
-
-Saludos cordiales,
-
-Equipo MedSys"""
+    cuerpo = f"Estimado/a {nombres} {apellido},\n\nAdjuntamos el PDF correspondiente a su registro de paciente.\n\nSaludos cordiales,\nEquipo MedSys"
 
     mensaje = MIMEMultipart()
     mensaje["From"] = remitente
@@ -125,19 +125,3 @@ Equipo MedSys"""
         return JSONResponse({"mensaje": "Correo enviado exitosamente"})
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
-
-# ---------- ELIMINAR PACIENTE CON RESPALDO ----------
-@router.post("/eliminar-paciente")
-async def eliminar_paciente(dni: str = Form(...), usuario: str = Form(...)):
-    respaldo_exitoso = guardar_respaldo_completo(dni_paciente=dni, eliminado_por=usuario)
-    if respaldo_exitoso:
-        conn = sqlite3.connect(DB_PATH)
-        cursor = conn.cursor()
-        for tabla in ["recetas", "indicaciones", "estudios", "historia_clinica", "turnos"]:
-            cursor.execute(f"DELETE FROM {tabla} WHERE paciente_id = (SELECT id FROM pacientes WHERE dni=?)", (dni,))
-        cursor.execute("DELETE FROM pacientes WHERE dni=?", (dni,))
-        conn.commit()
-        conn.close()
-        return RedirectResponse(url="/registro", status_code=303)
-    else:
-        return JSONResponse({"error": "Paciente no encontrado o respaldo fallido"}, status_code=500)

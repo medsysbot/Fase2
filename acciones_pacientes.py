@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Form, Request
+from fastapi import APIRouter, Form
 from fastapi.responses import JSONResponse
 from fpdf import FPDF
 from pathlib import Path
@@ -10,16 +10,13 @@ from supabase import create_client
 
 router = APIRouter()
 
-# Config Supabase
 SUPABASE_URL = "https://wolcdduoroiobtadbcup.supabase.co"
-SUPABASE_KEY_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvbGNkZHVvcm9pb2J0YWRiY3VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyMDE0OTMsImV4cCI6MjA2MTc3NzQ5M30.rV_1sa8iM8s6eCD-5m_wViCgWpd0d2xRHA_zQxRabHU"
 SUPABASE_KEY_SERVICE = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvbGNkZHVvcm9pb2J0YWRiY3VwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NjIwMTQ5MywiZXhwIjoyMDYxNzc3NzQ5M30.GJtQkyj4PBLxekNQXJq7-mqnnqpcb_Gp0O0nmpLxICM"
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY_SERVICE)
 
 BUCKET_PDFS = "pdfs"
 BUCKET_BACKUPS = "backups"
 
-# ---------- REGISTRAR PACIENTE, PDF Y SUBIDA ----------
 @router.post("/generar_pdf_paciente")
 async def generar_pdf(
     nombres: str = Form(...), apellido: str = Form(...), dni: str = Form(...),
@@ -50,16 +47,16 @@ async def generar_pdf(
             ("Nombre y Apellido", f"{nombres} {apellido}"),
             ("DNI", dni),
             ("Fecha de Nacimiento", fecha_nacimiento),
-            ("Teléfono", telefono),
-            ("Correo Electrónico", email),
+            ("TelÃ©fono", telefono),
+            ("Correo ElectrÃ³nico", email),
             ("Domicilio", domicilio),
             ("Obra Social / Prepaga", obra_social),
-            ("Número de Afiliado", numero_afiliado),
+            ("NÃºmero de Afiliado", numero_afiliado),
             ("Contacto de Emergencia", contacto_emergencia)
         ]
 
         for label, value in campos:
-            pdf.cell(0, 10, f"{label}: {value}", ln=True)
+            pdf.cell(0, 10, f"{label}: {str(value)}", ln=True)
 
         pdf.output(local_path)
 
@@ -90,7 +87,6 @@ async def generar_pdf(
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
 
-# ---------- ENVIAR PDF POR EMAIL ----------
 @router.post("/enviar_pdf_paciente")
 async def enviar_pdf(email: str = Form(...), nombres: str = Form(...), apellido: str = Form(...)):
     safe_name = f"{nombres.strip().replace(' ', '_')}_{apellido.strip().replace(' ', '_')}"
@@ -122,7 +118,6 @@ Equipo MEDSYS"""
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
 
-# ---------- ELIMINAR PACIENTE CON BACKUP ----------
 @router.post("/eliminar-paciente")
 async def eliminar_paciente(data: dict):
     dni = data.get("dni")
@@ -143,7 +138,7 @@ async def eliminar_paciente(data: dict):
     pdf.set_font("Arial", size=12)
     pdf.ln(10)
     for key, value in paciente.items():
-        pdf.cell(0, 10, f"{key.capitalize()}: {value}", ln=True)
+        pdf.cell(0, 10, f"{key.capitalize()}: {str(value)}", ln=True)
     pdf.output(local_path)
 
     with open(local_path, "rb") as file_data:

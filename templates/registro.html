@@ -255,6 +255,31 @@
       alert("Error al guardar el paciente: " + error.message);
     }
   }
+
+  function enviarPorCorreo() {
+    const nombre = document.getElementById('nombres').value.trim();
+    const apellido = document.getElementById('apellido').value.trim();
+    const email = document.getElementById('email').value.trim();
+
+    if (!nombre || !apellido || !email) {
+      alert("Por favor, completá nombre, apellido y correo electrónico.");
+      return;
+    }
+
+    const formEnviar = document.createElement('form');
+    formEnviar.method = 'POST';
+    formEnviar.action = '/enviar_pdf_paciente';
+
+    formEnviar.innerHTML = `
+      <input type="hidden" name="nombres" value="${nombre}">
+      <input type="hidden" name="apellido" value="${apellido}">
+      <input type="hidden" name="email" value="${email}">
+    `;
+
+    document.body.appendChild(formEnviar);
+    formEnviar.submit();
+    alert("El PDF se está enviando al correo del paciente...");
+  }
 </script>
 </body>
 </html>

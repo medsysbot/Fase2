@@ -157,4 +157,4 @@ async def eliminar_paciente(data: dict):
         return JSONResponse({"message": f"Paciente eliminado y respaldado: {filename}"})
 
     except Exception as e:
-        return JSONResponse({"error": str(e)}, status_code=500})
+        return JSONResponse({"error": str(e)}, status_code=500)

@@ -6,7 +6,7 @@ document.querySelectorAll("input").forEach((campo) => {
   });
 });
 
-function activarDictado() {
+function activarVoz() {
   if (!('webkitSpeechRecognition' in window)) {
     alert("Tu navegador no soporta reconocimiento de voz.");
     return;

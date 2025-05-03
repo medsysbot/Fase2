@@ -11,6 +11,7 @@ from supabase import create_client
 
 router = APIRouter()
 
+# Configuración Supabase
 SUPABASE_URL = "https://wolcdduoroiobtadbcup.supabase.co"
 SUPABASE_KEY_SERVICE = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvbGNkZHVvcm9pb2J0YWRiY3VwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NjIwMTQ5MywiZXhwIjoyMDYxNzc3NDkzfQ.GJtQkyj4PBLxekNQXJq7-mqnnqpcb_Gp0O0nmpLxICM"
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY_SERVICE)
@@ -93,10 +94,7 @@ async def enviar_pdf(email: str = Form(...), nombres: str = Form(...), apellido:
     try:
         safe_name = f"{nombres.strip().replace(' ', '_')}_{apellido.strip().replace(' ', '_')}"
         filename = f"paciente_{safe_name}.pdf"
-        filepath = os.path.join("static/doc", filename)
-
-        if not os.path.exists(filepath):
-            return JSONResponse({"error": "El PDF no fue encontrado localmente."}, status_code=404)
+        local_path = os.path.join("static/doc", filename)
 
         remitente = "medisys.bot@gmail.com"
         contrasena = "yeuaugaxmdvydcou"
@@ -109,10 +107,10 @@ async def enviar_pdf(email: str = Form(...), nombres: str = Form(...), apellido:
         mensaje["Subject"] = asunto
         mensaje.attach(MIMEText(cuerpo, "plain"))
 
-        with open(filepath, "rb") as archivo:
-            adjunto = MIMEApplication(archivo.read(), _subtype="pdf")
-            adjunto.add_header('Content-Disposition', 'attachment', filename=filename)
-            mensaje.attach(adjunto)
+        with open(local_path, "rb") as f:
+            part = MIMEApplication(f.read(), Name=filename)
+            part['Content-Disposition'] = f'attachment; filename="{filename}"'
+            mensaje.attach(part)
 
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
             servidor.login(remitente, contrasena)
@@ -124,12 +122,13 @@ async def enviar_pdf(email: str = Form(...), nombres: str = Form(...), apellido:
         return JSONResponse({"error": str(e)}, status_code=500)
 
 @router.post("/eliminar-paciente")
-async def eliminar_paciente(data: dict):
+async def eliminar_paciente(request: Request):
     try:
+        data = await request.json()
         dni = data.get("dni")
-        paciente_data, error = supabase.table("pacientes").select("*").eq("dni", dni).single().execute()
+        paciente_data = supabase.table("pacientes").select("*").eq("dni", dni).single().execute()
 
-        if error or not paciente_data.data:
+        if not paciente_data.data:
             return JSONResponse({"error": "Paciente no encontrado"}, status_code=404)
 
         paciente = paciente_data.data

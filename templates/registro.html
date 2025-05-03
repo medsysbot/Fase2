@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
   <style>
     body {
       background: linear-gradient(to bottom left, #0a2a3d, #155f82);
@@ -60,11 +61,11 @@
       margin-top: 40px;
       text-align: center;
     }
-    .visor-pdf iframe {
-      width: 90%;
-      height: 500px;
+    canvas {
       border: 2px solid #09394f;
       border-radius: 10px;
+      width: 90%;
+      max-width: 600px;
     }
     .botones-flotantes {
       position: fixed;
@@ -140,7 +141,7 @@
 
 <div class="visor-pdf">
   <h3>Vista previa del documento PDF:</h3>
-  <iframe id="pdf-visor" src=""></iframe>
+  <canvas id="pdf-canvas"></canvas>
 </div>
 
 <div class="botones-flotantes">
@@ -167,7 +168,6 @@
   <img src="/static/icons/cerrar.png" alt="Cancelar" onclick="cancelarBorradoPaciente()" />
 </div>
 
-<script src="/static/js/registro_formulario.js"></script>
 <script>
   function prepararBorradoPaciente() {
     document.getElementById("confirmacion-borrado").style.display = "block";
@@ -197,7 +197,64 @@
       console.error(err);
     });
   }
-</script>
 
+  async function renderPDF(url) {
+    const loadingTask = pdfjsLib.getDocument(url);
+    const pdf = await loadingTask.promise;
+    const page = await pdf.getPage(1);
+    const scale = 1.5;
+    const viewport = page.getViewport({ scale });
+
+    const canvas = document.getElementById("pdf-canvas");
+    const context = canvas.getContext("2d");
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+
+    await page.render({ canvasContext: context, viewport }).promise;
+  }
+
+  async function guardarPDF() {
+    const nombres = document.getElementById("nombres").value;
+    const apellido = document.getElementById("apellido").value;
+    const dni = document.getElementById("dni").value;
+    const fecha_nacimiento = document.getElementById("fecha_nacimiento").value;
+    const telefono = document.getElementById("telefono").value;
+    const email = document.getElementById("email").value;
+    const domicilio = document.getElementById("domicilio").value;
+    const obra_social = document.getElementById("obra_social").value;
+    const numero_afiliado = document.getElementById("numero_afiliado").value;
+    const contacto_emergencia = document.getElementById("contacto_emergencia").value;
+
+    const formData = new FormData();
+    formData.append("nombres", nombres);
+    formData.append("apellido", apellido);
+    formData.append("dni", dni);
+    formData.append("fecha_nacimiento", fecha_nacimiento);
+    formData.append("telefono", telefono);
+    formData.append("email", email);
+    formData.append("domicilio", domicilio);
+    formData.append("obra_social", obra_social);
+    formData.append("numero_afiliado", numero_afiliado);
+    formData.append("contacto_emergencia", contacto_emergencia);
+
+    try {
+      const response = await fetch("/generar_pdf_paciente", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (data.url) {
+        alert("Paciente guardado y PDF generado con éxito.");
+        await renderPDF(data.url);
+      } else {
+        alert("No se pudo generar el PDF: " + (data.error || "Error desconocido."));
+      }
+    } catch (error) {
+      alert("Error al guardar el paciente: " + error.message);
+    }
+  }
+</script>
 </body>
 </html>

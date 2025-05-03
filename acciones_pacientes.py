@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Form
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi import APIRouter, Form, Request
+from fastapi.responses import JSONResponse
 from fpdf import FPDF
 from pathlib import Path
 import os
@@ -11,7 +11,6 @@ from supabase import create_client
 
 router = APIRouter()
 
-# Configuración Supabase
 SUPABASE_URL = "https://wolcdduoroiobtadbcup.supabase.co"
 SUPABASE_KEY_SERVICE = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvbGNkZHVvcm9pb2J0YWRiY3VwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NjIwMTQ5MywiZXhwIjoyMDYxNzc3NDkzfQ.GJtQkyj4PBLxekNQXJq7-mqnnqpcb_Gp0O0nmpLxICM"
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY_SERVICE)
@@ -19,7 +18,6 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY_SERVICE)
 BUCKET_PDFS = "pdfs"
 BUCKET_BACKUPS = "backups"
 
-# ---------- REGISTRAR PACIENTE ----------
 @router.post("/generar_pdf_paciente")
 async def generar_pdf(
     nombres: str = Form(...), apellido: str = Form(...), dni: str = Form(...),
@@ -84,22 +82,21 @@ async def generar_pdf(
             "institucion_id": 1
         }).execute()
 
-        return FileResponse(local_path, media_type='application/pdf', filename=filename)
+        public_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_PDFS}/{filename}"
+        return JSONResponse({"filename": filename, "url": public_url})
 
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
 
-
-# ---------- ENVIAR EMAIL CON PDF ADJUNTO ----------
 @router.post("/enviar_pdf_paciente")
 async def enviar_pdf(email: str = Form(...), nombres: str = Form(...), apellido: str = Form(...)):
     try:
         safe_name = f"{nombres.strip().replace(' ', '_')}_{apellido.strip().replace(' ', '_')}"
         filename = f"paciente_{safe_name}.pdf"
-        local_path = os.path.join("static/doc", filename)
+        filepath = os.path.join("static/doc", filename)
 
-        if not os.path.exists(local_path):
-            return JSONResponse({"error": "PDF no encontrado localmente."}, status_code=404)
+        if not os.path.exists(filepath):
+            return JSONResponse({"error": "El PDF no fue encontrado localmente."}, status_code=404)
 
         remitente = "medisys.bot@gmail.com"
         contrasena = "yeuaugaxmdvydcou"
@@ -112,10 +109,10 @@ async def enviar_pdf(email: str = Form(...), nombres: str = Form(...), apellido:
         mensaje["Subject"] = asunto
         mensaje.attach(MIMEText(cuerpo, "plain"))
 
-        with open(local_path, "rb") as adjunto:
-            part = MIMEApplication(adjunto.read(), _subtype="pdf")
-            part.add_header('Content-Disposition', 'attachment', filename=filename)
-            mensaje.attach(part)
+        with open(filepath, "rb") as archivo:
+            adjunto = MIMEApplication(archivo.read(), _subtype="pdf")
+            adjunto.add_header('Content-Disposition', 'attachment', filename=filename)
+            mensaje.attach(adjunto)
 
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
             servidor.login(remitente, contrasena)
@@ -126,8 +123,6 @@ async def enviar_pdf(email: str = Form(...), nombres: str = Form(...), apellido:
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
 
-
-# ---------- ELIMINAR PACIENTE CON BACKUP ----------
 @router.post("/eliminar-paciente")
 async def eliminar_paciente(data: dict):
     try:

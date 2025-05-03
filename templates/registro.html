@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
   <style>
     body {
       background: linear-gradient(to bottom left, #0a2a3d, #155f82);
@@ -61,11 +60,12 @@
       margin-top: 40px;
       text-align: center;
     }
-    canvas {
+    iframe {
       border: 2px solid #09394f;
       border-radius: 10px;
       width: 90%;
       max-width: 600px;
+      height: 500px;
     }
     .botones-flotantes {
       position: fixed;
@@ -141,7 +141,7 @@
 
 <div class="visor-pdf">
   <h3>Vista previa del documento PDF:</h3>
-  <canvas id="pdf-canvas"></canvas>
+  <iframe id="pdf-iframe"></iframe>
 </div>
 
 <div class="botones-flotantes">
@@ -169,12 +169,47 @@
 </div>
 
 <script>
+  let campoActivo = null;
+
+  document.querySelectorAll("input").forEach((campo) => {
+    campo.addEventListener("focus", () => {
+      campoActivo = campo;
+    });
+  });
+
+  function activarVoz() {
+    if (!('webkitSpeechRecognition' in window)) {
+      alert("Tu navegador no soporta reconocimiento de voz.");
+      return;
+    }
+
+    const reconocimiento = new webkitSpeechRecognition();
+    reconocimiento.lang = "es-ES";
+    reconocimiento.interimResults = false;
+    reconocimiento.maxAlternatives = 1;
+
+    reconocimiento.onresult = function (evento) {
+      const texto = evento.results[0][0].transcript;
+      if (campoActivo) {
+        campoActivo.value = texto;
+      }
+    };
+
+    reconocimiento.onerror = function (evento) {
+      console.error("Error de reconocimiento: ", evento.error);
+    };
+
+    reconocimiento.start();
+  }
+
   function prepararBorradoPaciente() {
     document.getElementById("confirmacion-borrado").style.display = "block";
   }
+
   function cancelarBorradoPaciente() {
     document.getElementById("confirmacion-borrado").style.display = "none";
   }
+
   function confirmarBorradoPaciente() {
     const dni = document.getElementById("dni").value;
     if (!dni) {
@@ -191,6 +226,7 @@
       alert(res.message || "Paciente eliminado con respaldo");
       document.getElementById("confirmacion-borrado").style.display = "none";
       document.getElementById("form-registro").reset();
+      document.getElementById("pdf-iframe").src = "";
     })
     .catch(err => {
       alert("Error al eliminar paciente");
@@ -198,44 +234,10 @@
     });
   }
 
-  async function renderPDF(url) {
-    const loadingTask = pdfjsLib.getDocument(url);
-    const pdf = await loadingTask.promise;
-    const page = await pdf.getPage(1);
-    const scale = 1.5;
-    const viewport = page.getViewport({ scale });
-
-    const canvas = document.getElementById("pdf-canvas");
-    const context = canvas.getContext("2d");
-    canvas.height = viewport.height;
-    canvas.width = viewport.width;
-
-    await page.render({ canvasContext: context, viewport }).promise;
-  }
-
   async function guardarPDF() {
-    const nombres = document.getElementById("nombres").value;
-    const apellido = document.getElementById("apellido").value;
-    const dni = document.getElementById("dni").value;
-    const fecha_nacimiento = document.getElementById("fecha_nacimiento").value;
-    const telefono = document.getElementById("telefono").value;
-    const email = document.getElementById("email").value;
-    const domicilio = document.getElementById("domicilio").value;
-    const obra_social = document.getElementById("obra_social").value;
-    const numero_afiliado = document.getElementById("numero_afiliado").value;
-    const contacto_emergencia = document.getElementById("contacto_emergencia").value;
-
+    const campos = ["nombres", "apellido", "dni", "fecha_nacimiento", "telefono", "email", "domicilio", "obra_social", "numero_afiliado", "contacto_emergencia"];
     const formData = new FormData();
-    formData.append("nombres", nombres);
-    formData.append("apellido", apellido);
-    formData.append("dni", dni);
-    formData.append("fecha_nacimiento", fecha_nacimiento);
-    formData.append("telefono", telefono);
-    formData.append("email", email);
-    formData.append("domicilio", domicilio);
-    formData.append("obra_social", obra_social);
-    formData.append("numero_afiliado", numero_afiliado);
-    formData.append("contacto_emergencia", contacto_emergencia);
+    campos.forEach(id => formData.append(id, document.getElementById(id).value));
 
     try {
       const response = await fetch("/generar_pdf_paciente", {
@@ -247,12 +249,22 @@
 
       if (data.url) {
         alert("Paciente guardado y PDF generado con éxito.");
-        await renderPDF(data.url);
+        document.getElementById("pdf-iframe").src = data.url;
       } else {
         alert("No se pudo generar el PDF: " + (data.error || "Error desconocido."));
       }
     } catch (error) {
       alert("Error al guardar el paciente: " + error.message);
+    }
+  }
+
+  function imprimirPDF() {
+    const iframe = document.getElementById("pdf-iframe");
+    if (iframe && iframe.contentWindow) {
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
+    } else {
+      alert("No se pudo acceder al visor PDF.");
     }
   }
 

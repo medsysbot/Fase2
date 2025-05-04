@@ -1,4 +1,172 @@
-  <!-- ... (todo tu código anterior sin cambios) ... -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Registro de Pacientes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <style>
+    body {
+      background: linear-gradient(to bottom left, #0a2a3d, #155f82);
+      font-family: 'Poppins', sans-serif;
+      color: #d3d3d3;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .logo-grande {
+      width: 180px;
+      margin-bottom: 10px;
+    }
+    h2 {
+      text-align: center;
+      font-style: italic;
+      font-weight: 600;
+      font-size: 28px;
+      color: #d3d3d3;
+    }
+    form {
+      max-width: 400px;   
+      width: 90%;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 500;
+      font-size: 17px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 6px 10px;
+      font-size: 17.5px;
+      border: none;
+      border-radius: 8px;
+      background-color: white;
+      color: black;
+      box-sizing: border-box;
+      min-height: 45px;
+    }
+    textarea {
+      resize: vertical;
+      line-height: 1.4;
+    }
+    .visor-pdf {
+      margin-top: 40px;
+      text-align: center;
+    }
+    iframe {
+      border: 2px solid #09394f;
+      border-radius: 10px;
+      width: 90%;
+      height: 600px;
+      max-width: 600px;
+    }
+    .botones-flotantes {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      z-index: 1000;
+    }
+    .botones-flotantes button {
+      background-color: #4A90E2;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .botones-flotantes img {
+      width: 30px;
+      height: 30px;
+    }
+    .confirmacion-borrado {
+      display: none;
+      position: fixed;
+      bottom: 100px;
+      right: 20px;
+      background-color: rgba(10, 42, 61, 0.9);
+      padding: 15px;
+      border-radius: 12px;
+      text-align: center;
+      z-index: 1001;
+    }
+    .confirmacion-borrado img {
+      width: 50px;
+      height: 50px;
+      margin: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <img src="/static/icons/icono-registro.png" alt="Logo Registro" class="logo-grande" />
+  <h2>Registro de Pacientes</h2>
+</header>
+
+<form id="form-registro">
+  <label>Nombres:</label>
+  <input type="text" id="nombres" required />
+  <label>Apellido:</label>
+  <input type="text" id="apellido" required />
+  <label>DNI:</label>
+  <input type="text" id="dni" required />
+  <label>Fecha de Nacimiento:</label>
+  <input type="date" id="fecha_nacimiento" required />
+  <label>Teléfono:</label>
+  <input type="text" id="telefono" />
+  <label>Correo Electrónico:</label>
+  <input type="email" id="email" />
+  <label>Domicilio:</label>
+  <input type="text" id="domicilio" />
+  <label>Obra Social / Prepaga:</label>
+  <input type="text" id="obra_social" />
+  <label>Número de Afiliado:</label>
+  <input type="text" id="numero_afiliado" />
+  <label>Contacto de Emergencia:</label>
+  <input type="text" id="contacto_emergencia" />
+</form>
+
+<div class="visor-pdf">
+  <h3>Vista previa del documento PDF:</h3>
+  <iframe id="pdf-visor"></iframe>
+</div>
+
+<div class="botones-flotantes">
+  <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
+    <img src="/static/icons/microfono.png" alt="Voz" />
+  </button>
+  <button type="button" onclick="guardarPDF()" title="Guardar">
+    <img src="/static/icons/guardar.png" alt="Guardar" />
+  </button>
+  <button type="button" onclick="enviarPorCorreo()" title="Enviar">
+    <img src="/static/icons/enviar.png" alt="Enviar" />
+  </button>
+  <button type="button" onclick="imprimirPDF()" title="Imprimir">
+    <img src="/static/icons/imprimir.png" alt="Imprimir" />
+  </button>
+  <button type="button" ondblclick="prepararBorradoPaciente()" title="Borrar paciente">
+    <img src="/static/icons/borrar.png" alt="Borrar" />
+  </button>
+</div>
+
+<div id="confirmacion-borrado" class="confirmacion-borrado">
+  <p>¿Confirmar borrado del paciente?</p>
+  <img src="/static/icons/confirmar-borrado.png" alt="Confirmar" onclick="confirmarBorradoPaciente()" />
+  <img src="/static/icons/cerrar.png" alt="Cancelar" onclick="cancelarBorradoPaciente()" />
+</div>
 
 <script>
   // Reconocimiento por voz
@@ -68,16 +236,14 @@
   // Imprimir PDF (corregido)
   function imprimirPDF() {
     const iframe = document.getElementById("pdf-visor");
-    const url = iframe?.src;
-    if (url) {
-      const ventana = window.open(url, "_blank");
-      ventana.onload = function () {
-        ventana.focus();
-        ventana.print();
-      };
-    } else {
-      alert("No se encontró ningún PDF para imprimir.");
+    const pdfUrl = iframe?.src;
+    if (!pdfUrl) {
+      alert("No hay PDF cargado.");
+      return;
     }
+    const win = window.open(pdfUrl, "_blank");
+    win.focus();
+    win.print();
   }
 
   // Enviar por correo

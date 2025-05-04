@@ -30,7 +30,7 @@
       color: #d3d3d3;
     }
     form {
-      max-width: 400px;   
+      max-width: 400px;
       width: 90%;
       margin: 0 auto;
       padding: 20px;
@@ -237,7 +237,7 @@
   function imprimirPDF() {
     const iframe = document.getElementById("pdf-visor");
     const pdfUrl = iframe?.src;
-    if (!pdfUrl) {
+    if (!pdfUrl || pdfUrl === "about:blank") {
       alert("No hay PDF cargado.");
       return;
     }

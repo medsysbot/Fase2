@@ -1,12 +1,15 @@
 let campoActivo = null;
+
+// Activar el reconocimiento de voz cuando se enfoca un input
 document.querySelectorAll("input").forEach((campo) => {
   campo.addEventListener("focus", () => {
     campoActivo = campo;
   });
 });
 
+// Función de reconocimiento por voz
 function activarVoz() {
-  if (!('webkitSpeechRecognition' in window)) {
+  if (!("webkitSpeechRecognition" in window)) {
     alert("Tu navegador no soporta reconocimiento de voz.");
     return;
   }
@@ -26,6 +29,7 @@ function activarVoz() {
   reconocimiento.start();
 }
 
+// Función para guardar el PDF
 async function guardarPDF() {
   const datos = {
     nombres: document.getElementById("nombres").value.trim(),
@@ -48,10 +52,25 @@ async function guardarPDF() {
       method: "POST",
       body: formData
     });
+
     const data = await response.json();
 
     if (response.ok && data.url) {
+      // Mostrar PDF en visor
       document.getElementById("pdf-visor").src = data.url;
+
+      // Mostrar botón Ver PDF si es Android
+      const isAndroid = /Android/i.test(navigator.userAgent);
+      if (isAndroid) {
+        const btnVerPDF = document.getElementById("btn-ver-pdf");
+        if (btnVerPDF) {
+          btnVerPDF.style.display = "flex";
+          btnVerPDF.onclick = function () {
+            window.open(data.url, "_blank");
+          };
+        }
+      }
+
       alert("Paciente guardado y PDF generado con éxito.");
     } else {
       alert(data.mensaje || "No se pudo generar el PDF: " + (data.error || "Error desconocido."));
@@ -61,29 +80,7 @@ async function guardarPDF() {
   }
 }
 
-// Función de impresión corregida: apertura directa desde interacción de usuario
-function imprimirPDF() {
-  const visor = document.getElementById("pdf-visor");
-  const pdfUrl = visor?.src;
-
-  if (!pdfUrl || pdfUrl === "about:blank") {
-    alert("No hay PDF cargado.");
-    return;
-  }
-
-  const nuevaVentana = window.open(pdfUrl, "_blank", "width=800,height=600");
-
-  if (!nuevaVentana) {
-    alert("El navegador bloqueó la ventana de impresión. Permití ventanas emergentes.");
-    return;
-  }
-
-  nuevaVentana.onload = function () {
-    nuevaVentana.focus();
-    nuevaVentana.print();
-  };
-}
-
+// Función para enviar el PDF por correo
 function enviarPorCorreo() {
   const nombre = document.getElementById("nombres").value.trim();
   const apellido = document.getElementById("apellido").value.trim();
@@ -109,14 +106,17 @@ function enviarPorCorreo() {
   alert("El PDF se está enviando al correo del paciente...");
 }
 
+// Preparar la confirmación de borrado
 function prepararBorradoPaciente() {
   document.getElementById("confirmacion-borrado").style.display = "block";
 }
 
+// Cancelar el borrado
 function cancelarBorradoPaciente() {
   document.getElementById("confirmacion-borrado").style.display = "none";
 }
 
+// Confirmar y realizar el borrado del paciente
 function confirmarBorradoPaciente() {
   const dni = document.getElementById("dni").value.trim();
   if (!dni) {
@@ -129,15 +129,15 @@ function confirmarBorradoPaciente() {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ dni })
   })
-  .then(res => res.json())
-  .then(res => {
-    alert(res.message || "Paciente eliminado con respaldo");
-    document.getElementById("confirmacion-borrado").style.display = "none";
-    document.getElementById("form-registro").reset();
-    document.getElementById("pdf-visor").src = "";
-  })
-  .catch(err => {
-    alert("Error al eliminar paciente");
-    console.error(err);
-  });
+    .then((res) => res.json())
+    .then((res) => {
+      alert(res.message || "Paciente eliminado con respaldo");
+      document.getElementById("confirmacion-borrado").style.display = "none";
+      document.getElementById("form-registro").reset();
+      document.getElementById("pdf-visor").src = "";
+    })
+    .catch((err) => {
+      alert("Error al eliminar paciente");
+      console.error(err);
+    });
 }

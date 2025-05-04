@@ -1,5 +1,4 @@
 let campoActivo = null;
-
 document.querySelectorAll("input").forEach((campo) => {
   campo.addEventListener("focus", () => {
     campoActivo = campo;
@@ -52,9 +51,7 @@ async function guardarPDF() {
     const data = await response.json();
 
     if (response.ok && data.url) {
-      // Corrección doble barra en URL
-      const urlCorregida = data.url.replace(/([^:]\/)\/+/g, "$1");
-      document.getElementById("pdf-visor").src = urlCorregida;
+      document.getElementById("pdf-visor").src = data.url;
       alert("Paciente guardado y PDF generado con éxito.");
     } else {
       alert(data.mensaje || "No se pudo generar el PDF: " + (data.error || "Error desconocido."));
@@ -65,26 +62,28 @@ async function guardarPDF() {
 }
 
 function imprimirPDF() {
-  const iframe = document.getElementById("pdf-visor");
-  const src = iframe?.src;
+  try {
+    const iframe = document.getElementById("pdf-visor");
+    const src = iframe?.src;
+    if (!src || src === "about:blank") {
+      alert("No hay PDF cargado.");
+      return;
+    }
 
-  if (!src || src === "about:blank") {
-    alert("No hay PDF cargado.");
-    return;
+    const win = window.open(src, "_blank");
+    if (!win) {
+      alert("No se pudo abrir la ventana de impresión.");
+      return;
+    }
+
+    win.onload = function () {
+      win.focus();
+      win.print();
+    };
+  } catch (error) {
+    alert("Error al intentar imprimir: " + error.message);
+    console.error("Error de impresión:", error);
   }
-
-  // Abrir nueva ventana directamente con el PDF
-  const nuevaVentana = window.open(src, "_blank");
-  if (!nuevaVentana) {
-    alert("No se pudo abrir la ventana para imprimir.");
-    return;
-  }
-
-  // Esperar que cargue el PDF y luego activar impresión
-  nuevaVentana.onload = () => {
-    nuevaVentana.focus();
-    nuevaVentana.print();
-  };
 }
 
 function enviarPorCorreo() {
@@ -109,23 +108,7 @@ function enviarPorCorreo() {
 
   document.body.appendChild(formEnviar);
   formEnviar.submit();
-
-  // Mostrar cartel central en vez de redirigir
-  const cartel = document.createElement("div");
-  cartel.textContent = "E-mail enviado exitosamente.";
-  cartel.style.position = "fixed";
-  cartel.style.top = "50%";
-  cartel.style.left = "50%";
-  cartel.style.transform = "translate(-50%, -50%)";
-  cartel.style.backgroundColor = "#e0f7fa";
-  cartel.style.padding = "20px";
-  cartel.style.borderRadius = "10px";
-  cartel.style.boxShadow = "0 0 10px rgba(0,0,0,0.2)";
-  cartel.style.fontSize = "18px";
-  cartel.style.fontWeight = "bold";
-  document.body.appendChild(cartel);
-
-  setTimeout(() => cartel.remove(), 3000);
+  alert("El PDF se está enviando al correo del paciente...");
 }
 
 function prepararBorradoPaciente() {

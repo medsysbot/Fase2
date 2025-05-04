@@ -36,18 +36,24 @@ async function guardarPDF() {
 
 function imprimirPDF() {
   try {
-    const visorFrame = document.querySelector("#pdf-visor").contentWindow;
-    const intento = setInterval(() => {
-      const botonImprimir = visorFrame.document?.querySelector('button[title="Print"]');
-      if (botonImprimir) {
-        botonImprimir.click();
-        clearInterval(intento);
-      }
-    }, 300);
-    setTimeout(() => clearInterval(intento), 3000);
+    const pdfUrl = document.getElementById("pdf-visor").src?.replace(/([^:]\/)\/+/g, "$1");
+    if (!pdfUrl || pdfUrl === "about:blank") {
+      alert("No hay PDF cargado.");
+      return;
+    }
+
+    const nuevaVentana = window.open(pdfUrl, "_blank");
+    if (nuevaVentana) {
+      nuevaVentana.focus();
+      setTimeout(() => {
+        nuevaVentana.print();
+      }, 1000);
+    } else {
+      alert("No se pudo abrir la ventana de impresión.");
+    }
   } catch (error) {
-    alert("No se pudo activar la impresión directa desde el visor.");
-    console.error("Error de impresión:", error);
+    alert("Error al intentar imprimir el PDF.");
+    console.error("Error impresión:", error);
   }
 }
 

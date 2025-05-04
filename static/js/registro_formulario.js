@@ -25,7 +25,7 @@ async function guardarPDF() {
     const data = await response.json();
 
     if (response.ok && data.url) {
-      urlPDFActual = data.url;  // GUARDAMOS LA URL
+      urlPDFActual = data.url.replace(/([^:]\/)\/+/g, "$1");  // QUITA DOBLE BARRA
       document.getElementById("pdf-visor").src = urlPDFActual;
       alert("Paciente guardado y PDF generado con éxito.");
     } else {
@@ -117,7 +117,7 @@ function confirmarBorradoPaciente() {
     document.getElementById("confirmacion-borrado").style.display = "none";
     document.getElementById("form-registro").reset();
     document.getElementById("pdf-visor").src = "";
-    urlPDFActual = ""; // Reset
+    urlPDFActual = "";
   })
   .catch(err => {
     alert("Error al eliminar paciente");

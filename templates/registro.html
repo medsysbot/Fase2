@@ -30,7 +30,7 @@
       color: #d3d3d3;
     }
     form {
-      max-width: 400px;   
+      max-width: 400px;
       width: 90%;
       margin: 0 auto;
       padding: 20px;
@@ -66,6 +66,12 @@
       width: 90%;
       height: 600px;
       max-width: 600px;
+    }
+    #diagnostico {
+      margin-top: 10px;
+      color: yellow;
+      font-size: 15px;
+      text-align: center;
     }
     .botones-flotantes {
       position: fixed;
@@ -142,6 +148,7 @@
 <div class="visor-pdf">
   <h3>Vista previa del documento PDF:</h3>
   <iframe id="pdf-visor"></iframe>
+  <div id="diagnostico"></div>
 </div>
 
 <div class="botones-flotantes">
@@ -170,17 +177,23 @@
 
 <script>
   function imprimirPDF() {
-    const iframe = document.getElementById("pdf-visor");
-    const pdfUrl = iframe?.src;
-    if (!pdfUrl || pdfUrl === "about:blank") {
-      alert("No hay PDF cargado.");
+    const visor = document.getElementById("pdf-visor");
+    const diagnostico = document.getElementById("diagnostico");
+    const url = visor?.src;
+
+    if (!url || url === "about:blank") {
+      diagnostico.textContent = "El visor PDF tiene src = 'about:blank' (PDF no cargado)";
       return;
     }
-    const win = window.open(pdfUrl, "_blank");
-    win.onload = () => {
+
+    const win = window.open(url, "_blank");
+    if (win) {
+      diagnostico.textContent = `Intentando abrir e imprimir el PDF desde: ${url}`;
       win.focus();
       win.print();
-    };
+    } else {
+      diagnostico.textContent = "No se pudo abrir una nueva ventana para imprimir."
+    }
   }
 </script>
 </body>

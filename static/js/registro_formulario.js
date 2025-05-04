@@ -1,3 +1,5 @@
+let urlPDFActual = "";
+
 async function guardarPDF() {
   const datos = {
     nombres: document.getElementById("nombres").value.trim(),
@@ -23,7 +25,8 @@ async function guardarPDF() {
     const data = await response.json();
 
     if (response.ok && data.url) {
-      document.getElementById("pdf-visor").src = data.url;
+      urlPDFActual = data.url;  // GUARDAMOS LA URL
+      document.getElementById("pdf-visor").src = urlPDFActual;
       alert("Paciente guardado y PDF generado con éxito.");
     } else {
       alert(data.mensaje || "No se pudo generar el PDF: " + (data.error || "Error desconocido."));
@@ -33,11 +36,8 @@ async function guardarPDF() {
   }
 }
 
-// NUEVA FUNCIÓN imprimirPDF()
 function imprimirPDF() {
-  const iframe = document.getElementById("pdf-visor");
-
-  if (!iframe || iframe.src === "" || iframe.src === "about:blank") {
+  if (!urlPDFActual || urlPDFActual === "" || urlPDFActual === "about:blank") {
     alert("No hay PDF cargado.");
     return;
   }
@@ -53,7 +53,7 @@ function imprimirPDF() {
     <html>
       <head><title>Impresión PDF</title></head>
       <body style="margin:0">
-        <iframe src="${iframe.src}" style="width:100%; height:100vh; border:none;"></iframe>
+        <iframe src="${urlPDFActual}" style="width:100%; height:100vh; border:none;"></iframe>
         <script>
           window.onload = function() {
             setTimeout(() => {
@@ -117,6 +117,7 @@ function confirmarBorradoPaciente() {
     document.getElementById("confirmacion-borrado").style.display = "none";
     document.getElementById("form-registro").reset();
     document.getElementById("pdf-visor").src = "";
+    urlPDFActual = ""; // Reset
   })
   .catch(err => {
     alert("Error al eliminar paciente");

@@ -33,20 +33,37 @@ async function guardarPDF() {
   }
 }
 
+// NUEVA FUNCIÓN imprimirPDF()
 function imprimirPDF() {
   const iframe = document.getElementById("pdf-visor");
-  const src = iframe?.src;
-  if (!src || src === "about:blank") {
+
+  if (!iframe || iframe.src === "" || iframe.src === "about:blank") {
     alert("No hay PDF cargado.");
     return;
   }
-  const win = window.open(src, "_blank");
-  if (win) {
-    win.focus();
-    win.print();
-  } else {
-    alert("No se pudo abrir ventana de impresión.");
+
+  const ventana = window.open("", "_blank");
+
+  if (!ventana) {
+    alert("No se pudo abrir la ventana de impresión.");
+    return;
   }
+
+  ventana.document.write(`
+    <html>
+      <head><title>Impresión PDF</title></head>
+      <body style="margin:0">
+        <iframe src="${iframe.src}" style="width:100%; height:100vh; border:none;"></iframe>
+        <script>
+          window.onload = function() {
+            setTimeout(() => {
+              window.print();
+            }, 1000);
+          };
+        <\/script>
+      </body>
+    </html>
+  `);
 }
 
 function enviarPorCorreo() {

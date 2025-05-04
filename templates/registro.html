@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -91,6 +91,23 @@
       width: 30px;
       height: 30px;
     }
+    .confirmacion-borrado {
+      display: none;
+      position: fixed;
+      bottom: 100px;
+      right: 20px;
+      background-color: rgba(10, 42, 61, 0.9);
+      padding: 15px;
+      border-radius: 12px;
+      text-align: center;
+      z-index: 1001;
+    }
+    .confirmacion-borrado img {
+      width: 50px;
+      height: 50px;
+      margin: 10px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -145,8 +162,14 @@
   </button>
 </div>
 
+<div id="confirmacion-borrado" class="confirmacion-borrado">
+  <p>¿Confirmar borrado del paciente?</p>
+  <img src="/static/icons/confirmar-borrado.png" alt="Confirmar" onclick="confirmarBorradoPaciente()" />
+  <img src="/static/icons/cerrar.png" alt="Cancelar" onclick="cancelarBorradoPaciente()" />
+</div>
+
 <script>
-  // --- Voz
+  // Reconocimiento por voz
   let campoActivo = null;
   document.querySelectorAll("input").forEach((campo) => {
     campo.addEventListener("focus", () => {
@@ -174,7 +197,7 @@
     reconocimiento.start();
   }
 
-  // --- Guardar y mostrar PDF
+  // Guardar y mostrar PDF
   async function guardarPDF() {
     const datos = {
       nombres: document.getElementById("nombres").value.trim(),
@@ -210,6 +233,7 @@
     }
   }
 
+  // Imprimir PDF
   function imprimirPDF() {
     const iframe = document.getElementById("pdf-visor");
     if (iframe && iframe.contentWindow) {
@@ -220,6 +244,7 @@
     }
   }
 
+  // Enviar por correo
   function enviarPorCorreo() {
     const nombre = document.getElementById("nombres").value.trim();
     const apellido = document.getElementById("apellido").value.trim();
@@ -243,6 +268,38 @@
     document.body.appendChild(formEnviar);
     formEnviar.submit();
     alert("El PDF se está enviando al correo del paciente...");
+  }
+
+  // Función de borrado implantada
+  function prepararBorradoPaciente() {
+    document.getElementById("confirmacion-borrado").style.display = "block";
+  }
+  function cancelarBorradoPaciente() {
+    document.getElementById("confirmacion-borrado").style.display = "none";
+  }
+  function confirmarBorradoPaciente() {
+    const dni = document.getElementById("dni").value.trim();
+    if (!dni) {
+      alert("Primero debes completar el DNI");
+      return;
+    }
+
+    fetch("/eliminar-paciente", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ dni })
+    })
+    .then(res => res.json())
+    .then(res => {
+      alert(res.message || "Paciente eliminado con respaldo");
+      document.getElementById("confirmacion-borrado").style.display = "none";
+      document.getElementById("form-registro").reset();
+      document.getElementById("pdf-visor").src = "";
+    })
+    .catch(err => {
+      alert("Error al eliminar paciente");
+      console.error(err);
+    });
   }
 </script>
 </body>

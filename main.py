@@ -31,7 +31,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # ---------------- Templates ----------------
 templates = Jinja2Templates(directory="templates")
 
-# ---------------- RUTA SPLASH INICIAL ----------------
+# ---------------- SPLASH INICIAL ----------------
 @app.get("/", response_class=HTMLResponse)
 async def root_redirect(request: Request):
     return templates.TemplateResponse("splash_screen.html", {"request": request})
@@ -40,7 +40,7 @@ async def root_redirect(request: Request):
 async def splash_inicio(request: Request):
     return templates.TemplateResponse("splash_screen.html", {"request": request})
 
-# ---------------- LOGIN usando SUPABASE ----------------
+# ---------------- LOGIN ----------------
 @app.get("/login", response_class=HTMLResponse)
 async def login_get(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
@@ -77,7 +77,7 @@ async def login_post(request: Request, usuario: str = Form(...), contrasena: str
             "error": f"Error de conexión o datos inválidos: {str(e)}"
         })
 
-# ---------------- SPLASH FINAL usando SUPABASE ----------------
+# ---------------- SPLASH FINAL ----------------
 @app.get("/splash-final", response_class=HTMLResponse)
 async def splash_final(request: Request):
     usuario_logueado = request.session.get("usuario")
@@ -119,42 +119,6 @@ async def index(request: Request):
 async def registro(request: Request):
     return templates.TemplateResponse("registro.html", {"request": request})
 
-@app.get("/historia", response_class=HTMLResponse)
-async def historia(request: Request):
-    return templates.TemplateResponse("historia.html", {"request": request})
-
-@app.get("/historia-completa", response_class=HTMLResponse)
-async def historia_completa(request: Request):
-    return templates.TemplateResponse("historia-clinica-completa.html", {"request": request})
-
-@app.get("/historia-resumen", response_class=HTMLResponse)
-async def historia_resumen(request: Request):
-    return templates.TemplateResponse("historia-resumen.html", {"request": request})
-
-@app.get("/historia-evolucion", response_class=HTMLResponse)
-async def historia_evolucion(request: Request):
-    return templates.TemplateResponse("evolucion.html", {"request": request})
-
-@app.get("/receta", response_class=HTMLResponse)
-async def receta(request: Request):
-    return templates.TemplateResponse("receta.html", {"request": request})
-
-@app.get("/indicaciones", response_class=HTMLResponse)
-async def indicaciones(request: Request):
-    return templates.TemplateResponse("indicaciones.html", {"request": request})
-
-@app.get("/turnos", response_class=HTMLResponse)
-async def turnos(request: Request):
-    return templates.TemplateResponse("turnos.html", {"request": request})
-
-@app.get("/busqueda", response_class=HTMLResponse)
-async def busqueda(request: Request):
-    return templates.TemplateResponse("busqueda.html", {"request": request})
-
-@app.get("/estudios", response_class=HTMLResponse)
-async def estudios(request: Request):
-    return templates.TemplateResponse("estudios.html", {"request": request})
-
 # ---------------- ARCHIVOS MÉDICOS ----------------
 @app.get("/listar-estudios")
 async def listar_estudios():
@@ -191,11 +155,11 @@ async def subir_estudio(archivo: UploadFile = File(...)):
     with open(ruta_guardado, "wb") as f:
         contenido = await archivo.read()
         f.write(contenido)
-    return {"status": "success", "message": "Archivo subido"}
+    return {"status": "success", "message": "Archivo subido correctamente"}
 
-# ---------------- RUTAS EXTERNAS ----------------
+# ---------------- INCLUIR RUTAS EXTERNAS ----------------
 from admin_routes import router as admin_router
-app.include_router(admin_router)
-
 from acciones_pacientes import router as pacientes_router
+
+app.include_router(admin_router)
 app.include_router(pacientes_router)

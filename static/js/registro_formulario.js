@@ -61,29 +61,27 @@ async function guardarPDF() {
   }
 }
 
+// Función de impresión corregida: apertura directa desde interacción de usuario
 function imprimirPDF() {
-  try {
-    const iframe = document.getElementById("pdf-visor");
-    const src = iframe?.src;
-    if (!src || src === "about:blank") {
-      alert("No hay PDF cargado.");
-      return;
-    }
+  const visor = document.getElementById("pdf-visor");
+  const pdfUrl = visor?.src;
 
-    const win = window.open(src, "_blank");
-    if (!win) {
-      alert("No se pudo abrir la ventana de impresión.");
-      return;
-    }
-
-    win.onload = function () {
-      win.focus();
-      win.print();
-    };
-  } catch (error) {
-    alert("Error al intentar imprimir: " + error.message);
-    console.error("Error de impresión:", error);
+  if (!pdfUrl || pdfUrl === "about:blank") {
+    alert("No hay PDF cargado.");
+    return;
   }
+
+  const nuevaVentana = window.open(pdfUrl, "_blank", "width=800,height=600");
+
+  if (!nuevaVentana) {
+    alert("El navegador bloqueó la ventana de impresión. Permití ventanas emergentes.");
+    return;
+  }
+
+  nuevaVentana.onload = function () {
+    nuevaVentana.focus();
+    nuevaVentana.print();
+  };
 }
 
 function enviarPorCorreo() {

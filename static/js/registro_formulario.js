@@ -35,35 +35,20 @@ async function guardarPDF() {
 }
 
 function imprimirPDF() {
-  const visor = document.getElementById("pdf-visor");
-  const pdfUrl = visor?.src?.replace(/([^:]\/)\/+/g, "$1"); // Se vuelve a limpiar por seguridad
-
-  if (!pdfUrl || pdfUrl === "about:blank") {
-    alert("No hay PDF cargado.");
-    return;
+  try {
+    const visorFrame = document.querySelector("#pdf-visor").contentWindow;
+    const intento = setInterval(() => {
+      const botonImprimir = visorFrame.document?.querySelector('button[title="Print"]');
+      if (botonImprimir) {
+        botonImprimir.click();
+        clearInterval(intento);
+      }
+    }, 300);
+    setTimeout(() => clearInterval(intento), 3000);
+  } catch (error) {
+    alert("No se pudo activar la impresión directa desde el visor.");
+    console.error("Error de impresión:", error);
   }
-
-  const ventana = window.open("", "_blank");
-  if (!ventana) {
-    alert("No se pudo abrir la ventana de impresión.");
-    return;
-  }
-
-  ventana.document.write(`
-    <html>
-      <head><title>Impresión PDF</title></head>
-      <body style="margin:0">
-        <iframe src="${pdfUrl}" style="width:100%; height:100vh; border:none;"></iframe>
-        <script>
-          window.onload = function() {
-            setTimeout(() => {
-              window.print();
-            }, 1000);
-          };
-        <\/script>
-      </body>
-    </html>
-  `);
 }
 
 function enviarPorCorreo() {

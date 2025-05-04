@@ -1,33 +1,53 @@
+let campoActivo = null;
+document.querySelectorAll("input").forEach((campo) => {
+  campo.addEventListener("focus", () => {
+    campoActivo = campo;
+  });
+});
+
+function activarVoz() {
+  if (!('webkitSpeechRecognition' in window)) {
+    alert("Tu navegador no soporta reconocimiento de voz.");
+    return;
+  }
+  const reconocimiento = new webkitSpeechRecognition();
+  reconocimiento.lang = "es-ES";
+  reconocimiento.interimResults = false;
+  reconocimiento.maxAlternatives = 1;
+  reconocimiento.onresult = function (evento) {
+    const texto = evento.results[0][0].transcript;
+    if (campoActivo) {
+      campoActivo.value = texto;
+    }
+  };
+  reconocimiento.onerror = function (evento) {
+    console.error("Error de reconocimiento: ", evento.error);
+  };
+  reconocimiento.start();
+}
+
 async function guardarPDF() {
-  const nombres = document.getElementById("nombres").value.trim();
-  const apellido = document.getElementById("apellido").value.trim();
-  const dni = document.getElementById("dni").value.trim();
-  const fecha_nacimiento = document.getElementById("fecha_nacimiento").value.trim();
-  const telefono = document.getElementById("telefono").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const domicilio = document.getElementById("domicilio").value.trim();
-  const obra_social = document.getElementById("obra_social").value.trim();
-  const numero_afiliado = document.getElementById("numero_afiliado").value.trim();
-  const contacto_emergencia = document.getElementById("contacto_emergencia").value.trim();
+  const datos = {
+    nombres: document.getElementById("nombres").value.trim(),
+    apellido: document.getElementById("apellido").value.trim(),
+    dni: document.getElementById("dni").value.trim(),
+    fecha_nacimiento: document.getElementById("fecha_nacimiento").value.trim(),
+    telefono: document.getElementById("telefono").value.trim(),
+    email: document.getElementById("email").value.trim(),
+    domicilio: document.getElementById("domicilio").value.trim(),
+    obra_social: document.getElementById("obra_social").value.trim(),
+    numero_afiliado: document.getElementById("numero_afiliado").value.trim(),
+    contacto_emergencia: document.getElementById("contacto_emergencia").value.trim()
+  };
 
   const formData = new FormData();
-  formData.append("nombres", nombres);
-  formData.append("apellido", apellido);
-  formData.append("dni", dni);
-  formData.append("fecha_nacimiento", fecha_nacimiento);
-  formData.append("telefono", telefono);
-  formData.append("email", email);
-  formData.append("domicilio", domicilio);
-  formData.append("obra_social", obra_social);
-  formData.append("numero_afiliado", numero_afiliado);
-  formData.append("contacto_emergencia", contacto_emergencia);
+  Object.entries(datos).forEach(([clave, valor]) => formData.append(clave, valor));
 
   try {
     const response = await fetch("/generar_pdf_paciente", {
       method: "POST",
       body: formData
     });
-
     const data = await response.json();
 
     if (response.ok && data.url) {
@@ -42,12 +62,24 @@ async function guardarPDF() {
 }
 
 function imprimirPDF() {
-  const iframe = document.getElementById("pdf-visor");
-  if (iframe && iframe.contentWindow) {
-    iframe.contentWindow.focus();
-    iframe.contentWindow.print();
-  } else {
-    alert("No se pudo acceder al visor PDF.");
+  try {
+    const iframe = document.getElementById("pdf-visor");
+    const src = iframe?.src;
+    if (!src || src === "about:blank") {
+      alert("No hay PDF cargado.");
+      return;
+    }
+
+    const win = window.open(src, "_blank");
+    if (!win) {
+      alert("No se pudo abrir nueva ventana para imprimir.");
+      return;
+    }
+    win.focus();
+    win.print();
+  } catch (error) {
+    alert("Error al intentar imprimir: " + error.message);
+    console.error("Error de impresión:", error);
   }
 }
 

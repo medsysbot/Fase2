@@ -209,11 +209,17 @@
       numero_afiliado: document.getElementById("numero_afiliado").value.trim(),
       contacto_emergencia: document.getElementById("contacto_emergencia").value.trim()
     };
+
     const formData = new FormData();
     Object.entries(datos).forEach(([clave, valor]) => formData.append(clave, valor));
+
     try {
-      const response = await fetch("/generar_pdf_paciente", { method: "POST", body: formData });
+      const response = await fetch("/generar_pdf_paciente", {
+        method: "POST",
+        body: formData
+      });
       const data = await response.json();
+
       if (response.ok && data.url) {
         document.getElementById("pdf-visor").src = data.url;
         alert("Paciente guardado y PDF generado con éxito.");
@@ -225,21 +231,26 @@
     }
   }
 
+  // FUNCION CORREGIDA imprimirPDF()
   function imprimirPDF() {
     try {
       const iframe = document.getElementById("pdf-visor");
-      const url = new URL(iframe.src);
-      const pdfParam = url.searchParams.get("file");
-      if (!pdfParam) {
-        alert("No se pudo obtener la URL del archivo PDF.");
+      const src = iframe?.src;
+      if (!src || src === "about:blank") {
+        alert("No hay PDF cargado.");
         return;
       }
-      const decodedURL = decodeURIComponent(pdfParam);
-      const win = window.open(decodedURL, "_blank");
+
+      const win = window.open(src, "_blank");
+      if (!win) {
+        alert("No se pudo abrir nueva ventana para imprimir.");
+        return;
+      }
       win.focus();
       win.print();
-    } catch (err) {
-      alert("Error al intentar imprimir: " + err.message);
+    } catch (error) {
+      alert("Error al intentar imprimir: " + error.message);
+      console.error("Error de impresión:", error);
     }
   }
 
@@ -247,18 +258,22 @@
     const nombre = document.getElementById("nombres").value.trim();
     const apellido = document.getElementById("apellido").value.trim();
     const email = document.getElementById("email").value.trim();
+
     if (!nombre || !apellido || !email) {
       alert("Por favor, completá nombre, apellido y correo electrónico.");
       return;
     }
+
     const formEnviar = document.createElement("form");
     formEnviar.method = "POST";
     formEnviar.action = "/enviar_pdf_paciente";
+
     formEnviar.innerHTML = `
       <input type="hidden" name="nombres" value="${nombre}">
       <input type="hidden" name="apellido" value="${apellido}">
       <input type="hidden" name="email" value="${email}">
     `;
+
     document.body.appendChild(formEnviar);
     formEnviar.submit();
     alert("El PDF se está enviando al correo del paciente...");
@@ -267,15 +282,18 @@
   function prepararBorradoPaciente() {
     document.getElementById("confirmacion-borrado").style.display = "block";
   }
+
   function cancelarBorradoPaciente() {
     document.getElementById("confirmacion-borrado").style.display = "none";
   }
+
   function confirmarBorradoPaciente() {
     const dni = document.getElementById("dni").value.trim();
     if (!dni) {
       alert("Primero debes completar el DNI");
       return;
     }
+
     fetch("/eliminar-paciente", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

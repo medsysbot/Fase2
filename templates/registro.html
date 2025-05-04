@@ -57,13 +57,13 @@
       line-height: 1.4;
     }
     .visor-pdf {
-      margin-top: 40px;
+      margin-top: 20px;
       text-align: center;
     }
     iframe {
       border: 2px solid #09394f;
       border-radius: 10px;
-      width: 100%;
+      width: 90%;
       height: 600px;
       max-width: 800px;
     }
@@ -154,6 +154,9 @@
   <button type="button" onclick="enviarPorCorreo()" title="Enviar">
     <img src="/static/icons/enviar.png" alt="Enviar" />
   </button>
+  <button type="button" id="btn-ver-pdf" style="display:none;" title="Ver PDF">
+    <img src="/static/icons/icono-ver-pdf.png" alt="Ver PDF" />
+  </button>
   <button type="button" ondblclick="prepararBorradoPaciente()" title="Borrar paciente">
     <img src="/static/icons/borrar.png" alt="Borrar" />
   </button>
@@ -167,5 +170,22 @@
 
 <script src="/static/js/registro_formulario.js"></script>
 <script src="/static/js/registro_voz.js"></script>
+<script>
+  // Mostrar el botón "Ver PDF" solo si es Android
+  const isAndroid = /Android/i.test(navigator.userAgent);
+  if (isAndroid) {
+    const btnVerPDF = document.getElementById('btn-ver-pdf');
+    btnVerPDF.style.display = 'flex';
+    btnVerPDF.onclick = function () {
+      const pdfIframe = document.getElementById('pdf-visor');
+      const src = pdfIframe.getAttribute('src');
+      if (src) {
+        window.open(src, '_blank');
+      } else {
+        alert("No hay PDF cargado.");
+      }
+    };
+  }
+</script>
 </body>
 </html>

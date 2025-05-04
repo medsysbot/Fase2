@@ -1,5 +1,3 @@
-let urlPDFActual = "";
-
 async function guardarPDF() {
   const datos = {
     nombres: document.getElementById("nombres").value.trim(),
@@ -25,8 +23,8 @@ async function guardarPDF() {
     const data = await response.json();
 
     if (response.ok && data.url) {
-      urlPDFActual = data.url.replace(/([^:]\/)\/+/g, "$1");  // QUITA DOBLE BARRA
-      document.getElementById("pdf-visor").src = urlPDFActual;
+      const cleanURL = data.url.replace(/([^:]\/)\/+/g, "$1"); // FIX doble barra
+      document.getElementById("pdf-visor").src = cleanURL;
       alert("Paciente guardado y PDF generado con éxito.");
     } else {
       alert(data.mensaje || "No se pudo generar el PDF: " + (data.error || "Error desconocido."));
@@ -37,13 +35,15 @@ async function guardarPDF() {
 }
 
 function imprimirPDF() {
-  if (!urlPDFActual || urlPDFActual === "" || urlPDFActual === "about:blank") {
+  const visor = document.getElementById("pdf-visor");
+  const pdfUrl = visor?.src?.replace(/([^:]\/)\/+/g, "$1"); // Se vuelve a limpiar por seguridad
+
+  if (!pdfUrl || pdfUrl === "about:blank") {
     alert("No hay PDF cargado.");
     return;
   }
 
   const ventana = window.open("", "_blank");
-
   if (!ventana) {
     alert("No se pudo abrir la ventana de impresión.");
     return;
@@ -53,7 +53,7 @@ function imprimirPDF() {
     <html>
       <head><title>Impresión PDF</title></head>
       <body style="margin:0">
-        <iframe src="${urlPDFActual}" style="width:100%; height:100vh; border:none;"></iframe>
+        <iframe src="${pdfUrl}" style="width:100%; height:100vh; border:none;"></iframe>
         <script>
           window.onload = function() {
             setTimeout(() => {
@@ -117,7 +117,6 @@ function confirmarBorradoPaciente() {
     document.getElementById("confirmacion-borrado").style.display = "none";
     document.getElementById("form-registro").reset();
     document.getElementById("pdf-visor").src = "";
-    urlPDFActual = "";
   })
   .catch(err => {
     alert("Error al eliminar paciente");

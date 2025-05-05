@@ -94,7 +94,7 @@ function cancelarBorradoPaciente() {
   document.getElementById('confirmacion-borrado').style.display = 'none';
 }
 
-// Confirmar borrado
+// Confirmar borrado con respaldo
 async function confirmarBorradoPaciente() {
   const dni = document.getElementById('dni').value.trim();
 
@@ -104,15 +104,15 @@ async function confirmarBorradoPaciente() {
   }
 
   try {
-    const response = await fetch('/eliminar-paciente', {
+    const response = await fetch('/eliminar_paciente', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ dni: dni })
     });
 
     const resultado = await response.json();
-    if (resultado.message || resultado.exito) {
-      alert('Paciente eliminado y respaldado con éxito.');
+    if (resultado.exito || resultado.mensaje) {
+      alert('Paciente eliminado y respaldado correctamente.');
       document.getElementById('form-registro').reset();
       document.getElementById('confirmacion-borrado').style.display = 'none';
       sessionStorage.removeItem('pdfURL');

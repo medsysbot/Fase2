@@ -51,10 +51,6 @@
       box-sizing: border-box;
       min-height: 45px;
     }
-    textarea {
-      resize: vertical;
-      line-height: 1.4;
-    }
     .botones-flotantes {
       position: fixed;
       right: 20px;
@@ -78,23 +74,6 @@
     .botones-flotantes img {
       width: 30px;
       height: 30px;
-    }
-    .confirmacion-borrado {
-      display: none;
-      position: fixed;
-      bottom: 100px;
-      right: 20px;
-      background-color: rgba(10, 42, 61, 0.9);
-      padding: 15px;
-      border-radius: 12px;
-      text-align: center;
-      z-index: 1001;
-    }
-    .confirmacion-borrado img {
-      width: 50px;
-      height: 50px;
-      margin: 10px;
-      cursor: pointer;
     }
   </style>
 </head>
@@ -128,9 +107,6 @@
 </form>
 
 <div class="botones-flotantes">
-  <button type="button" ondblclick="marcarCamposVoz()" title="Reconocimiento por voz">
-    <img src="/static/icons/microfono.png" alt="Voz" />
-  </button>
   <button type="button" onclick="guardarPDF()" title="Guardar">
     <img src="/static/icons/guardar.png" alt="Guardar" />
   </button>
@@ -140,18 +116,91 @@
   <button type="button" onclick="abrirPDF()" title="Ver PDF">
     <img src="/static/icons/icono-ver-pdf.png" alt="Ver PDF" />
   </button>
-  <button type="button" ondblclick="prepararBorradoPaciente()" title="Borrar paciente">
-    <img src="/static/icons/borrar.png" alt="Borrar" />
-  </button>
 </div>
 
-<div id="confirmacion-borrado" class="confirmacion-borrado">
-  <p>¿Confirmar borrado del paciente?</p>
-  <img src="/static/icons/confirmar-borrado.png" alt="Confirmar" onclick="confirmarBorradoPaciente()" />
-  <img src="/static/icons/cerrar.png" alt="Cancelar" onclick="cancelarBorradoPaciente()" />
-</div>
+<script>
+  async function guardarPDF() {
+    const datos = {
+      nombres: document.getElementById('nombres').value.trim(),
+      apellido: document.getElementById('apellido').value.trim(),
+      dni: document.getElementById('dni').value.trim(),
+      fecha_nacimiento: document.getElementById('fecha_nacimiento').value,
+      telefono: document.getElementById('telefono').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      domicilio: document.getElementById('domicilio').value.trim(),
+      obra_social: document.getElementById('obra_social').value.trim(),
+      numero_afiliado: document.getElementById('numero_afiliado').value.trim(),
+      contacto_emergencia: document.getElementById('contacto_emergencia').value.trim()
+    };
 
-<script src="/static/js/registro_formulario.js"></script>
-<script src="/static/js/registro_voz.js"></script>
+    try {
+      const formData = new FormData();
+      for (const key in datos) {
+        formData.append(key, datos[key]);
+      }
+
+      const response = await fetch('/generar_pdf_paciente', {
+        method: 'POST',
+        body: formData
+      });
+
+      const resultado = await response.json();
+
+      if (resultado.exito && resultado.pdf_url) {
+        alert('Paciente guardado correctamente.');
+        sessionStorage.setItem('pdfURL', resultado.pdf_url);
+      } else if (resultado.mensaje) {
+        alert(resultado.mensaje);
+      } else {
+        alert('Error desconocido al guardar el paciente.');
+      }
+    } catch (error) {
+      console.error('Error al guardar:', error);
+      alert('Error en el servidor.');
+    }
+  }
+
+  async function enviarPorCorreo() {
+    const nombres = document.getElementById('nombres').value.trim();
+    const apellido = document.getElementById('apellido').value.trim();
+    const email = document.getElementById('email').value.trim();
+
+    if (!email) {
+      alert('Debes ingresar un correo válido.');
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("nombres", nombres);
+      formData.append("apellido", apellido);
+      formData.append("email", email);
+
+      const response = await fetch('/enviar_pdf_paciente', {
+        method: 'POST',
+        body: formData
+      });
+
+      const resultado = await response.json();
+      if (resultado.exito) {
+        alert('Correo enviado exitosamente.');
+      } else {
+        alert('No se pudo enviar el correo.');
+      }
+    } catch (error) {
+      console.error('Error al enviar el correo:', error);
+      alert('Error en el servidor.');
+    }
+  }
+
+  function abrirPDF() {
+    const url = sessionStorage.getItem('pdfURL');
+    if (url) {
+      window.open(url, '_blank');
+    } else {
+      alert('No hay PDF disponible. Por favor, genere uno primero.');
+    }
+  }
+</script>
 </body>
 </html>

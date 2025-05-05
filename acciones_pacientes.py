@@ -134,3 +134,48 @@ async def enviar_pdf_paciente(email: str = Form(...), nombres: str = Form(...), 
         return JSONResponse({"exito": True})
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
+
+# ---------- ELIMINAR PACIENTE CON BACKUP ----------
+@router.post("/eliminar_paciente")
+async def eliminar_paciente(request: Request):
+    try:
+        datos = await request.json()
+        dni = datos.get("dni")
+        institucion_id = request.session.get("institucion_id")
+        if not dni or not institucion_id:
+            return JSONResponse({"error": "Faltan datos necesarios"}, status_code=400)
+
+        # Buscar paciente
+        paciente = supabase.table("pacientes").select("*").eq("dni", dni).eq("institucion_id", institucion_id).single().execute()
+        if not paciente.data:
+            return JSONResponse({"error": "Paciente no encontrado"}, status_code=404)
+
+        datos_paciente = paciente.data
+
+        # Generar PDF de backup
+        safe_name = f"{datos_paciente['nombres'].replace(' ', '_')}_{datos_paciente['apellido'].replace(' ', '_')}"
+        backup_name = f"backup_{safe_name}_{dni}.pdf"
+        backup_path = os.path.join("static/doc", backup_name)
+
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", "B", 16)
+        pdf.cell(0, 10, "Backup del Paciente", ln=True, align="C")
+        pdf.set_font("Arial", size=12)
+        pdf.ln(10)
+        for key, value in datos_paciente.items():
+            pdf.cell(0, 10, f"{key}: {value}", ln=True)
+
+        pdf.output(backup_path)
+
+        # Subir backup
+        with open(backup_path, "rb") as f:
+            supabase.storage.from_(BUCKET_BACKUPS).upload(backup_name, f)
+
+        # Eliminar paciente
+        supabase.table("pacientes").delete().eq("dni", dni).eq("institucion_id", institucion_id).execute()
+
+        return JSONResponse({"exito": True, "mensaje": f"Paciente eliminado y respaldado como {backup_name}"})
+
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)

@@ -104,14 +104,14 @@ async function confirmarBorradoPaciente() {
   }
 
   try {
-    const response = await fetch('/eliminar_paciente', {
+    const response = await fetch('/eliminar-paciente', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ dni: dni })
     });
 
     const resultado = await response.json();
-    if (resultado.exito) {
+    if (resultado.mensaje) {
       alert('Paciente eliminado y respaldado con éxito.');
       document.getElementById('form-registro').reset();
       document.getElementById('confirmacion-borrado').style.display = 'none';

@@ -11,7 +11,7 @@ from supabase import create_client
 
 router = APIRouter()
 
-# Supabase config
+# Configuración Supabase
 SUPABASE_URL = "https://wolcdduoroiobtadbcup.supabase.co"
 SUPABASE_KEY_SERVICE = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvbGNkZHVvcm9pb2J0YWRiY3VwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NjIwMTQ5MywiZXhwIjoyMDYxNzc3NDkzfQ.GJtQkyj4PBLxekNQXJq7-mqnnqpcb_Gp0O0nmpLxICM"
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY_SERVICE)
@@ -19,19 +19,25 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY_SERVICE)
 BUCKET_PDFS = "pdfs"
 BUCKET_BACKUPS = "backups"
 
-# REGISTRO + PDF
+# ---------- REGISTRAR PACIENTE Y GENERAR PDF ----------
 @router.post("/generar_pdf_paciente")
 async def generar_pdf_paciente(
     request: Request,
-    nombres: str = Form(...), apellido: str = Form(...), dni: str = Form(...),
-    fecha_nacimiento: str = Form(...), telefono: str = Form(""), email: str = Form(""),
-    domicilio: str = Form(""), obra_social: str = Form(""), numero_afiliado: str = Form(""),
+    nombres: str = Form(...),
+    apellido: str = Form(...),
+    dni: str = Form(...),
+    fecha_nacimiento: str = Form(...),
+    telefono: str = Form(""),
+    email: str = Form(""),
+    domicilio: str = Form(""),
+    obra_social: str = Form(""),
+    numero_afiliado: str = Form(""),
     contacto_emergencia: str = Form("")
 ):
     try:
         institucion_id = request.session.get("institucion_id")
         if institucion_id is None:
-            return JSONResponse({"error": "No se encontró la institución en sesión"}, status_code=403)
+            return JSONResponse({"error": "Sesión sin institución activa"}, status_code=403)
 
         existe = supabase.table("pacientes").select("dni").eq("dni", dni).eq("institucion_id", institucion_id).execute()
         if existe.data:
@@ -42,6 +48,7 @@ async def generar_pdf_paciente(
         local_path = os.path.join("static/doc", filename)
         Path("static/doc").mkdir(parents=True, exist_ok=True)
 
+        # Crear PDF
         pdf = FPDF()
         pdf.add_page()
         logo_path = "static/icons/logo-medsys-gris.png"
@@ -71,11 +78,11 @@ async def generar_pdf_paciente(
 
         pdf.output(local_path)
 
+        # Subir a Supabase
         with open(local_path, "rb") as file_data:
-            supabase.storage.from_(BUCKET_PDFS).upload(
-                filename, file_data, {"content-type": "application/pdf"}
-            )
+            supabase.storage.from_(BUCKET_PDFS).upload(filename, file_data, {"content-type": "application/pdf"})
 
+        # Guardar en base
         supabase.table("pacientes").insert({
             "dni": dni,
             "nombres": nombres,
@@ -91,12 +98,12 @@ async def generar_pdf_paciente(
         }).execute()
 
         public_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_PDFS}/{filename}"
-        return JSONResponse({"exito": True, "url": public_url})
+        return JSONResponse({"exito": True, "pdf_url": public_url})
 
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
 
-# ENVÍO POR CORREO
+# ---------- ENVIAR PDF POR EMAIL ----------
 @router.post("/enviar_pdf_paciente")
 async def enviar_pdf_paciente(email: str = Form(...), nombres: str = Form(...), apellido: str = Form(...)):
     try:
@@ -107,7 +114,7 @@ async def enviar_pdf_paciente(email: str = Form(...), nombres: str = Form(...), 
         remitente = "medisys.bot@gmail.com"
         contrasena = "yeuaugaxmdvydcou"
         asunto = "Registro de Pacientes - MEDSYS"
-        cuerpo = f"""Estimado/a {nombres} {apellido},\n\nAdjuntamos el PDF correspondiente a su registro de paciente.\n\nSaludos cordiales,\nEquipo MEDSYS"""
+        cuerpo = f"Estimado/a {nombres} {apellido},\n\nAdjuntamos su registro en PDF.\n\nSaludos,\nEquipo MEDSYS"
 
         mensaje = MIMEMultipart()
         mensaje["From"] = remitente
@@ -116,54 +123,14 @@ async def enviar_pdf_paciente(email: str = Form(...), nombres: str = Form(...), 
         mensaje.attach(MIMEText(cuerpo, "plain"))
 
         with open(local_path, "rb") as f:
-            part = MIMEApplication(f.read(), Name=filename)
-            part['Content-Disposition'] = f'attachment; filename="{filename}"'
-            mensaje.attach(part)
+            parte = MIMEApplication(f.read(), Name=filename)
+            parte["Content-Disposition"] = f'attachment; filename="{filename}"'
+            mensaje.attach(parte)
 
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
             servidor.login(remitente, contrasena)
             servidor.send_message(mensaje)
 
-        return JSONResponse({"mensaje": "Correo enviado correctamente"})
-
-    except Exception as e:
-        return JSONResponse({"error": str(e)}, status_code=500)
-
-# ELIMINAR PACIENTE + BACKUP
-@router.post("/eliminar_paciente")
-async def eliminar_paciente(request: Request):
-    try:
-        data = await request.json()
-        dni = data.get("dni")
-        institucion_id = request.session.get("institucion_id")
-        if not institucion_id:
-            return JSONResponse({"error": "Sesión inválida"}, status_code=403)
-
-        paciente_data = supabase.table("pacientes").select("*").eq("dni", dni).eq("institucion_id", institucion_id).single().execute()
-        if not paciente_data.data:
-            return JSONResponse({"error": "Paciente no encontrado"}, status_code=404)
-
-        paciente = paciente_data.data
-        safe_name = f"{paciente['nombres'].replace(' ', '_')}_{paciente['apellido'].replace(' ', '_')}"
-        filename = f"backup_{safe_name}_{dni}.pdf"
-        local_path = os.path.join("static/doc", filename)
-
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", "B", 16)
-        pdf.cell(0, 10, "Backup Completo del Paciente", ln=True, align="C")
-        pdf.set_font("Arial", size=12)
-        pdf.ln(10)
-        for key, value in paciente.items():
-            pdf.cell(0, 10, f"{key.capitalize()}: {value}", ln=True)
-        pdf.output(local_path)
-
-        with open(local_path, "rb") as file_data:
-            supabase.storage.from_(BUCKET_BACKUPS).upload(filename, file_data)
-
-        supabase.table("pacientes").delete().eq("dni", dni).eq("institucion_id", institucion_id).execute()
-
-        return JSONResponse({"mensaje": f"Paciente eliminado y respaldado: {filename}"})
-
+        return JSONResponse({"exito": True})
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)

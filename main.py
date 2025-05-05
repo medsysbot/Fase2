@@ -157,6 +157,11 @@ async def subir_estudio(archivo: UploadFile = File(...)):
         f.write(contenido)
     return {"status": "success", "message": "Archivo subido correctamente"}
 
+# ---------------- RUTA ALERT MANAGER ----------------
+@app.get("/alertas", response_class=HTMLResponse)
+async def mostrar_alertas(request: Request):
+    return templates.TemplateResponse("alertas.html", {"request": request})
+
 # ---------------- INCLUIR RUTAS EXTERNAS ----------------
 from admin_routes import router as admin_router
 from acciones_pacientes import router as pacientes_router

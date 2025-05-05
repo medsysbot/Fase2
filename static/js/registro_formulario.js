@@ -26,9 +26,9 @@ async function guardarPDF() {
 
     const resultado = await response.json();
 
-    if (resultado.url) {
+    if (resultado.pdf_url) {
       alert('Paciente guardado exitosamente. PDF generado.');
-      sessionStorage.setItem('pdfURL', resultado.url);
+      sessionStorage.setItem('pdfURL', resultado.pdf_url);
     } else if (resultado.mensaje) {
       alert(resultado.mensaje);
     } else {
@@ -63,7 +63,7 @@ async function enviarPorCorreo() {
     });
 
     const resultado = await response.json();
-    if (resultado.mensaje) {
+    if (resultado.exito) {
       alert('E-mail enviado exitosamente.');
     } else {
       alert('No se pudo enviar el correo.');
@@ -104,14 +104,14 @@ async function confirmarBorradoPaciente() {
   }
 
   try {
-    const response = await fetch('/eliminar-paciente', {
+    const response = await fetch('/eliminar_paciente', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ dni: dni })
     });
 
     const resultado = await response.json();
-    if (resultado.message) {
+    if (resultado.exito) {
       alert('Paciente eliminado y respaldado con éxito.');
       document.getElementById('form-registro').reset();
       document.getElementById('confirmacion-borrado').style.display = 'none';

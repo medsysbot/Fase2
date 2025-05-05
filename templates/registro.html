@@ -2,10 +2,9 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Registro de Pacientes</title>
+  <title>MEDSYS - Registro de Pacientes</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
     body {
       background: linear-gradient(to bottom left, #0a2a3d, #155f82);
@@ -129,7 +128,7 @@
 </form>
 
 <div class="botones-flotantes">
-  <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
+  <button type="button" ondblclick="marcarCamposVoz()" title="Reconocimiento por voz">
     <img src="/static/icons/microfono.png" alt="Voz" />
   </button>
   <button type="button" onclick="guardarPDF()" title="Guardar">
@@ -138,7 +137,7 @@
   <button type="button" onclick="enviarPorCorreo()" title="Enviar">
     <img src="/static/icons/enviar.png" alt="Enviar" />
   </button>
-  <button type="button" onclick="abrirPDF()" id="btn-ver-pdf" title="Ver PDF">
+  <button type="button" onclick="abrirPDF()" title="Ver PDF">
     <img src="/static/icons/icono-ver-pdf.png" alt="Ver PDF" />
   </button>
   <button type="button" ondblclick="prepararBorradoPaciente()" title="Borrar paciente">

@@ -104,7 +104,7 @@ async function confirmarBorradoPaciente() {
   }
 
   try {
-    const response = await fetch('/eliminar_paciente', {
+    const response = await fetch('/eliminar-paciente', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ dni: dni })

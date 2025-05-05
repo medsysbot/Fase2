@@ -26,7 +26,7 @@ async function guardarPDF() {
 
     const resultado = await response.json();
 
-    if (resultado.pdf_url) {
+    if (resultado.exito && resultado.pdf_url) {
       alert('Paciente guardado exitosamente. PDF generado.');
       sessionStorage.setItem('pdfURL', resultado.pdf_url);
     } else if (resultado.mensaje) {
@@ -111,7 +111,7 @@ async function confirmarBorradoPaciente() {
     });
 
     const resultado = await response.json();
-    if (resultado.mensaje) {
+    if (resultado.message || resultado.exito) {
       alert('Paciente eliminado y respaldado con éxito.');
       document.getElementById('form-registro').reset();
       document.getElementById('confirmacion-borrado').style.display = 'none';

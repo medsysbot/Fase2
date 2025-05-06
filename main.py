@@ -7,9 +7,14 @@ from starlette.middleware.sessions import SessionMiddleware
 import os
 from supabase import create_client, Client
 
+# ╔════════════════════════════════════╗
+# ║             APP BASE               ║
+# ╚════════════════════════════════════╝
 app = FastAPI()
 
-# ---------------- CORS ----------------
+# ╔════════════════════════════════════╗
+# ║                CORS                ║
+# ╚════════════════════════════════════╝
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -17,21 +22,31 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ---------------- Sesiones ----------------
+# ╔════════════════════════════════════╗
+# ║        SESIÓN DE USUARIOS         ║
+# ╚════════════════════════════════════╝
 app.add_middleware(SessionMiddleware, secret_key="clave-super-secreta")
 
-# ---------------- Supabase Client ----------------
+# ╔════════════════════════════════════╗
+# ║        CLIENTE SUPABASE           ║
+# ╚════════════════════════════════════╝
 SUPABASE_URL = "https://wolcdduoroiobtadbcup.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvbGNkZHVvcm9pb2J0YWRiY3VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyMDE0OTMsImV4cCI6MjA2MTc3NzQ5M30.rV_1sa8iM8s6eCD-5m_wViCgWpd0d2xRHA_zQxRabHU"
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# ---------------- Archivos estáticos ----------------
+# ╔════════════════════════════════════╗
+# ║       ARCHIVOS ESTÁTICOS          ║
+# ╚════════════════════════════════════╝
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# ---------------- Templates ----------------
+# ╔════════════════════════════════════╗
+# ║            PLANTILLAS             ║
+# ╚════════════════════════════════════╝
 templates = Jinja2Templates(directory="templates")
 
-# ---------------- SPLASH INICIAL ----------------
+# ╔════════════════════════════════════╗
+# ║          SPLASH INICIAL           ║
+# ╚════════════════════════════════════╝
 @app.get("/", response_class=HTMLResponse)
 async def root_redirect(request: Request):
     return templates.TemplateResponse("splash_screen.html", {"request": request})
@@ -40,7 +55,9 @@ async def root_redirect(request: Request):
 async def splash_inicio(request: Request):
     return templates.TemplateResponse("splash_screen.html", {"request": request})
 
-# ---------------- LOGIN ----------------
+# ╔════════════════════════════════════╗
+# ║               LOGIN               ║
+# ╚════════════════════════════════════╝
 @app.get("/login", response_class=HTMLResponse)
 async def login_get(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
@@ -53,9 +70,7 @@ async def login_post(request: Request, usuario: str = Form(...), contrasena: str
             .eq("contrasena", contrasena)\
             .eq("rol", rol)\
             .eq("activo", True)\
-            .single()\
-            .execute()
-
+            .single().execute()
         user = result.data
 
         if user:
@@ -77,7 +92,9 @@ async def login_post(request: Request, usuario: str = Form(...), contrasena: str
             "error": f"Error de conexión o datos inválidos: {str(e)}"
         })
 
-# ---------------- SPLASH FINAL ----------------
+# ╔════════════════════════════════════╗
+# ║           SPLASH FINAL            ║
+# ╚════════════════════════════════════╝
 @app.get("/splash-final", response_class=HTMLResponse)
 async def splash_final(request: Request):
     usuario_logueado = request.session.get("usuario")
@@ -93,7 +110,6 @@ async def splash_final(request: Request):
         result = supabase.table("usuarios").select("nombres, apellido, rol")\
             .eq("usuario", usuario_logueado)\
             .single().execute()
-
         data = result.data or {}
         nombres = data.get("nombres", "Invitado")
         apellido = data.get("apellido", "")
@@ -110,16 +126,20 @@ async def splash_final(request: Request):
         "titulo": titulo
     })
 
-# ---------------- RUTAS HTML ----------------
+# ╔════════════════════════════════════╗
+# ║             RUTAS HTML            ║
+# ╚════════════════════════════════════╝
 @app.get("/index", response_class=HTMLResponse)
 async def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse("historias.html", {"request": request})
 
 @app.get("/registro", response_class=HTMLResponse)
 async def registro(request: Request):
     return templates.TemplateResponse("registro.html", {"request": request})
 
-# ---------------- ARCHIVOS MÉDICOS ----------------
+# ╔════════════════════════════════════╗
+# ║       ARCHIVOS MÉDICOS            ║
+# ╚════════════════════════════════════╝
 @app.get("/listar-estudios")
 async def listar_estudios():
     carpeta = "static/estudios"
@@ -157,12 +177,16 @@ async def subir_estudio(archivo: UploadFile = File(...)):
         f.write(contenido)
     return {"status": "success", "message": "Archivo subido correctamente"}
 
-# ---------------- RUTA ALERT MANAGER ----------------
+# ╔════════════════════════════════════╗
+# ║         RUTA ALERT MANAGER        ║
+# ╚════════════════════════════════════╝
 @app.get("/alertas", response_class=HTMLResponse)
 async def mostrar_alertas(request: Request):
     return templates.TemplateResponse("alertas.html", {"request": request})
 
-# ---------------- INCLUIR RUTAS EXTERNAS ----------------
+# ╔════════════════════════════════════╗
+# ║     INCLUIR RUTAS EXTERNAS        ║
+# ╚════════════════════════════════════╝
 from admin_routes import router as admin_router
 from acciones_pacientes import router as pacientes_router
 

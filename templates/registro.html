@@ -5,100 +5,10 @@
   <title>MEDSYS - Registro de Pacientes</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
-  <style>
-    body {
-      background: linear-gradient(to bottom left, #0a2a3d, #155f82);
-      font-family: 'Poppins', sans-serif;
-      color: #d3d3d3;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      text-align: center;
-      margin-top: 20px;
-    }
-    .logo-grande {
-      width: 180px;
-      margin-bottom: 10px;
-    }
-    h2 {
-      text-align: center;
-      font-style: italic;
-      font-weight: 600;
-      font-size: 28px;
-      color: #d3d3d3;
-    }
-    form {
-      max-width: 400px;
-      width: 90%;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: 500;
-      font-size: 17px;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 6px 10px;
-      font-size: 17.5px;
-      border: none;
-      border-radius: 8px;
-      background-color: white;
-      color: black;
-      box-sizing: border-box;
-      min-height: 45px;
-    }
-    textarea {
-      resize: vertical;
-      line-height: 1.4;
-    }
-    .botones-flotantes {
-      position: fixed;
-      right: 20px;
-      bottom: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      z-index: 1000;
-    }
-    .botones-flotantes button {
-      background-color: #4A90E2;
-      border: none;
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-    .botones-flotantes img {
-      width: 30px;
-      height: 30px;
-    }
-    .confirmacion-borrado {
-      display: none;
-      position: fixed;
-      bottom: 100px;
-      right: 20px;
-      background-color: rgba(10, 42, 61, 0.9);
-      padding: 15px;
-      border-radius: 12px;
-      text-align: center;
-      z-index: 1001;
-    }
-    .confirmacion-borrado img {
-      width: 50px;
-      height: 50px;
-      margin: 10px;
-      cursor: pointer;
-    }
-  </style>
+  <link rel="stylesheet" href="/static/css/styles.css" />
 </head>
 <body>
+
 <header>
   <img src="/static/icons/icono-registro.png" alt="Logo Registro" class="logo-grande" />
   <h2>Registro de Pacientes</h2>
@@ -144,14 +54,8 @@
     <img src="/static/icons/borrar.png" alt="Borrar" />
   </button>
 </div>
-  
-<div id="confirmacion-borrado" class="confirmacion-borrado">
-  <p>¿Confirmar borrado del paciente?</p>
-  <img src="/static/icons/confirmar-borrado.png" alt="Confirmar" onclick="confirmarBorradoPaciente()" />
-  <img src="/static/icons/cerrar.png" alt="Cancelar" onclick="cancelarBorradoPaciente()" />
-</div>
 
- <!-- ALERT MANAGER -->
+<!-- ALERT MANAGER -->
 <div id="alert-manager" class="alert-container" style="display: none;">
   <div class="alert-box">
     <img id="alert-icon" src="" alt="icono-alerta" class="alert-icon" />
@@ -163,8 +67,16 @@
   </div>
 </div>
 
+<!-- CONFIRMACIÓN DE BORRADO (clásico) -->
+<div id="confirmacion-borrado" class="confirmacion-borrado" style="display: none;">
+  <p>¿Confirmar borrado del paciente?</p>
+  <img src="/static/icons/confirmar-borrado.png" alt="Confirmar" onclick="confirmarBorradoPaciente()" />
+  <img src="/static/icons/cerrar.png" alt="Cancelar" onclick="cancelarBorradoPaciente()" />
+</div>
+
 <script src="/static/js/registro_formulario.js"></script>
 <script src="/static/js/registro_voz.js"></script>
 <script src="/static/js/alertas.js"></script>
+
 </body>
 </html>

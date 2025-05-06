@@ -67,16 +67,17 @@
   </div>
 </div>
 
-<!-- CONFIRMACIÓN DE BORRADO -->
+<!-- CONFIRMACIÓN DE BORRADO (clásico) -->
 <div id="confirmacion-borrado" class="confirmacion-borrado" style="display: none;">
   <p>¿Confirmar borrado del paciente?</p>
   <img src="/static/icons/confirmar-borrado.png" alt="Confirmar" onclick="confirmarBorradoPaciente()" />
   <img src="/static/icons/cerrar.png" alt="Cancelar" onclick="cancelarBorradoPaciente()" />
 </div>
 
+<!-- Carga de scripts en orden correcto -->
+<script src="/static/js/alertas.js"></script>
 <script src="/static/js/registro_formulario.js"></script>
 <script src="/static/js/registro_voz.js"></script>
-<script src="/static/js/alertas.js"></script>
 
 </body>
 </html>

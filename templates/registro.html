@@ -151,7 +151,7 @@
   <img src="/static/icons/cerrar.png" alt="Cancelar" onclick="cancelarBorradoPaciente()" />
 </div>
 
-  <!-- ALERT MANAGER -->
+ <!-- ALERT MANAGER -->
 <div id="alert-manager" class="alert-container" style="display: none;">
   <div class="alert-box">
     <img id="alert-icon" src="" alt="icono-alerta" class="alert-icon" />
@@ -162,83 +162,6 @@
     </div>
   </div>
 </div>
-
-<style>
-  .alert-container {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw; height: 100vh;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex; justify-content: center; align-items: center;
-    z-index: 9999;
-  }
-  .alert-box {
-    background: rgba(0, 0, 0, 0.85);
-    border-radius: 12px;
-    padding: 20px 30px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: #D3D3D3;
-  }
-  .alert-icon {
-    width: 96px;
-    height: 96px;
-    margin-bottom: 12px;
-  }
-  .alert-message {
-    font-size: 18px;
-    text-align: center;
-    margin-bottom: 20px;
-    white-space: nowrap;
-  }
-  .alert-buttons {
-    display: flex;
-    gap: 20px;
-  }
-  .alert-btn {
-    width: 100px;
-    height: auto;
-    cursor: pointer;
-  }
-</style>
-
-<script>
-  function showAlert(type, message, withButtons = false) {
-    const iconos = {
-      alerta: "/static/icons/alerta/alerta-alerta.png",
-      borrado: "/static/icons/alerta/alerta-borrado.png",
-      busqueda: "/static/icons/alerta/alerta-busqueda.png",
-      error: "/static/icons/alerta/alerta-error.png",
-      guardado: "/static/icons/alerta/alerta-guardado.png",
-      suceso: "/static/icons/alerta/alerta-suceso.png",
-      pacienteCargado: "/static/icons/alerta/alerta-paciente-cargado.png",
-      pdf: "/static/icons/alerta/alerta-pdf.png"
-    };
-
-    document.getElementById("alert-icon").src = iconos[type] || iconos["alerta"];
-    document.getElementById("alert-text").textContent = message;
-    document.getElementById("alert-buttons").style.display = withButtons ? "flex" : "none";
-    document.getElementById("alert-manager").style.display = "flex";
-
-    // Cierre automático después de 2.5 segundos (excepto si hay botones)
-    if (!withButtons) {
-      setTimeout(() => {
-        document.getElementById("alert-manager").style.display = "none";
-      }, 2500);
-    }
-  }
-
-  function closeAlert() {
-    document.getElementById("alert-manager").style.display = "none";
-  }
-
-  document.getElementById("btn-no").onclick = closeAlert;
-  document.getElementById("btn-borrar").onclick = function () {
-    confirmarBorradoPaciente();
-    closeAlert();
-  };
-</script>
 
 <script src="/static/js/registro_formulario.js"></script>
 <script src="/static/js/registro_voz.js"></script>

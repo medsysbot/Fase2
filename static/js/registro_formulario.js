@@ -93,7 +93,7 @@ function prepararBorradoPaciente() {
   showAlert("borrado", "¿Desea borrar este paciente?", true);
 }
 
-// Ocultar cartel
+// Ocultar cartel clásico (solo por si estuviera activo)
 function cancelarBorradoPaciente() {
   document.getElementById('confirmacion-borrado').style.display = 'none';
 }

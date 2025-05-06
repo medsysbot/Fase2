@@ -1,10 +1,19 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gestor de Alertas</title>
+  <link rel="stylesheet" href="/static/css/styles.css" />
+</head>
+<body>
+
 <div id="alert-manager" class="alert-container" style="display: none;">
   <div class="alert-box">
     <img id="alert-icon" src="" alt="icono-alerta" class="alert-icon" />
     <span id="alert-text" class="alert-message">Mensaje de alerta</span>
     <div id="alert-buttons" class="alert-buttons" style="display: none;">
-      <img src="static/icons/alerta/alerta-boton-borrar.png" id="btn-borrar" class="alert-btn" />
-      <img src="static/icons/alerta/alerta-boton-no.png" id="btn-no" class="alert-btn" />
+      <img src="/static/icons/alerta/alerta-boton-borrar.png" id="btn-borrar" class="alert-btn" />
+      <img src="/static/icons/alerta/alerta-boton-no.png" id="btn-no" class="alert-btn" />
     </div>
   </div>
 </div>
@@ -57,13 +66,13 @@
 <script>
   function showAlert(type, message, withButtons = false) {
     const iconos = {
-      alerta: "static/icons/alerta/alerta-alerta.png",
-      borrado: "static/icons/alerta/alerta-borrado.png",
-      busqueda: "static/icons/alerta/alerta-busqueda.png",
-      error: "static/icons/alerta/alerta-error.png",
-      guardado: "static/icons/alerta/alerta-guardado.png",
-      suceso: "static/icons/alerta/alerta-suceso.png",
-      pacienteCargado: "static/icons/alerta/alerta-paciente-cargado.png"
+      alerta: "/static/icons/alerta/alerta-alerta.png",
+      borrado: "/static/icons/alerta/alerta-borrado.png",
+      busqueda: "/static/icons/alerta/alerta-busqueda.png",
+      error: "/static/icons/alerta/alerta-error.png",
+      guardado: "/static/icons/alerta/alerta-guardado.png",
+      suceso: "/static/icons/alerta/alerta-suceso.png",
+      pacienteCargado: "/static/icons/alerta/alerta-paciente-cargado.png"
     };
 
     document.getElementById("alert-icon").src = iconos[type] || iconos["alerta"];
@@ -82,3 +91,6 @@
     closeAlert();
   };
 </script>
+
+</body>
+</html>

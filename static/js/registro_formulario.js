@@ -19,16 +19,12 @@ async function guardarPDF() {
       formData.append(key, datos[key]);
     }
 
-    showAlert("guardado", "Guardando paciente...");
-
     const response = await fetch('/generar_pdf_paciente', {
       method: 'POST',
       body: formData
     });
 
     const resultado = await response.json();
-
-    closeAlert();
 
     if (resultado.exito && resultado.pdf_url) {
       showAlert('suceso', 'Paciente guardado exitosamente. PDF generado.');
@@ -40,7 +36,6 @@ async function guardarPDF() {
     }
   } catch (error) {
     console.error('Error al guardar:', error);
-    closeAlert();
     showAlert('error', 'Error en el servidor.');
   }
 }
@@ -57,8 +52,6 @@ async function enviarPorCorreo() {
   }
 
   try {
-    showAlert("guardado", "Enviando e-mail...");
-
     const formData = new FormData();
     formData.append("nombres", nombres);
     formData.append("apellido", apellido);
@@ -70,8 +63,6 @@ async function enviarPorCorreo() {
     });
 
     const resultado = await response.json();
-    closeAlert();
-
     if (resultado.exito) {
       showAlert('suceso', 'E-mail enviado exitosamente.');
     } else {
@@ -79,7 +70,6 @@ async function enviarPorCorreo() {
     }
   } catch (error) {
     console.error('Error al enviar el e-mail:', error);
-    closeAlert();
     showAlert('error', 'Error en el servidor al enviar el e-mail.');
   }
 }
@@ -114,8 +104,6 @@ async function confirmarBorradoPaciente() {
   }
 
   try {
-    showAlert("borrado", "Eliminando paciente...");
-
     const response = await fetch('/eliminar_paciente', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -123,8 +111,6 @@ async function confirmarBorradoPaciente() {
     });
 
     const resultado = await response.json();
-    closeAlert();
-
     if (resultado.exito || resultado.mensaje) {
       showAlert('suceso', 'Paciente eliminado y respaldado correctamente.');
       document.getElementById('form-registro').reset();
@@ -135,7 +121,6 @@ async function confirmarBorradoPaciente() {
     }
   } catch (error) {
     console.error('Error al eliminar:', error);
-    closeAlert();
     showAlert('error', 'Error en el servidor al eliminar.');
   }
 }

@@ -1,4 +1,6 @@
-function showAlert(type, message, withButtons = false) {
+let alertTimeout = null;
+
+function showAlert(type, message, withButtons = false, duration = 3000) {
   const iconos = {
     alerta: "/static/icons/alerta/alerta-alerta.png",
     borrado: "/static/icons/alerta/alerta-borrado.png",
@@ -7,7 +9,9 @@ function showAlert(type, message, withButtons = false) {
     guardado: "/static/icons/alerta/alerta-guardado.png",
     suceso: "/static/icons/alerta/alerta-suceso.png",
     pacienteCargado: "/static/icons/alerta/alerta-paciente-cargado.png",
-    pdf: "/static/icons/alerta/alerta-pdf.png"
+    pdf: "/static/icons/alerta/alerta-pdf.png",
+    email: "/static/icons/alerta/alerta-email.png",
+    cargaPDF: "/static/icons/alerta/alerta-carga-pdf.png"
   };
 
   const icono = document.getElementById("alert-icon");
@@ -20,24 +24,10 @@ function showAlert(type, message, withButtons = false) {
   botones.style.display = withButtons ? "flex" : "none";
   contenedor.style.display = "flex";
 
-  if (!withButtons) {
-    setTimeout(() => {
+  if (!withButtons && duration !== "infinito") {
+    clearTimeout(alertTimeout);
+    alertTimeout = setTimeout(() => {
       contenedor.style.display = "none";
-    }, 2500);
+    }, duration);
   }
 }
-
-function closeAlert() {
-  document.getElementById("alert-manager").style.display = "none";
-}
-
-// Cierra el cartel cuando se hace clic en botón "no"
-document.getElementById("btn-no").onclick = closeAlert;
-
-// Confirma borrado y cierra cartel
-document.getElementById("btn-borrar").onclick = function () {
-  if (typeof confirmarBorradoPaciente === "function") {
-    confirmarBorradoPaciente();
-  }
-  closeAlert();
-};

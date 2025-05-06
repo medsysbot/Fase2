@@ -14,8 +14,6 @@ async function guardarPDF() {
   };
 
   try {
-    showAlert("guardado", "Guardando paciente...");
-
     const formData = new FormData();
     for (const key in datos) {
       formData.append(key, datos[key]);
@@ -29,16 +27,16 @@ async function guardarPDF() {
     const resultado = await response.json();
 
     if (resultado.exito && resultado.pdf_url) {
-      showAlert("suceso", "Paciente guardado exitosamente.");
+      alert('Paciente guardado exitosamente. PDF generado.');
       sessionStorage.setItem('pdfURL', resultado.pdf_url);
     } else if (resultado.mensaje) {
-      showAlert("error", resultado.mensaje);
+      alert(resultado.mensaje);
     } else {
-      showAlert("error", "Error desconocido al guardar el paciente.");
+      alert('Error desconocido al guardar el paciente.');
     }
   } catch (error) {
     console.error('Error al guardar:', error);
-    showAlert("error", "Error en el servidor.");
+    alert('Error en el servidor.');
   }
 }
 
@@ -49,13 +47,11 @@ async function enviarPorCorreo() {
   const email = document.getElementById('email').value.trim();
 
   if (!email) {
-    showAlert("error", "El campo de correo electrónico está vacío.");
+    alert('El campo de correo electrónico está vacío.');
     return;
   }
 
   try {
-    showAlert("alerta", "Enviando e-mail...");
-
     const formData = new FormData();
     formData.append("nombres", nombres);
     formData.append("apellido", apellido);
@@ -68,13 +64,13 @@ async function enviarPorCorreo() {
 
     const resultado = await response.json();
     if (resultado.exito) {
-      showAlert("suceso", "E-mail enviado exitosamente.");
+      alert('E-mail enviado exitosamente.');
     } else {
-      showAlert("error", "No se pudo enviar el correo.");
+      alert('No se pudo enviar el correo.');
     }
   } catch (error) {
     console.error('Error al enviar el e-mail:', error);
-    showAlert("error", "Error en el servidor al enviar el e-mail.");
+    alert('Error en el servidor al enviar el e-mail.');
   }
 }
 
@@ -84,16 +80,16 @@ function abrirPDF() {
   if (url) {
     window.open(url, '_blank');
   } else {
-    showAlert("pdf", "No hay PDF disponible.");
+    alert('No hay PDF disponible. Por favor, genera uno primero.');
   }
 }
 
 // Mostrar cartel de confirmación
 function prepararBorradoPaciente() {
-  showAlert("borrado", "¿Desea borrar este paciente?", true);
+  document.getElementById('confirmacion-borrado').style.display = 'block';
 }
 
-// Ocultar cartel clásico (solo por si estuviera activo)
+// Ocultar cartel
 function cancelarBorradoPaciente() {
   document.getElementById('confirmacion-borrado').style.display = 'none';
 }
@@ -103,13 +99,11 @@ async function confirmarBorradoPaciente() {
   const dni = document.getElementById('dni').value.trim();
 
   if (!dni) {
-    showAlert("error", "Debes ingresar un DNI válido.");
+    alert('Debes ingresar un DNI válido.');
     return;
   }
 
   try {
-    showAlert("borrado", "Borrando paciente...");
-
     const response = await fetch('/eliminar_paciente', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -118,15 +112,15 @@ async function confirmarBorradoPaciente() {
 
     const resultado = await response.json();
     if (resultado.exito || resultado.mensaje) {
-      showAlert("suceso", "Paciente eliminado correctamente.");
+      alert('Paciente eliminado y respaldado correctamente.');
       document.getElementById('form-registro').reset();
       document.getElementById('confirmacion-borrado').style.display = 'none';
       sessionStorage.removeItem('pdfURL');
     } else {
-      showAlert("error", "No se pudo eliminar el paciente.");
+      alert('No se pudo eliminar el paciente.');
     }
   } catch (error) {
     console.error('Error al eliminar:', error);
-    showAlert("error", "Error en el servidor al eliminar.");
+    alert('Error en el servidor al eliminar.');
   }
 }

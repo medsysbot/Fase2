@@ -40,7 +40,7 @@ document.getElementById("btn-borrar").onclick = function () {
   closeAlert();
 };
 
-// Función para guardar y generar el PDF del paciente
+// === [pulsar botón de guardado] ===
 async function guardarPDF() {
   const datos = {
     nombres: document.getElementById('nombres').value.trim(),
@@ -70,11 +70,16 @@ async function guardarPDF() {
 
     const resultado = await response.json();
 
+    // === [guardado exitoso del paciente] ===
     if (resultado.exito && resultado.pdf_url) {
       showAlert("suceso", "Paciente Guardado Con Éxito", false, 3000);
       sessionStorage.setItem('pdfURL', resultado.pdf_url);
+
+    // === [paciente duplicado] ===
     } else if (resultado.mensaje) {
       showAlert("pacienteCargado", "El Paciente Ya Está Registrado", false, 3000);
+
+    // === [error al guardar el paciente] ===
     } else {
       showAlert("error", "Error Al Guardar El Paciente", false, 4000);
     }
@@ -84,13 +89,14 @@ async function guardarPDF() {
   }
 }
 
-// Función para enviar el PDF por correo
+// === [pulsar botón de envío de email] ===
 async function enviarPorCorreo() {
   const nombres = document.getElementById('nombres').value.trim();
   const apellido = document.getElementById('apellido').value.trim();
   const email = document.getElementById('email').value.trim();
 
   if (!email) {
+    // === [Error: email vacío] ===
     showAlert("error", "El campo de correo electrónico está vacío.", false, 3000);
     return;
   }
@@ -109,8 +115,12 @@ async function enviarPorCorreo() {
     });
 
     const resultado = await response.json();
+
+    // === [email enviado exitosamente] ===
     if (resultado.exito) {
       showAlert("suceso", "E-mail Enviado", false, 3000);
+
+    // === [Error al enviar el e-mail] ===
     } else {
       showAlert("error", "Error Al Enviar el E-mail", false, 3000);
     }
@@ -120,7 +130,7 @@ async function enviarPorCorreo() {
   }
 }
 
-// Abrir el PDF en una nueva pestaña
+// === [pulsar botón para ver PDF] ===
 function abrirPDF() {
   const url = sessionStorage.getItem('pdfURL');
   if (url) {
@@ -129,21 +139,22 @@ function abrirPDF() {
       window.open(url, '_blank');
     }, 1000);
   } else {
+    // === [error al cargar el PDF] ===
     showAlert("pdf", "Error Al Cargar El PDF", false, 3000);
   }
 }
 
-// Mostrar cartel de confirmación
+// === [doble pulsado del botón borrar] ===
 function prepararBorradoPaciente() {
   showAlert("alerta", "Borrado De Paciente Definitivo Desea Continuar?", true, "infinito");
 }
 
-// Ocultar cartel
+// === [cancelar desde botón clásico viejo] ===
 function cancelarBorradoPaciente() {
   document.getElementById('confirmacion-borrado').style.display = 'none';
 }
 
-// Confirmar borrado con respaldo
+// === [confirmar borrado del paciente después del OK] ===
 async function confirmarBorradoPaciente() {
   const dni = document.getElementById('dni').value.trim();
 
@@ -162,11 +173,15 @@ async function confirmarBorradoPaciente() {
     });
 
     const resultado = await response.json();
+
+    // === [borrado exitoso] ===
     if (resultado.exito || resultado.mensaje) {
       showAlert("suceso", "Paciente Borrado", false, 3000);
       document.getElementById('form-registro').reset();
       document.getElementById('confirmacion-borrado').style.display = 'none';
       sessionStorage.removeItem('pdfURL');
+
+    // === [error al borrar el paciente] ===
     } else {
       showAlert("error", "Error Al Borrar El Paciente", false, 3000);
     }

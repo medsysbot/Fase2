@@ -31,8 +31,10 @@ function closeAlert() {
   document.getElementById("alert-manager").style.display = "none";
 }
 
+// Cierra el cartel cuando se hace clic en botón "no"
 document.getElementById("btn-no").onclick = closeAlert;
 
+// Confirma borrado y cierra cartel
 document.getElementById("btn-borrar").onclick = function () {
   if (typeof confirmarBorradoPaciente === "function") {
     confirmarBorradoPaciente();

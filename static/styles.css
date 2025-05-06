@@ -203,34 +203,44 @@ footer {
 
 .alert-box {
   background: rgba(0, 0, 0, 0.85);
-  border-radius: 12px;
-  padding: 20px 30px;
+  border-radius: 16px;
+  padding: 25px 35px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #D3D3D3;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
 }
 
 .alert-icon {
   width: 96px;
   height: 96px;
-  margin-bottom: 12px;
+  object-fit: contain;
+  margin-bottom: 18px;
+  image-rendering: auto;
 }
 
 .alert-message {
-  font-size: 18px;
+  font-size: 20px;
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
+  color: #D3D3D3;
+  font-weight: 500;
   white-space: nowrap;
 }
 
 .alert-buttons {
   display: flex;
-  gap: 20px;
+  gap: 25px;
+  justify-content: center;
 }
 
 .alert-btn {
-  width: 100px;
+  width: 110px;
   height: auto;
   cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.alert-btn:hover {
+  transform: scale(1.05);
 }

@@ -2,8 +2,6 @@
 /*      ALERTAS PERSONALIZADAS  */
 /*──────────────────────────────*/
 
-let alertTimeout = null;
-
 function showAlert(type, message, withButtons = false, duration = 3000) {
   const iconos = {
     alerta: "/static/icons/alerta/alerta-alerta.png",
@@ -29,8 +27,7 @@ function showAlert(type, message, withButtons = false, duration = 3000) {
   contenedor.style.display = "flex";
 
   if (!withButtons && duration !== "infinito") {
-    clearTimeout(alertTimeout);
-    alertTimeout = setTimeout(() => {
+    setTimeout(() => {
       contenedor.style.display = "none";
     }, duration);
   }
@@ -66,7 +63,6 @@ async function guardarPDF() {
 
   try {
     showAlert("guardado", "Guardando Paciente…", false, 3000);
-    await new Promise(resolve => setTimeout(resolve, 3200));
 
     const formData = new FormData();
     for (const key in datos) {
@@ -110,7 +106,6 @@ async function enviarPorCorreo() {
 
   try {
     showAlert("email", "Enviando e-mail…", false, 3000);
-    await new Promise(resolve => setTimeout(resolve, 3200));
 
     const formData = new FormData();
     formData.append("nombres", nombres);
@@ -152,6 +147,7 @@ function abrirPDF() {
         window.open(url, '_blank');
       }
     }, 1000);
+
   } else {
     showAlert("pdf", "Error Al Cargar El PDF", false, 3000);
   }
@@ -185,14 +181,9 @@ async function confirmarBorradoPaciente() {
     return;
   }
 
-  // FORZAR cierre de alerta anterior (confirmación)
-  document.getElementById("alert-manager").style.display = "none";
-  await new Promise(resolve => setTimeout(resolve, 300)); // pequeña pausa para evitar superposición
-
-  showAlert("borrado", "Borrando Paciente…", false, 3000);
-  await new Promise(resolve => setTimeout(resolve, 3200));
-
   try {
+    showAlert("borrado", "Borrando Paciente…", false, 3000);
+
     const response = await fetch('/eliminar_paciente', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

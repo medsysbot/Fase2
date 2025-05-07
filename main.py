@@ -228,3 +228,5 @@ from acciones_pacientes import router as pacientes_router
 
 app.include_router(admin_router)
 app.include_router(pacientes_router)
+from acciones_historia_clinica import router as historia_clinica_router
+app.include_router(historia_clinica_router)

@@ -115,7 +115,6 @@ function abrirPDF() {
   const url = sessionStorage.getItem('pdfURL');
   if (url) {
     showAlert("cargaPDF", "Cargando PDF…", false, 3000);
-
     setTimeout(() => {
       const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
       if (isIOS) {

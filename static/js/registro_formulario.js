@@ -174,6 +174,10 @@ function cancelarBorradoPaciente() {
 /*      FUNCIÓN: CONFIRMAR BORRADO      */
 /*──────────────────────────────────────*/
 
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function confirmarBorradoPaciente() {
   const dni = document.getElementById('dni').value.trim();
 
@@ -182,9 +186,8 @@ async function confirmarBorradoPaciente() {
     return;
   }
 
-  // Mostramos el cartel intermedio ANTES del fetch
   showAlert("borrado", "Borrando Paciente…", false, 3000);
-  await new Promise(resolve => setTimeout(resolve, 3200));  // Esperamos que se vea
+  await delay(3200);
 
   try {
     const response = await fetch('/eliminar_paciente', {

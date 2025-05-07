@@ -1,31 +1,31 @@
-from fastapi import APIRouter, Form, Request
+# ╔══════════════════════════════════════════════╗
+# ║   RUTAS PARA HISTORIA CLÍNICA COMPLETA       ║
+# ╚══════════════════════════════════════════════╝
+
+from fastapi import APIRouter, Form, Request, UploadFile, File
 from fastapi.responses import JSONResponse
 from fpdf import FPDF
 from pathlib import Path
 import os
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.mime.application import MIMEApplication
 from supabase import create_client
 
 # ╔════════════════════════════════════╗
-# ║   CONFIGURACIÓN DE SUPABASE       ║
+# ║     CONFIGURACIÓN DE SUPABASE     ║
 # ╚════════════════════════════════════╝
+
 SUPABASE_URL = "https://wolcdduoroiobtadbcup.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvbGNkZHVvcm9pb2J0YWRiY3VwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NjIwMTQ5MywiZXhwIjoyMDYxNzc3NDkzfQ.GJtQkyj4PBLxekNQXJq7-mqnnqpcb_Gp0O0nmpLxICM"  # Pegá tu clave completa aquí
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvbGNkZHVvcm9pb2J0YWRiY3VwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NjIwMTQ5MywiZXhwIjoyMDYxNzc3NDkzfQ.GJtQkyj4PBLxekNQXJq7-mqnnqpcb_Gp0O0nmpLxICM"
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 BUCKET_PDFS = "pdfs"
+BUCKET_FIRMAS = "firma-sello-usuarios"
 
-# ╔══════════════════════════════════════╗
-# ║         DEFINICIÓN DE ROUTER        ║
-# ╚══════════════════════════════════════╝
 router = APIRouter()
 
 # ╔══════════════════════════════════════════════╗
 # ║  REGISTRAR HISTORIA CLÍNICA Y GENERAR PDF    ║
 # ╚══════════════════════════════════════════════╝
+
 @router.post("/generar_pdf_historia_completa")
 async def generar_pdf_historia_completa(
     request: Request,
@@ -47,18 +47,26 @@ async def generar_pdf_historia_completa(
     medicacion: str = Form(""),
     estudios: str = Form(""),
     historial_tratamientos: str = Form(""),
-    historial_consultas: str = Form("")
+    historial_consultas: str = Form(""),
+    firma: UploadFile = File(None),
+    sello: UploadFile = File(None)
 ):
     try:
         institucion_id = request.session.get("institucion_id")
         if institucion_id is None:
             return JSONResponse({"error": "Sesión sin institución activa"}, status_code=403)
 
+        # ═══════════════════════════════════════════════════════════
+        #  Generar nombre seguro y ruta local del PDF
+        # ═══════════════════════════════════════════════════════════
         safe_name = nombre.strip().replace(" ", "_")
         filename = f"historia_completa_{safe_name}_{dni}.pdf"
         local_path = os.path.join("static/doc", filename)
         Path("static/doc").mkdir(parents=True, exist_ok=True)
 
+        # ═══════════════════════════════════════════════════════════
+        #  Crear PDF
+        # ═══════════════════════════════════════════════════════════
         pdf = FPDF()
         pdf.add_page()
         logo_path = "static/icons/logo-medsys-gris.png"
@@ -98,9 +106,35 @@ async def generar_pdf_historia_completa(
 
         pdf.output(local_path)
 
-        with open(local_path, "rb") as file_data:
-            supabase.storage.from_(BUCKET_PDFS).upload(filename, file_data, {"content-type": "application/pdf"})
+        # ═══════════════════════════════════════════════════════════
+        #  Subir PDF al bucket público de PDFs
+        # ═══════════════════════════════════════════════════════════
+        with open(local_path, "rb") as f:
+            supabase.storage.from_(BUCKET_PDFS).upload(filename, f, {"content-type": "application/pdf"})
 
+        # ═══════════════════════════════════════════════════════════
+        #  Subir firma y sello al bucket privado (reemplazo automático)
+        # ═══════════════════════════════════════════════════════════
+        firma_url = ""
+        sello_url = ""
+
+        if firma:
+            firma_nombre = f"{dni}-firma.png"
+            supabase.storage.from_(BUCKET_FIRMAS).remove([firma_nombre])
+            contenido = await firma.read()
+            supabase.storage.from_(BUCKET_FIRMAS).upload(firma_nombre, contenido, {"content-type": firma.content_type})
+            firma_url = f"{BUCKET_FIRMAS}/{firma_nombre}"
+
+        if sello:
+            sello_nombre = f"{dni}-sello.png"
+            supabase.storage.from_(BUCKET_FIRMAS).remove([sello_nombre])
+            contenido = await sello.read()
+            supabase.storage.from_(BUCKET_FIRMAS).upload(sello_nombre, contenido, {"content-type": sello.content_type})
+            sello_url = f"{BUCKET_FIRMAS}/{sello_nombre}"
+
+        # ═══════════════════════════════════════════════════════════
+        #  Guardar en base de datos historia_clinica_completa
+        # ═══════════════════════════════════════════════════════════
         supabase.table("historia_clinica_completa").insert({
             "nombre": nombre,
             "dni": dni,
@@ -121,44 +155,13 @@ async def generar_pdf_historia_completa(
             "estudios": estudios,
             "historial_tratamientos": historial_tratamientos,
             "historial_consultas": historial_consultas,
-            "institucion_id": institucion_id
+            "institucion_id": institucion_id,
+            "firma_url": firma_url,
+            "sello_url": sello_url
         }).execute()
 
         public_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_PDFS}/{filename}"
         return JSONResponse({"exito": True, "pdf_url": public_url})
 
-    except Exception as e:
-        return JSONResponse({"error": str(e)}, status_code=500)
-
-# ╔══════════════════════════════════════════════╗
-# ║    ENVIAR HISTORIA COMPLETA POR CORREO       ║
-# ╚══════════════════════════════════════════════╝
-@router.post("/enviar_pdf_historia_completa")
-async def enviar_pdf_historia(email: str = Form(...), nombre: str = Form(...), dni: str = Form(...)):
-    try:
-        filename = f"historia_completa_{nombre.strip().replace(' ', '_')}_{dni}.pdf"
-        local_path = os.path.join("static/doc", filename)
-
-        remitente = "medisys.bot@gmail.com"
-        contrasena = "yeuaugaxmdvydcou"
-        asunto = "Historia Clínica Completa - MEDSYS"
-        cuerpo = f"Estimado/a {nombre},\n\nAdjuntamos su historia clínica completa.\n\nSaludos,\nEquipo MEDSYS"
-
-        mensaje = MIMEMultipart()
-        mensaje["From"] = remitente
-        mensaje["To"] = email
-        mensaje["Subject"] = asunto
-        mensaje.attach(MIMEText(cuerpo, "plain"))
-
-        with open(local_path, "rb") as f:
-            parte = MIMEApplication(f.read(), Name=filename)
-            parte["Content-Disposition"] = f'attachment; filename="{filename}"'
-            mensaje.attach(parte)
-
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
-            servidor.login(remitente, contrasena)
-            servidor.send_message(mensaje)
-
-        return JSONResponse({"exito": True})
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)

@@ -1,60 +1,36 @@
-function iniciarReconocimiento() {
-  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-  recognition.lang = 'es-AR';
-  recognition.interimResults = false;
-  recognition.continuous = false;
+/*──────────────────────────────────────────────*/
+/*   FUNCIÓN PRINCIPAL: Activar Reconocimiento   */
+/*──────────────────────────────────────────────*/
+function marcarCamposVoz() {
+  try {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert("Este navegador no soporta reconocimiento de voz.");
+      return;
+    }
 
-  recognition.onresult = (event) => {
-    const texto = event.results[0][0].transcript.toLowerCase();
-    console.log("Texto dictado:", texto);
+    const recognition = new SpeechRecognition();
+    recognition.lang = "es-ES";
+    recognition.interimResults = false;
+    recognition.continuous = false;
 
-    const campos = {
-      "paciente": "paciente",
-      "edad": "edad",
-      "dni": "dni",
-      "fecha de nacimiento": "fecha_nacimiento",
-      "sexo": "sexo",
-      "domicilio": "domicilio",
-      "teléfono": "telefono",
-      "correo": "email",
-      "email": "email",
-      "obra social": "obra_social",
-      "prepaga": "obra_social",
-      "afiliado": "nro_afiliado",
-      "antecedentes personales": "antecedentes_personales",
-      "antecedentes familiares": "antecedentes_familiares",
-      "hábitos": "habitos",
-      "crónicas": "cronicas",
-      "internaciones": "cirugias",
-      "cirugías": "cirugias",
-      "medicación actual": "medicacion",
-      "estudios": "estudios",
-      "motivo de consulta": "motivo",
-      "diagnóstico": "diagnostico",
-      "tratamiento": "tratamiento",
-      "instrucciones": "instrucciones",
-      "próxima consulta": "proxima_consulta",
-      "profesional": "profesional"
+    recognition.onresult = function (event) {
+      const texto = event.results[0][0].transcript.trim();
+      const campoActivo = document.activeElement;
+
+      if (campoActivo && (campoActivo.tagName === "INPUT" || campoActivo.tagName === "TEXTAREA")) {
+        campoActivo.value += (campoActivo.value ? " " : "") + texto;
+      }
     };
 
-    for (const clave in campos) {
-      if (texto.includes(clave)) {
-        const idCampo = campos[clave];
-        const valor = texto.replace(clave, "").trim();
-        const campo = document.getElementById(idCampo);
-        if (campo) campo.value = valor;
-        break;
-      }
-    }
-  };
+    recognition.onerror = function (event) {
+      console.error("Error en reconocimiento de voz:", event.error);
+      alert("Ocurrió un error con el reconocimiento de voz.");
+    };
 
-  recognition.onerror = (e) => console.error("Error de voz:", e.error);
-  recognition.start();
-}
-
-document.addEventListener("keydown", (e) => {
-  if (e.code === "Space") {
-    e.preventDefault();
-    iniciarReconocimiento();
+    recognition.start();
+  } catch (e) {
+    console.error("No se pudo activar la voz:", e);
+    alert("Error al activar el reconocimiento de voz.");
   }
-});
+}

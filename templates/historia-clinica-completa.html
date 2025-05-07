@@ -64,34 +64,34 @@
 <!--        ANTECEDENTES MÉDICOS       -->
 <!--────────────────────────────────────-->
   <label>Antecedentes personales:</label>
-  <textarea name="antecedentes_personales" autocapitalize="sentences"></textarea>
+  <textarea name="antecedentes_personales" autocomplete="off" inputmode="text"></textarea>
 
   <label>Antecedentes familiares:</label>
-  <textarea name="antecedentes_familiares" autocapitalize="sentences"></textarea>
+  <textarea name="antecedentes_familiares" autocomplete="off" inputmode="text"></textarea>
 
   <label>Hábitos:</label>
-  <textarea name="habitos" autocapitalize="sentences"></textarea>
+  <textarea name="habitos" autocomplete="off" inputmode="text"></textarea>
 
   <label>Enfermedades crónicas:</label>
-  <textarea name="enfermedades_cronicas" autocapitalize="sentences"></textarea>
+  <textarea name="enfermedades_cronicas" autocomplete="off" inputmode="text"></textarea>
 
 <!--────────────────────────────────────-->
 <!--        HISTORIAL Y ESTUDIOS       -->
 <!--────────────────────────────────────-->
   <label>Cirugías y Hospitalizaciones:</label>
-  <textarea name="cirugias" autocapitalize="sentences"></textarea>
+  <textarea name="cirugias" autocomplete="off" inputmode="text"></textarea>
 
   <label>Medicación Actual:</label>
-  <textarea name="medicacion" autocapitalize="sentences"></textarea>
+  <textarea name="medicacion" autocomplete="off" inputmode="text"></textarea>
 
   <label>Estudios Complementarios:</label>
-  <textarea name="estudios" autocapitalize="sentences"></textarea>
+  <textarea name="estudios" autocomplete="off" inputmode="text"></textarea>
 
   <label>Historial de tratamientos:</label>
-  <textarea name="historial_tratamientos" autocapitalize="sentences"></textarea>
+  <textarea name="historial_tratamientos" autocomplete="off" inputmode="text"></textarea>
 
   <label>Historial de consultas:</label>
-  <textarea name="historial_consultas" autocapitalize="sentences"></textarea>
+  <textarea name="historial_consultas" autocomplete="off" inputmode="text"></textarea>
 
 <!--────────────────────────────────────-->
 <!--        FIRMAS PROFESIONALES       -->
@@ -117,7 +117,7 @@
   <button type="button" onclick="guardarPDF()" title="Guardar">
     <img src="/static/icons/guardar.png" alt="Guardar" />
   </button>
-  <button type="submit" form="form-historia" title="Enviar">
+  <button type="button" onclick="enviarPorCorreo()" title="Enviar">
     <img src="/static/icons/enviar.png" alt="Enviar" />
   </button>
   <button type="button" onclick="abrirPDF()" title="Ver PDF">

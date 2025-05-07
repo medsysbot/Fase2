@@ -14,7 +14,8 @@ body {
   margin: 0;
   padding: 0;
   color: #5c5c5c;
-  background: linear-gradient(to bottom, #d6f5f3, #66b2ff, #0d47a1); 
+  background: linear-gradient(to bottom, #e0f7fa, #81d4fa, #4fc3f7);
+  color: #2a2a2a;
   background-repeat: no-repeat;
   background-attachment: fixed;
   min-height: 100vh;

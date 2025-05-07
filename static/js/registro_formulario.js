@@ -63,6 +63,7 @@ async function guardarPDF() {
 
   try {
     showAlert("guardado", "Guardando Paciente…", false, 3000);
+    await new Promise(resolve => setTimeout(resolve, 3200));
 
     const formData = new FormData();
     for (const key in datos) {
@@ -106,6 +107,7 @@ async function enviarPorCorreo() {
 
   try {
     showAlert("email", "Enviando e-mail…", false, 3000);
+    await new Promise(resolve => setTimeout(resolve, 3200));
 
     const formData = new FormData();
     formData.append("nombres", nombres);
@@ -147,7 +149,6 @@ function abrirPDF() {
         window.open(url, '_blank');
       }
     }, 1000);
-
   } else {
     showAlert("pdf", "Error Al Cargar El PDF", false, 3000);
   }
@@ -183,6 +184,7 @@ async function confirmarBorradoPaciente() {
 
   try {
     showAlert("borrado", "Borrando Paciente…", false, 3000);
+    await new Promise(resolve => setTimeout(resolve, 3200));
 
     const response = await fetch('/eliminar_paciente', {
       method: 'POST',

@@ -1,4 +1,7 @@
-// Función para mostrar alertas personalizadas
+/*──────────────────────────────*/
+/*      ALERTAS PERSONALIZADAS  */
+/*──────────────────────────────*/
+
 function showAlert(type, message, withButtons = false, duration = 3000) {
   const iconos = {
     alerta: "/static/icons/alerta/alerta-alerta.png",
@@ -40,7 +43,10 @@ document.getElementById("btn-borrar").onclick = function () {
   closeAlert();
 };
 
-// === [pulsar botón de guardado] ===
+/*────────────────────────────────────*/
+/*      FUNCIÓN: GUARDAR PACIENTE     */
+/*────────────────────────────────────*/
+
 async function guardarPDF() {
   const datos = {
     nombres: document.getElementById('nombres').value.trim(),
@@ -70,16 +76,11 @@ async function guardarPDF() {
 
     const resultado = await response.json();
 
-    // === [guardado exitoso del paciente] ===
     if (resultado.exito && resultado.pdf_url) {
       showAlert("suceso", "Paciente Guardado Con Éxito", false, 3000);
       sessionStorage.setItem('pdfURL', resultado.pdf_url);
-
-    // === [paciente duplicado] ===
     } else if (resultado.mensaje) {
       showAlert("pacienteCargado", "El Paciente Ya Está Registrado", false, 3000);
-
-    // === [error al guardar el paciente] ===
     } else {
       showAlert("error", "Error Al Guardar El Paciente", false, 4000);
     }
@@ -89,14 +90,16 @@ async function guardarPDF() {
   }
 }
 
-// === [pulsar botón de envío de email] ===
+/*──────────────────────────────────────────*/
+/*      FUNCIÓN: ENVIAR PDF POR CORREO      */
+/*──────────────────────────────────────────*/
+
 async function enviarPorCorreo() {
   const nombres = document.getElementById('nombres').value.trim();
   const apellido = document.getElementById('apellido').value.trim();
   const email = document.getElementById('email').value.trim();
 
   if (!email) {
-    // === [Error: email vacío] ===
     showAlert("error", "El campo de correo electrónico está vacío.", false, 3000);
     return;
   }
@@ -116,11 +119,8 @@ async function enviarPorCorreo() {
 
     const resultado = await response.json();
 
-    // === [email enviado exitosamente] ===
     if (resultado.exito) {
       showAlert("suceso", "E-mail Enviado", false, 3000);
-
-    // === [Error al enviar el e-mail] ===
     } else {
       showAlert("error", "Error Al Enviar el E-mail", false, 3000);
     }
@@ -130,31 +130,49 @@ async function enviarPorCorreo() {
   }
 }
 
-// === [pulsar botón para ver PDF] ===
+/*────────────────────────────────────────*/
+/*      FUNCIÓN: ABRIR PDF COMPATIBLE     */
+/*────────────────────────────────────────*/
+
 function abrirPDF() {
   const url = sessionStorage.getItem('pdfURL');
   if (url) {
     showAlert("cargaPDF", "Cargando PDF…", false, 3000);
+
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
     setTimeout(() => {
-      window.open(url, '_blank');
+      if (isIOS) {
+        window.location.href = url;
+      } else {
+        window.open(url, '_blank');
+      }
     }, 1000);
+
   } else {
-    // === [error al cargar el PDF] ===
     showAlert("pdf", "Error Al Cargar El PDF", false, 3000);
   }
 }
 
-// === [doble pulsado del botón borrar] ===
+/*──────────────────────────────────────*/
+/*      FUNCIÓN: MOSTRAR CONFIRMACIÓN   */
+/*──────────────────────────────────────*/
+
 function prepararBorradoPaciente() {
-  showAlert("alerta", "Borrado De Paciente Definitivo Desea Continuar?", true, "infinito");
+  showAlert("alerta", "Borrado De Paciente Definitivo ¿Desea Continuar?", true, "infinito");
 }
 
-// === [cancelar desde botón clásico viejo] ===
+/*──────────────────────────────────────*/
+/*      FUNCIÓN: CANCELAR BORRADO       */
+/*──────────────────────────────────────*/
+
 function cancelarBorradoPaciente() {
   document.getElementById('confirmacion-borrado').style.display = 'none';
 }
 
-// === [confirmar borrado del paciente después del OK] ===
+/*──────────────────────────────────────*/
+/*      FUNCIÓN: CONFIRMAR BORRADO      */
+/*──────────────────────────────────────*/
+
 async function confirmarBorradoPaciente() {
   const dni = document.getElementById('dni').value.trim();
 
@@ -174,14 +192,11 @@ async function confirmarBorradoPaciente() {
 
     const resultado = await response.json();
 
-    // === [borrado exitoso] ===
     if (resultado.exito || resultado.mensaje) {
       showAlert("suceso", "Paciente Borrado", false, 3000);
       document.getElementById('form-registro').reset();
       document.getElementById('confirmacion-borrado').style.display = 'none';
       sessionStorage.removeItem('pdfURL');
-
-    // === [error al borrar el paciente] ===
     } else {
       showAlert("error", "Error Al Borrar El Paciente", false, 3000);
     }

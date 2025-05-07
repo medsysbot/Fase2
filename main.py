@@ -132,6 +132,10 @@ async def splash_final(request: Request):
 @app.get("/index", response_class=HTMLResponse)
 async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
+    @app.get("/historia", response_class=HTMLResponse)
+
+async def historia(request: Request):
+    return templates.TemplateResponse("historia.html", {"request": request})
 
 @app.get("/registro", response_class=HTMLResponse)
 async def registro(request: Request):

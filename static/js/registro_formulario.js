@@ -182,10 +182,11 @@ async function confirmarBorradoPaciente() {
     return;
   }
 
-  try {
-    showAlert("borrado", "Borrando Paciente…", false, 3000);
-    await new Promise(resolve => setTimeout(resolve, 3200));
+  // Mostramos el cartel intermedio ANTES del fetch
+  showAlert("borrado", "Borrando Paciente…", false, 3000);
+  await new Promise(resolve => setTimeout(resolve, 3200));  // Esperamos que se vea
 
+  try {
     const response = await fetch('/eliminar_paciente', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

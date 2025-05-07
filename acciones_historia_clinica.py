@@ -56,17 +56,14 @@ async def generar_pdf_historia_completa(
         if institucion_id is None:
             return JSONResponse({"error": "Sesión sin institución activa"}, status_code=403)
 
-        # ═══════════════════════════════════════════════════════════
-        #  Generar nombre seguro y ruta local del PDF
-        # ═══════════════════════════════════════════════════════════
+        # ════════════════════════════════
+        # Generar PDF
+        # ════════════════════════════════
         safe_name = nombre.strip().replace(" ", "_")
         filename = f"historia_completa_{safe_name}_{dni}.pdf"
         local_path = os.path.join("static/doc", filename)
         Path("static/doc").mkdir(parents=True, exist_ok=True)
 
-        # ═══════════════════════════════════════════════════════════
-        #  Crear PDF
-        # ═══════════════════════════════════════════════════════════
         pdf = FPDF()
         pdf.add_page()
         logo_path = "static/icons/logo-medsys-gris.png"
@@ -106,15 +103,12 @@ async def generar_pdf_historia_completa(
 
         pdf.output(local_path)
 
-        # ═══════════════════════════════════════════════════════════
-        #  Subir PDF al bucket público de PDFs
-        # ═══════════════════════════════════════════════════════════
         with open(local_path, "rb") as f:
             supabase.storage.from_(BUCKET_PDFS).upload(filename, f, {"content-type": "application/pdf"})
 
-        # ═══════════════════════════════════════════════════════════
-        #  Subir firma y sello al bucket privado (reemplazo automático)
-        # ═══════════════════════════════════════════════════════════
+        # ════════════════════════════════
+        # Subir Firma y Sello
+        # ════════════════════════════════
         firma_url = ""
         sello_url = ""
 
@@ -132,10 +126,10 @@ async def generar_pdf_historia_completa(
             supabase.storage.from_(BUCKET_FIRMAS).upload(sello_nombre, contenido, {"content-type": sello.content_type})
             sello_url = f"{BUCKET_FIRMAS}/{sello_nombre}"
 
-        # ═══════════════════════════════════════════════════════════
-        #  Guardar en base de datos historia_clinica_completa
-        # ═══════════════════════════════════════════════════════════
-        supabase.table("historia_clinica_completa").insert({
+        # ════════════════════════════════
+        # Guardar en la tabla
+        # ════════════════════════════════
+        respuesta = supabase.table("historia_clinica_completa").insert({
             "nombre": nombre,
             "dni": dni,
             "fecha_nacimiento": fecha_nacimiento,
@@ -159,6 +153,9 @@ async def generar_pdf_historia_completa(
             "firma_url": firma_url,
             "sello_url": sello_url
         }).execute()
+
+        print("DEBUG - RESPUESTA DE SUPABASE:")
+        print(respuesta)
 
         public_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_PDFS}/{filename}"
         return JSONResponse({"exito": True, "pdf_url": public_url})

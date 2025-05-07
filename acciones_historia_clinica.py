@@ -3,10 +3,14 @@ from fastapi.responses import JSONResponse
 from fpdf import FPDF
 from pathlib import Path
 import os
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication
 from supabase import create_client
 
 # ╔══════════════════════════════════════════════╗
-# ║    RUTAS PARA HISTORIA CLÍNICA COMPLETA      ║
+# ║     RUTAS PARA HISTORIA CLÍNICA COMPLETA     ║
 # ╚══════════════════════════════════════════════╝
 router = APIRouter()
 
@@ -14,7 +18,7 @@ router = APIRouter()
 # ║     CONFIGURACIÓN DE SUPABASE     ║
 # ╚════════════════════════════════════╝
 SUPABASE_URL = "https://wolcdduoroiobtadbcup.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvbGNkZHVvcm9pb2J0YWRiY3VwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NjIwMTQ5MywiZXhwIjoyMDYxNzc3NDkzfQ.GJtQkyj4PBLxekNQXJq7-mqnnqpcb_Gp0O0nmpLxICM"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 BUCKET_PDFS = "pdfs"
@@ -55,13 +59,18 @@ async def generar_pdf_historia_completa(
         local_path = os.path.join("static/doc", filename)
         Path("static/doc").mkdir(parents=True, exist_ok=True)
 
-        # Crear PDF
         pdf = FPDF()
         pdf.add_page()
+        logo_path = "static/icons/logo-medsys-gris.png"
+        if os.path.exists(logo_path):
+            pdf.image(logo_path, x=10, y=4, w=60)
         pdf.set_font("Arial", "B", 16)
-        pdf.cell(0, 10, "Historia Clínica Completa - MEDSYS", ln=True, align="C")
+        pdf.cell(0, 40, "Historia Clínica Completa - MEDSYS", ln=True, align="C")
+        pdf.set_draw_color(150, 150, 150)
+        pdf.set_line_width(1)
+        pdf.line(10, 50, 200, 50)
         pdf.set_font("Arial", size=12)
-        pdf.ln(10)
+        pdf.ln(15)
 
         campos = [
             ("Nombre del Paciente", nombre),
@@ -84,17 +93,14 @@ async def generar_pdf_historia_completa(
             ("Historial de Tratamientos", historial_tratamientos),
             ("Historial de Consultas", historial_consultas)
         ]
-
         for label, value in campos:
             pdf.cell(0, 10, f"{label}: {value}", ln=True)
 
         pdf.output(local_path)
 
-        # Subir a Supabase
         with open(local_path, "rb") as file_data:
             supabase.storage.from_(BUCKET_PDFS).upload(filename, file_data, {"content-type": "application/pdf"})
 
-        # Guardar en tabla historia_clinica_completa
         supabase.table("historia_clinica_completa").insert({
             "nombre": nombre,
             "dni": dni,
@@ -121,5 +127,38 @@ async def generar_pdf_historia_completa(
         public_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_PDFS}/{filename}"
         return JSONResponse({"exito": True, "pdf_url": public_url})
 
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+# ╔══════════════════════════════════════════════╗
+# ║     ENVIAR HISTORIA COMPLETA POR CORREO      ║
+# ╚══════════════════════════════════════════════╝
+@router.post("/enviar_pdf_historia_completa")
+async def enviar_pdf_historia(email: str = Form(...), nombre: str = Form(...), dni: str = Form(...)):
+    try:
+        filename = f"historia_completa_{nombre.strip().replace(' ', '_')}_{dni}.pdf"
+        local_path = os.path.join("static/doc", filename)
+
+        remitente = "medisys.bot@gmail.com"
+        contrasena = "yeuaugaxmdvydcou"
+        asunto = "Historia Clínica Completa - MEDSYS"
+        cuerpo = f"Estimado/a {nombre},\n\nAdjuntamos su historia clínica completa.\n\nSaludos,\nEquipo MEDSYS"
+
+        mensaje = MIMEMultipart()
+        mensaje["From"] = remitente
+        mensaje["To"] = email
+        mensaje["Subject"] = asunto
+        mensaje.attach(MIMEText(cuerpo, "plain"))
+
+        with open(local_path, "rb") as f:
+            parte = MIMEApplication(f.read(), Name=filename)
+            parte["Content-Disposition"] = f'attachment; filename="{filename}"'
+            mensaje.attach(parte)
+
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
+            servidor.login(remitente, contrasena)
+            servidor.send_message(mensaje)
+
+        return JSONResponse({"exito": True})
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)

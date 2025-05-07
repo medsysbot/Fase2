@@ -34,7 +34,7 @@ function showAlert(type, message, withButtons = false, duration = 3000) {
 }
 
 /*──────────────────────────────────────────────*/
-/*  GUARDAR HISTORIA CLÍNICA Y GENERAR PDF      */
+/*   GUARDAR HISTORIA CLÍNICA Y GENERAR PDF     */
 /*──────────────────────────────────────────────*/
 
 async function guardarPDF() {
@@ -67,7 +67,7 @@ async function guardarPDF() {
 }
 
 /*──────────────────────────────────────────────*/
-/*           ENVIAR HISTORIA POR CORREO         */
+/*         ENVIAR HISTORIA POR CORREO           */
 /*──────────────────────────────────────────────*/
 
 async function enviarPorCorreo() {
@@ -76,6 +76,7 @@ async function enviarPorCorreo() {
 
   const email = form.email.value.trim();
   const nombre = form.nombre.value.trim();
+  const dni = form.dni.value.trim();
 
   if (!email) {
     showAlert("error", "El campo de correo está vacío.", false, 3000);
@@ -85,6 +86,8 @@ async function enviarPorCorreo() {
   try {
     showAlert("email", "Enviando e-mail…", false, 3000);
     await new Promise(resolve => setTimeout(resolve, 3200));
+
+    formData.append("dni", dni);
 
     const response = await fetch('/enviar_pdf_historia_completa', {
       method: 'POST',
@@ -105,13 +108,14 @@ async function enviarPorCorreo() {
 }
 
 /*──────────────────────────────────────────────*/
-/*             ABRIR PDF HISTORIA               */
+/*               ABRIR PDF GUARDADO             */
 /*──────────────────────────────────────────────*/
 
 function abrirPDF() {
   const url = sessionStorage.getItem('pdfURL');
   if (url) {
     showAlert("cargaPDF", "Cargando PDF…", false, 3000);
+
     setTimeout(() => {
       const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
       if (isIOS) {

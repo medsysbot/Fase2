@@ -129,17 +129,9 @@ async def splash_final(request: Request):
 # ╔════════════════════════════════════╗
 # ║             RUTAS HTML            ║
 # ╚════════════════════════════════════╝
-@app.get("/index", response_class=HTMLResponse)
-async def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})  
-    
-@app.get("/historia", response_class=HTMLResponse)
-async def historia(request: Request):
-    return templates.TemplateResponse("historia.html", {"request": request})
-
-@app.get("/registro", response_class=HTMLResponse)
-async def registro(request: Request):
-    return templates.TemplateResponse("registro.html", {"request": request})
+@app.get("/busqueda", response_class=HTMLResponse)
+async def busqueda(request: Request):
+    return templates.TemplateResponse("busqueda.html", {"request": request})
 
 @app.get("/estudios", response_class=HTMLResponse)
 async def estudios(request: Request):
@@ -148,6 +140,10 @@ async def estudios(request: Request):
 @app.get("/evolucion", response_class=HTMLResponse)
 async def evolucion(request: Request):
     return templates.TemplateResponse("evolucion.html", {"request": request})
+
+@app.get("/historia", response_class=HTMLResponse)
+async def historia(request: Request):
+    return templates.TemplateResponse("historia.html", {"request": request})
 
 @app.get("/historia-clinica-completa", response_class=HTMLResponse)
 async def historia_clinica_completa(request: Request):
@@ -161,17 +157,21 @@ async def historia_resumen(request: Request):
 async def indicaciones(request: Request):
     return templates.TemplateResponse("indicaciones.html", {"request": request})
 
+@app.get("/index", response_class=HTMLResponse)
+async def index(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
 @app.get("/receta", response_class=HTMLResponse)
 async def receta(request: Request):
     return templates.TemplateResponse("receta.html", {"request": request})
 
+@app.get("/registro", response_class=HTMLResponse)
+async def registro(request: Request):
+    return templates.TemplateResponse("registro.html", {"request": request})
+
 @app.get("/turnos", response_class=HTMLResponse)
 async def turnos(request: Request):
     return templates.TemplateResponse("turnos.html", {"request": request})
-
-@app.get("/busqueda", response_class=HTMLResponse)
-async def busqueda(request: Request):
-    return templates.TemplateResponse("busqueda.html", {"request": request})
 
 # ╔════════════════════════════════════╗
 # ║       ARCHIVOS MÉDICOS            ║

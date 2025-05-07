@@ -1,6 +1,6 @@
-/*──────────────────────────────*/
-/*      ALERTAS PERSONALIZADAS  */
-/*──────────────────────────────*/
+/*──────────────────────────────────────────────*/
+/*           ALERTAS PERSONALIZADAS             */
+/*──────────────────────────────────────────────*/
 
 function showAlert(type, message, withButtons = false, duration = 3000) {
   const iconos = {
@@ -33,13 +33,28 @@ function showAlert(type, message, withButtons = false, duration = 3000) {
   }
 }
 
+function closeAlert() {
+  document.getElementById("alert-manager").style.display = "none";
+}
+
 /*──────────────────────────────────────────────*/
-/*   GUARDAR HISTORIA CLÍNICA Y GENERAR PDF     */
+/*    GUARDAR HISTORIA CLÍNICA Y GENERAR PDF    */
 /*──────────────────────────────────────────────*/
 
 async function guardarPDF() {
   const form = document.getElementById("form-historia");
   const formData = new FormData(form);
+
+  const firma = document.getElementById("firma");
+  const sello = document.getElementById("sello");
+
+  if (firma && firma.files.length > 0) {
+    formData.append("firma", firma.files[0]);
+  }
+
+  if (sello && sello.files.length > 0) {
+    formData.append("sello", sello.files[0]);
+  }
 
   try {
     showAlert("guardado", "Guardando Historia Clínica…", false, 3000);
@@ -72,11 +87,10 @@ async function guardarPDF() {
 
 async function enviarPorCorreo() {
   const form = document.getElementById("form-historia");
-  const formData = new FormData(form);
 
-  const email = form.email.value.trim();
-  const nombre = form.nombre.value.trim();
-  const dni = form.dni.value.trim();
+  const email = form.querySelector('[name="email"]')?.value.trim() || "";
+  const nombre = form.querySelector('[name="nombre"]')?.value.trim() || "";
+  const dni = form.querySelector('[name="dni"]')?.value.trim() || "";
 
   if (!email) {
     showAlert("error", "El campo de correo está vacío.", false, 3000);
@@ -87,6 +101,9 @@ async function enviarPorCorreo() {
     showAlert("email", "Enviando e-mail…", false, 3000);
     await new Promise(resolve => setTimeout(resolve, 3200));
 
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("nombre", nombre);
     formData.append("dni", dni);
 
     const response = await fetch('/enviar_pdf_historia_completa', {
@@ -108,7 +125,7 @@ async function enviarPorCorreo() {
 }
 
 /*──────────────────────────────────────────────*/
-/*               ABRIR PDF GUARDADO             */
+/*             ABRIR PDF GUARDADO               */
 /*──────────────────────────────────────────────*/
 
 function abrirPDF() {

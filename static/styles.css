@@ -13,7 +13,7 @@ body {
   font-family: 'Poppins', sans-serif;
   margin: 0;
   padding: 0;
-  color: #c4bebe;
+  color: #5c5c5c;
   background: linear-gradient(to bottom, #d6f5f3, #66b2ff, #0d47a1); 
   background-repeat: no-repeat;
   background-attachment: fixed;
@@ -34,7 +34,7 @@ header {
   display: block;
 }
 h1, h2 {
-  color: #c4bebe;
+  color: #5c5c5c;
   margin: 20px 0;
 }
 h1.titulo {
@@ -60,7 +60,7 @@ form {
 label {
   font-size: 1.1rem;
   font-weight: 400;
-  color: #c4bebe;
+  color: #5c5c5c;
   display: block;
   margin-bottom: 5px;
 }

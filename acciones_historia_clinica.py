@@ -178,6 +178,19 @@ async def generar_pdf_historia_completa(
             print("Excepción al guardar en la base de datos:", e)
             return JSONResponse({"error": "Error al guardar en la base de datos."}, status_code=500)
 
+        # ╔══════════════════════════════════════════════════════════
+        #  RESPUESTA FINAL Y CIERRE DEL TRY PRINCIPAL
+        # ╚══════════════════════════════════════════════════════════
+        public_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_PDFS}/{filename}"
+        return JSONResponse({"exito": True, "pdf_url": public_url})
+
+    except Exception as e:
+        # ╔══════════════════════════════════════════════════════════
+        #  MANEJO DE ERROR GENERAL DEL ENDPOINT
+        # ╚══════════════════════════════════════════════════════════
+        print("Error general:", e)
+        return JSONResponse({"error": str(e)}, status_code=500)
+
 # ╔══════════════════════════════════════════════════════════
 #  ENVIAR PDF DE HISTORIA CLÍNICA POR CORREO MANUALMENTE
 # ╚══════════════════════════════════════════════════════════

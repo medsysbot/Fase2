@@ -4,12 +4,14 @@ from fpdf import FPDF
 from pathlib import Path
 import os
 from supabase import create_client
+import smtplib
+from email.message import EmailMessage
 
 # ╔════════════════════════════════════╗
 # ║     CONFIGURACIÓN DE SUPABASE     ║
 # ╚════════════════════════════════════╝
 SUPABASE_URL = "https://wolcdduoroiobtadbcup.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvbGNkZHVvcm9pb2J0YWRiY3VwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NjIwMTQ5MywiZXhwIjoyMDYxNzc3NDkzfQ.GJtQkyj4PBLxekNQXJq7-mqnnqpcb_Gp0O0nmpLxICM"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 BUCKET_PDFS = "pdfs"
@@ -59,9 +61,7 @@ async def generar_pdf_historia_completa(
         local_path = os.path.join("static/doc", filename)
         Path("static/doc").mkdir(parents=True, exist_ok=True)
 
-        # ═══════════════════════════════════════════════════════════
-        #  CREAR PDF
-        # ═══════════════════════════════════════════════════════════
+        # Crear PDF
         pdf = FPDF()
         pdf.add_page()
         logo_path = "static/icons/logo-medsys-gris.png"
@@ -101,9 +101,7 @@ async def generar_pdf_historia_completa(
 
         pdf.output(local_path)
 
-        # ═══════════════════════════════════════════════════════════
-        #  SUBIR PDF AL BUCKET
-        # ═══════════════════════════════════════════════════════════
+        # Subir PDF a Supabase
         try:
             with open(local_path, "rb") as f:
                 supabase.storage.from_(BUCKET_PDFS).upload(filename, f, {"content-type": "application/pdf"})
@@ -111,12 +109,9 @@ async def generar_pdf_historia_completa(
             print("Error al subir el PDF:", e)
             return JSONResponse({"error": "No se pudo subir el PDF."}, status_code=500)
 
-        # ═══════════════════════════════════════════════════════════
-        #  SUBIR FIRMA Y SELLO
-        # ═══════════════════════════════════════════════════════════
+        # Subir firma y sello
         firma_url = ""
         sello_url = ""
-
         if firma:
             try:
                 firma_nombre = f"{dni}-firma.png"
@@ -126,7 +121,6 @@ async def generar_pdf_historia_completa(
                 firma_url = f"{BUCKET_FIRMAS}/{firma_nombre}"
             except Exception as e:
                 print("Error al subir firma:", e)
-
         if sello:
             try:
                 sello_nombre = f"{dni}-sello.png"
@@ -137,12 +131,10 @@ async def generar_pdf_historia_completa(
             except Exception as e:
                 print("Error al subir sello:", e)
 
-        # ═══════════════════════════════════════════════════════════
-        #  GUARDAR REGISTRO EN SUPABASE
-        # ═══════════════════════════════════════════════════════════
+        # Guardar en Supabase
         try:
             resultado = supabase.table("historia_clinica_completa").insert({
-                "paciente_id": dni,  # <<< ESTA ES LA LÍNEA CLAVE
+                "paciente_id": dni,
                 "nombre": nombre,
                 "dni": dni,
                 "fecha_nacimiento": fecha_nacimiento,
@@ -174,6 +166,36 @@ async def generar_pdf_historia_completa(
         except Exception as e:
             print("Excepción al guardar en la base de datos:", e)
             return JSONResponse({"error": "Error al guardar en la base de datos."}, status_code=500)
+
+        # Enviar PDF por correo
+        try:
+            if email:
+                remitente = "medisys.bot@gmail.com"
+                clave = "yeuaugaxmdvydcou"
+                asunto = "Historia Clínica Completa - MEDSYS"
+                cuerpo = """Estimado/a,
+
+Adjuntamos su historia clínica completa en formato PDF.
+
+Saludos cordiales,  
+Equipo MEDSYS"""
+
+                mensaje = EmailMessage()
+                mensaje["From"] = remitente
+                mensaje["To"] = email
+                mensaje["Subject"] = asunto
+                mensaje.set_content(cuerpo)
+
+                with open(local_path, "rb") as archivo_pdf:
+                    contenido_pdf = archivo_pdf.read()
+                    mensaje.add_attachment(contenido_pdf, maintype="application", subtype="pdf", filename=filename)
+
+                with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+                    smtp.login(remitente, clave)
+                    smtp.send_message(mensaje)
+
+        except Exception as e:
+            print("Error al enviar el correo:", e)
 
         public_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_PDFS}/{filename}"
         return JSONResponse({"exito": True, "pdf_url": public_url})

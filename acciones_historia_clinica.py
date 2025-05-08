@@ -110,7 +110,7 @@ async def generar_pdf_historia_completa(
 try:
     with open(local_path, "rb") as f:
         upload_response = supabase.storage.from_(BUCKET_PDFS).upload(filename, f, {"content-type": "application/pdf"})
-        if "error" in upload_response or upload_response is None:
+        if not upload_response or "error" in upload_response:
             print("Error al subir el PDF:", upload_response)
             return JSONResponse({"error": "No se pudo subir el PDF."}, status_code=500)
 except Exception as e:

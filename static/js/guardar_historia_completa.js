@@ -71,7 +71,7 @@ async function guardarPDF() {
       showAlert("suceso", "Historia Clínica Guardada", false, 3000);
       sessionStorage.setItem('pdfURL', resultado.pdf_url);
     } else if (resultado.mensaje) {
-      showAlert("pacientecargado", resultado.mensaje, false, 3000);
+      showAlert("pacienteCargado", resultado.mensaje, false, 3000);
     } else {
       showAlert("error", "Error Al Guardar Historia Clínica", false, 4000);
     }

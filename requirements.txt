@@ -4,6 +4,6 @@ fpdf==1.7.2
 jinja2
 python-multipart
 pydantic
-openai-whisper
+# openai-whisper
 itsdangerous
 supabase==1.0.3

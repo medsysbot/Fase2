@@ -104,13 +104,12 @@ async def generar_pdf_historia_completa(
 
         pdf.output(local_path)
 
-        # ═══════════════════════════════════════════════════════════
+# ╔══════════════════════════════════════════════════════════
 #  SUBIR PDF AL BUCKET
-# ═══════════════════════════════════════════════════════════
+# ╚══════════════════════════════════════════════════════════
 try:
     with open(local_path, "rb") as f:
         upload_response = supabase.storage.from_(BUCKET_PDFS).upload(filename, f, {"content-type": "application/pdf"})
-        # Verificamos si el archivo se subió correctamente
         if "error" in upload_response or upload_response is None:
             print("Error al subir el PDF:", upload_response)
             return JSONResponse({"error": "No se pudo subir el PDF."}, status_code=500)

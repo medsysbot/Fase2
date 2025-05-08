@@ -182,6 +182,7 @@ async def generar_pdf_historia_completa(
         #  RESPUESTA FINAL Y CIERRE DEL TRY PRINCIPAL
         # ╚══════════════════════════════════════════════════════════
         public_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_PDFS}/{filename}"
+        print("PDF público generado:", public_url)
         return JSONResponse({"exito": True, "pdf_url": public_url})
 
     except Exception as e:

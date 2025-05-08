@@ -66,10 +66,11 @@ async function guardarPDF() {
     });
 
     const resultado = await response.json();
+    console.log("Respuesta del backend:", resultado);  // DEBUG
 
     if (resultado.exito && resultado.pdf_url) {
-      showAlert("suceso", "Historia Clínica Guardada", false, 3000);
       sessionStorage.setItem('pdfURL', resultado.pdf_url);
+      showAlert("suceso", "Historia Clínica Guardada", false, 3000);
     } else if (resultado.mensaje) {
       showAlert("pacienteCargado", resultado.mensaje, false, 3000);
     } else {

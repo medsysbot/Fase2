@@ -6,6 +6,7 @@ import os
 from supabase import create_client
 import smtplib
 from email.message import EmailMessage
+import io
 
 # ╔════════════════════════════════════╗
 # ║     CONFIGURACIÓN DE SUPABASE     ║
@@ -180,10 +181,6 @@ async def generar_pdf_historia_completa(
 # ╔══════════════════════════════════════════════════════════
 #  ENVIAR PDF DE HISTORIA CLÍNICA POR CORREO MANUALMENTE
 # ╚══════════════════════════════════════════════════════════
-from fastapi import Form
-import smtplib
-from email.message import EmailMessage
-import io
 
 @router.post("/enviar_pdf_historia_completa")
 async def enviar_pdf_historia_completa(

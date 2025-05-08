@@ -177,41 +177,62 @@ async def generar_pdf_historia_completa(
             print("Excepción al guardar en la base de datos:", e)
             return JSONResponse({"error": "Error al guardar en la base de datos."}, status_code=500)
 
-        # ═══════════════════════════════════════════════════════════
-        #  ENVIAR PDF POR CORREO ELECTRÓNICO
-        # ═══════════════════════════════════════════════════════════
+# ╔══════════════════════════════════════════════════════════
+#  ENVIAR PDF DE HISTORIA CLÍNICA POR CORREO MANUALMENTE
+# ╚══════════════════════════════════════════════════════════
+from fastapi import Form
+import smtplib
+from email.message import EmailMessage
+import io
+
+@router.post("/enviar_pdf_historia_completa")
+async def enviar_pdf_historia_completa(
+    email: str = Form(...),
+    nombre: str = Form(...),
+    dni: str = Form(...)
+):
+    try:
+        safe_name = nombre.strip().replace(" ", "_")
+        filename = f"historia_completa_{safe_name}_{dni}.pdf"
+
+        # Descargar el archivo desde Supabase
         try:
-            if email:
-                remitente = "medisys.bot@gmail.com"
-                clave = "yeuaugaxmdvydcou"
-                asunto = "Historia Clínica Completa - MEDSYS"
-                cuerpo = """Estimado/a,
+            pdf_obj = supabase.storage.from_(BUCKET_PDFS).download(filename)
+            pdf_bytes = pdf_obj
+        except Exception as e:
+            print("Error al descargar PDF desde Supabase:", e)
+            return JSONResponse({"error": "No se pudo obtener el PDF desde el servidor."}, status_code=500)
+
+        # Enviar por correo
+        remitente = "medisys.bot@gmail.com"
+        clave = "yeuaugaxmdvydcou"
+        asunto = "Historia Clínica Completa - MEDSYS"
+        cuerpo = f"""Estimado/a,
 
 Adjuntamos su historia clínica completa en formato PDF.
 
 Saludos cordiales,  
 Equipo MEDSYS"""
 
-                mensaje = EmailMessage()
-                mensaje["From"] = remitente
-                mensaje["To"] = email
-                mensaje["Subject"] = asunto
-                mensaje.set_content(cuerpo)
+        mensaje = EmailMessage()
+        mensaje["From"] = remitente
+        mensaje["To"] = email
+        mensaje["Subject"] = asunto
+        mensaje.set_content(cuerpo)
 
-                with open(local_path, "rb") as archivo_pdf:
-                    contenido_pdf = archivo_pdf.read()
-                    mensaje.add_attachment(contenido_pdf, maintype="application", subtype="pdf", filename=filename)
+        mensaje.add_attachment(
+            pdf_bytes,
+            maintype="application",
+            subtype="pdf",
+            filename=filename
+        )
 
-                with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
-                    smtp.login(remitente, clave)
-                    smtp.send_message(mensaje)
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+            smtp.login(remitente, clave)
+            smtp.send_message(mensaje)
 
-        except Exception as e:
-            print("Error al enviar correo:", e)
-
-        public_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_PDFS}/{filename}"
-        return JSONResponse({"exito": True, "pdf_url": public_url})
+        return JSONResponse({"exito": True})
 
     except Exception as e:
-        print("Error general:", e)
-        return JSONResponse({"error": str(e)}, status_code=500)
+        print("Error al enviar correo:", e)
+        return JSONResponse({"error": "No se pudo enviar el correo electrónico."}, status_code=500)

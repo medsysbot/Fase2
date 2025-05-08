@@ -142,6 +142,7 @@ async def generar_pdf_historia_completa(
         # ═══════════════════════════════════════════════════════════
         try:
             resultado = supabase.table("historia_clinica_completa").insert({
+                "paciente_id": dni,  # <<< ESTA ES LA LÍNEA CLAVE
                 "nombre": nombre,
                 "dni": dni,
                 "fecha_nacimiento": fecha_nacimiento,

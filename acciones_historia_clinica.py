@@ -61,7 +61,9 @@ async def generar_pdf_historia_completa(
         local_path = os.path.join("static/doc", filename)
         Path("static/doc").mkdir(parents=True, exist_ok=True)
 
-        # Crear PDF
+        # ═══════════════════════════════════════════════════════════
+        #  CREAR PDF
+        # ═══════════════════════════════════════════════════════════
         pdf = FPDF()
         pdf.add_page()
         logo_path = "static/icons/logo-medsys-gris.png"
@@ -101,7 +103,9 @@ async def generar_pdf_historia_completa(
 
         pdf.output(local_path)
 
-        # Subir PDF a Supabase
+        # ═══════════════════════════════════════════════════════════
+        #  SUBIR PDF AL BUCKET
+        # ═══════════════════════════════════════════════════════════
         try:
             with open(local_path, "rb") as f:
                 supabase.storage.from_(BUCKET_PDFS).upload(filename, f, {"content-type": "application/pdf"})
@@ -109,9 +113,12 @@ async def generar_pdf_historia_completa(
             print("Error al subir el PDF:", e)
             return JSONResponse({"error": "No se pudo subir el PDF."}, status_code=500)
 
-        # Subir firma y sello
+        # ═══════════════════════════════════════════════════════════
+        #  SUBIR FIRMA Y SELLO
+        # ═══════════════════════════════════════════════════════════
         firma_url = ""
         sello_url = ""
+
         if firma:
             try:
                 firma_nombre = f"{dni}-firma.png"
@@ -121,6 +128,7 @@ async def generar_pdf_historia_completa(
                 firma_url = f"{BUCKET_FIRMAS}/{firma_nombre}"
             except Exception as e:
                 print("Error al subir firma:", e)
+
         if sello:
             try:
                 sello_nombre = f"{dni}-sello.png"
@@ -131,7 +139,9 @@ async def generar_pdf_historia_completa(
             except Exception as e:
                 print("Error al subir sello:", e)
 
-        # Guardar en Supabase
+        # ═══════════════════════════════════════════════════════════
+        #  GUARDAR REGISTRO EN SUPABASE
+        # ═══════════════════════════════════════════════════════════
         try:
             resultado = supabase.table("historia_clinica_completa").insert({
                 "paciente_id": dni,
@@ -159,15 +169,17 @@ async def generar_pdf_historia_completa(
                 "sello_url": sello_url
             }).execute()
 
-            if resultado.error:
-                print("Error al insertar en Supabase:", resultado.error)
+            if resultado.get("status_code", 200) >= 300:
+                print("Error al insertar en Supabase:", resultado)
                 return JSONResponse({"error": "No se pudo guardar en la base de datos."}, status_code=500)
 
         except Exception as e:
             print("Excepción al guardar en la base de datos:", e)
             return JSONResponse({"error": "Error al guardar en la base de datos."}, status_code=500)
 
-        # Enviar PDF por correo
+        # ═══════════════════════════════════════════════════════════
+        #  ENVIAR PDF POR CORREO ELECTRÓNICO
+        # ═══════════════════════════════════════════════════════════
         try:
             if email:
                 remitente = "medisys.bot@gmail.com"
@@ -195,7 +207,7 @@ Equipo MEDSYS"""
                     smtp.send_message(mensaje)
 
         except Exception as e:
-            print("Error al enviar el correo:", e)
+            print("Error al enviar correo:", e)
 
         public_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_PDFS}/{filename}"
         return JSONResponse({"exito": True, "pdf_url": public_url})

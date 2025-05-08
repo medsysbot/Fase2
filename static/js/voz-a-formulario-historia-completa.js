@@ -1,7 +1,8 @@
 /*──────────────────────────────────────────────*/
 /*   FUNCIÓN PRINCIPAL: Activar Reconocimiento   */
 /*──────────────────────────────────────────────*/
-function marcarCamposVoz() {
+
+function activarVoz() {
   try {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {

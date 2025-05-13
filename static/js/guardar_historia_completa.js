@@ -70,11 +70,11 @@ async function guardarPDF() {
     if (resultado.exito && resultado.pdf_url) {
       showAlert("suceso", "Historia Clínica Guardada", false, 3000);
       sessionStorage.setItem('pdfURL', resultado.pdf_url);
-    } else if (resultado.mensaje) {
-      showAlert("pacienteCargado", "La Historia Clínica Ya Está Registrada", false, 3000);
-    } else {
-      showAlert("error", "Error Al Guardar Historia Clínica", false, 4000);
-    }
+    } else if (resultado.mensaje && resultado.mensaje.toLowerCase().includes("registrada")) {
+  showAlert("pacienteCargado", "La Historia Clínica Ya Está Registrada", false, 3000);
+} else {
+  showAlert("error", resultado.mensaje || "Error Al Guardar Historia Clínica", false, 4000);
+}
   } catch (error) {
     console.error('Error al guardar:', error);
     showAlert("error", "Error Al Guardar Historia Clínica", false, 4000);

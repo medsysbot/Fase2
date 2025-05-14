@@ -80,6 +80,8 @@ async function guardarPDF() {
   console.error('Error al guardar:', error);
   showAlert("error", "Error Al Guardar Historia Clínica", false, 4000);
 }
+  
+    
 
 /*──────────────────────────────────────────────*/
 /*         ENVIAR HISTORIA POR CORREO           */

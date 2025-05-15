@@ -7,3 +7,4 @@ pydantic
 # openai-whisper
 itsdangerous
 supabase==1.0.3
+python-dotenv

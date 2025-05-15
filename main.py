@@ -226,7 +226,7 @@ async def mostrar_alertas(request: Request):
 from admin_routes import router as admin_router
 from acciones_pacientes import router as pacientes_router
 from acciones_historia_clinica import router as historia_clinica_router
-from acciones_historia_resumen import router as historia_resumen_router
+from routes import historia_resumen_router
 
 app.include_router(admin_router)
 app.include_router(pacientes_router)

@@ -4,182 +4,64 @@
   <meta charset="UTF-8" />
   <title>Historia Clínica Resumida</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@0,400;0,600&display=swap" rel="stylesheet" />
-  <style>
-    body {
-      background: linear-gradient(to bottom left, #0a2a3d, #155f82);
-      font-family: 'Poppins', sans-serif;
-      color: #d3d3d3;
-      margin: 0;
-      padding: 0;
-    }
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/styles.css" />
 
-    header {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    .logo-grande {
-      width: 180px;
-      height: auto;
-      margin-bottom: 10px;
-    }
-
-    h2 {
-      text-align: center;
-      font-style: italic;
-      font-weight: 600;
-      font-size: 28px;
-      margin-top: 10px;
-    }
-
-form {
-  max-width: 400px;  
-  width: 90%;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: 500;
-      font-size: 17px;
-    }
-
-input {
-  width: 100%;
-  padding: 6px 10px;
-  font-size: 17.5px;
-  border: none;
-  border-radius: 8px;
-  background-color: white;
-  color: black;
-  box-sizing: border-box;
-  min-height: 45px;
-}
-
-textarea {
-  width: 100%;
-  padding: 6px 10px;
-  font-size: 17.5px;
-  border: none;
-  border-radius: 8px;
-  background-color: white;
-  color: black;
-  box-sizing: border-box;
-  min-height: 45px;
-  resize: vertical;
-  line-height: 1.4;
-}
-
-    textarea {
-      resize: vertical;
-      height: auto;
-    }
-
-    .vista-previa {
-      display: block;
-      margin-top: 10px;
-      max-height: 100px;
-    }
-
-    .btn-eliminar {
-      margin-top: 5px;
-      background-color: crimson;
-      border: none;
-      color: white;
-      padding: 4px 8px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .visor-pdf {
-      margin-top: 40px;
-      text-align: center;
-    }
-
-    .visor-pdf iframe {
-      width: 90%;
-      height: 500px;
-      border: 2px solid #09394f;
-      border-radius: 10px;
-    }
-
-.botones-flotantes {
-  position: fixed;
-  right: 20px;
-  bottom: 20px; 
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  z-index: 1000;
-}
-
-    .botones-flotantes button {
-      background-color: #4A90E2;
-      border: none;
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .botones-flotantes img {
-      width: 30px;
-      height: 30px;
-    }
-  </style>
+  <!-- Preload de íconos de alerta -->
+  <link rel="preload" href="/static/icons/alerta/alerta-alerta.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-borrado.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-busqueda.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-error.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-guardado.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-suceso.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-paciente-cargado.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-pdf.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-email.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-carga-pdf.png" as="image">
 </head>
 <body>
-  <header>
-    <img src="/static/icons/icono-historia-clinica-resumida.png" alt="Logo Historia Clínica" class="logo-grande" />
-    <h2 style="text-align: center;">Historia Clínica Resumida</h2>
-  </header>
 
-  <form class="formulario" id="form-resumen">
-    <label>Paciente:</label>
-    <input type="text" name="paciente" />
+<header>
+  <img src="/static/icons/icono-historia-clinica-resumida.png" alt="Logo Historia Clínica" class="logo-grande" />
+  <h2>Historia Clínica Resumida</h2>
+</header>
 
-    <label>DNI:</label>
-    <input type="text" name="dni" />
+<form id="form-resumen">
+  <label>Paciente:</label>
+  <input type="text" name="paciente" />
 
-    <label>Edad:</label>
-    <input type="text" name="edad" />
+  <label>DNI:</label>
+  <input type="text" name="dni" />
 
-    <label>Motivo de consulta:</label>
-    <textarea name="motivo"></textarea>
+  <label>Edad:</label>
+  <input type="text" name="edad" />
 
-    <label>Diagnóstico:</label>
-    <textarea name="diagnostico"></textarea>
+  <label>Motivo de consulta:</label>
+  <textarea name="motivo"></textarea>
 
-    <label>Tratamiento:</label>
-    <textarea name="tratamiento"></textarea>
+  <label>Diagnóstico:</label>
+  <textarea name="diagnostico"></textarea>
 
-    <label>Observaciones:</label>
-    <textarea name="observaciones"></textarea>
+  <label>Tratamiento:</label>
+  <textarea name="tratamiento"></textarea>
 
-    <!-- Firma y sello con vista previa -->
-    <label class="etiqueta-campo"><span>Firma del Profesional:</span>
-      <input type="file" id="firma" name="firma" accept="image/*" onchange="mostrarVistaPrevia(this, 'firma-preview', 'firma-delete')" />
-      <img id="firma-preview" class="vista-previa" style="display:none;" />
-      <button type="button" id="firma-delete" class="btn-eliminar" onclick="eliminarImagen('firma', 'firma-preview', 'firma-delete')" style="display:none;">Eliminar</button>
-    </label>
+  <label>Observaciones:</label>
+  <textarea name="observaciones"></textarea>
 
-    <label class="etiqueta-campo"><span>Sello del Profesional:</span>
-      <input type="file" id="sello" name="sello" accept="image/*" onchange="mostrarVistaPrevia(this, 'sello-preview', 'sello-delete')" />
-      <img id="sello-preview" class="vista-previa" style="display:none;" />
-      <button type="button" id="sello-delete" class="btn-eliminar" onclick="eliminarImagen('sello', 'sello-preview', 'sello-delete')" style="display:none;">Eliminar</button>
-    </label>
-  </form>
+  <label>Firma del Profesional:</label>
+  <input type="file" id="firma" name="firma" accept="image/*" onchange="mostrarVistaPrevia(this, 'firma-preview', 'firma-delete')" />
+  <img id="firma-preview" class="vista-previa" style="display:none;" />
+  <button type="button" id="firma-delete" class="btn-eliminar" onclick="eliminarImagen('firma', 'firma-preview', 'firma-delete')" style="display:none;">Eliminar</button>
 
-  <div class="visor-pdf">
-    <h3>Vista previa del documento PDF:</h3>
-    <iframe id="pdf-visor" src="/static/doc/historia-resumen-generada.pdf" type="application/pdf"></iframe>
-  </div>
+  <label>Sello del Profesional:</label>
+  <input type="file" id="sello" name="sello" accept="image/*" onchange="mostrarVistaPrevia(this, 'sello-preview', 'sello-delete')" />
+  <img id="sello-preview" class="vista-previa" style="display:none;" />
+  <button type="button" id="sello-delete" class="btn-eliminar" onclick="eliminarImagen('sello', 'sello-preview', 'sello-delete')" style="display:none;">Eliminar</button>
+</form>
 
+<!--────────────────────────────────────-->
+<!--         BOTONES DE ACCIÓN          -->
+<!--────────────────────────────────────-->
 <div class="botones-flotantes">
   <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
     <img src="/static/icons/microfono.png" alt="Voz" />
@@ -187,54 +69,30 @@ textarea {
   <button type="button" onclick="guardarPDF()" title="Guardar">
     <img src="/static/icons/guardar.png" alt="Guardar" />
   </button>
-  <button type="submit" form="form-resumen" title="Enviar">
+  <button type="button" onclick="enviarPorCorreo()" title="Enviar">
     <img src="/static/icons/enviar.png" alt="Enviar" />
   </button>
-  <button type="button" onclick="imprimirPDF()" title="Imprimir">
-    <img src="/static/icons/imprimir.png" alt="Imprimir" />
-  </button>
-  <button type="button" onclick="document.getElementById('form-resumen').reset()" title="Borrar">
-    <img src="/static/icons/borrar.png" alt="Borrar" />
+  <button type="button" onclick="abrirPDF()" title="Ver PDF">
+    <img src="/static/icons/icono-ver-pdf.png" alt="Ver PDF" />
   </button>
 </div>
 
-  <script>
-    function activarVoz() {
-      const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
-      recognition.lang = "es-ES";
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.onresult = function(event) {
-        const texto = event.results[0][0].transcript;
-        const campo = document.activeElement;
-        if (campo && (campo.tagName === "INPUT" || campo.tagName === "TEXTAREA")) {
-          campo.value += (campo.value ? " " : "") + texto;
-        }
-      };
-      recognition.start();
-    }
+<!-- ALERT MANAGER -->
+<div id="alert-manager" class="alert-container" style="display: none;">
+  <div class="alert-box">
+    <img id="alert-icon" src="" alt="icono-alerta" class="alert-icon" />
+    <span id="alert-text" class="alert-message">Texto de alerta</span>
+    <div id="alert-buttons" class="alert-buttons" style="display: none;">
+      <img src="/static/icons/alerta/alerta-boton-borrar.png" id="btn-borrar" class="alert-btn" />
+      <img src="/static/icons/alerta/alerta-boton-no.png" id="btn-no" class="alert-btn" />
+    </div>
+  </div>
+</div>
 
-    function mostrarVistaPrevia(input, imgId, btnId) {
-      const file = input.files[0];
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        const img = document.getElementById(imgId);
-        const btn = document.getElementById(btnId);
-        img.src = e.target.result;
-        img.style.display = "block";
-        btn.style.display = "inline-block";
-        input.style.display = "none";
-      };
-      if (file) reader.readAsDataURL(file);
-    }
+<!-- SCRIPTS -->
+<script src="/static/js/alertas.js"></script>
+<script src="/static/js/guardar_historia_resumen.js"></script>
+<script src="/static/js/voz-a-formulario-historia-resumen.js"></script>
 
-    function eliminarImagen(inputId, imgId, btnId) {
-      document.getElementById(inputId).value = "";
-      document.getElementById(imgId).src = "";
-      document.getElementById(imgId).style.display = "none";
-      document.getElementById(btnId).style.display = "none";
-      document.getElementById(inputId).style.display = "block";
-    }
-  </script>
 </body>
 </html>

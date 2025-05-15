@@ -38,11 +38,11 @@ function closeAlert() {
 }
 
 /*──────────────────────────────────────────────*/
-/*    GUARDAR HISTORIA CLÍNICA Y GENERAR PDF    */
+/*    GUARDAR HISTORIA CLÍNICA RESUMIDA         */
 /*──────────────────────────────────────────────*/
 
 async function guardarPDF() {
-  const form = document.getElementById("form-historia");
+  const form = document.getElementById("form-resumen");
   const formData = new FormData(form);
 
   const firma = document.getElementById("firma");
@@ -56,42 +56,41 @@ async function guardarPDF() {
     formData.append("sello", sello.files[0]);
   }
 
- try {
-  showAlert("guardado", "Guardando Historia Clínica…", false, 3000);
-  await new Promise(resolve => setTimeout(resolve, 3200));
+  try {
+    showAlert("guardado", "Guardando Historia Clínica…", false, 3000);
+    await new Promise(resolve => setTimeout(resolve, 3200));
 
-  const response = await fetch('/generar_pdf_historia_completa', {
-    method: 'POST',
-    body: formData
-  });
+    const response = await fetch('/generar_pdf_historia_resumen', {
+      method: 'POST',
+      body: formData
+    });
 
-  const resultado = await response.json();
+    const resultado = await response.json();
 
-  if (resultado.exito && resultado.pdf_url) {
-    showAlert("suceso", "Historia Clínica Guardada", false, 3000);
-    sessionStorage.setItem('pdfURL', resultado.pdf_url);
-  } else if (resultado.mensaje && resultado.mensaje.toLowerCase().includes("registrada")) {
-    showAlert("pacienteCargado", "La Historia Clínica Ya Está Registrada", false, 3000);
-  } else {
-    showAlert("error", resultado.mensaje || "Error Al Guardar Historia Clínica", false, 4000);
+    if (resultado.exito && resultado.pdf_url) {
+      showAlert("suceso", "Historia Clínica Guardada", false, 3000);
+      sessionStorage.setItem('pdfURL', resultado.pdf_url);
+    } else if (resultado.mensaje && resultado.mensaje.toLowerCase().includes("registrada")) {
+      showAlert("pacienteCargado", "La Historia Clínica Ya Está Registrada", false, 3000);
+    } else {
+      showAlert("error", resultado.mensaje || "Error Al Guardar Historia Clínica", false, 4000);
+    }
+
+  } catch (error) {
+    console.error('Error al guardar:', error);
+    showAlert("error", "Error Al Guardar Historia Clínica", false, 4000);
   }
-
-} catch (error) {
-  console.error('Error al guardar:', error);
-  showAlert("error", "Error Al Guardar Historia Clínica", false, 4000);
 }
-  
-    
 
 /*──────────────────────────────────────────────*/
 /*         ENVIAR HISTORIA POR CORREO           */
 /*──────────────────────────────────────────────*/
 
 async function enviarPorCorreo() {
-  const form = document.getElementById("form-historia");
+  const form = document.getElementById("form-resumen");
 
   const email = form.querySelector('[name="email"]')?.value.trim() || "";
-  const nombre = form.querySelector('[name="nombre"]')?.value.trim() || "";
+  const paciente = form.querySelector('[name="paciente"]')?.value.trim() || "";
   const dni = form.querySelector('[name="dni"]')?.value.trim() || "";
 
   if (!email) {
@@ -105,10 +104,10 @@ async function enviarPorCorreo() {
 
     const formData = new FormData();
     formData.append("email", email);
-    formData.append("nombre", nombre);
+    formData.append("paciente", paciente);
     formData.append("dni", dni);
 
-    const response = await fetch('/enviar_pdf_historia_completa', {
+    const response = await fetch('/enviar_pdf_historia_resumen', {
       method: 'POST',
       body: formData
     });

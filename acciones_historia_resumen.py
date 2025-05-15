@@ -13,8 +13,8 @@ from utils.email_sender import enviar_email_con_pdf
 router = APIRouter()
 
 # Configuración Supabase
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+SUPABASE_URL = "https://wolcdduoroiobtadbcup.supabase.com'
+SUPABASE_KEY = "
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 BUCKET = "historia-resumen"
 

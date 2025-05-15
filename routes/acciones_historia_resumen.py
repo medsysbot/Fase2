@@ -104,7 +104,12 @@ async def enviar_historia_resumen(
         if not pdf_url:
             return JSONResponse(content={"exito": False, "mensaje": "No se encontró el PDF."}, status_code=404)
 
-        enviar_email_con_pdf(email_destino=email, asunto="Historia Clínica Resumida", cuerpo=f"Estimado/a {paciente}, adjuntamos su historia clínica.", url_pdf=pdf_url)
+        enviar_email_con_pdf(
+            email_destino=email,
+            asunto="Historia Clínica Resumida",
+            cuerpo=f"Estimado/a {paciente}, adjuntamos su historia clínica.",
+            url_pdf=pdf_url
+        )
 
         return {"exito": True}
 

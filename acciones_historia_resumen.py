@@ -13,7 +13,7 @@ from utils.email_sender import enviar_email_con_pdf
 router = APIRouter()
 
 # Configuración Supabase
-SUPABASE_URL = "https://wolcdduoroiobtadbcup.supabase.com'
+SUPABASE_URL = "https://wolcdduoroiobtadbcup.supabase.com"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvbGNkZHVvcm9pb2J0YWRiY3VwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NjIwMTQ5MywiZXhwIjoyMDYxNzc3NDkzfQ.GJtQkyj4PBLxekNQXJq7-mqnnqpcb_Gp0O0nmpLxICM"
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 BUCKET = "historia-resumen"

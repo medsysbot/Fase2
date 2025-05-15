@@ -36,7 +36,7 @@ def generar_pdf_resumen(datos, firma_path=None, sello_path=None):
 
     # Guardar PDF
     filename = f"{datos['dni']}_resumen.pdf"
-    output_path = os.path.join(\"/tmp\", filename)
+    output_path = os.path.join("/tmp", filename)
     pdf.output(output_path)
 
     return output_path

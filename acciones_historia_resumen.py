@@ -7,8 +7,8 @@ from fastapi.responses import JSONResponse
 from supabase import create_client
 from uuid import uuid4
 import os, datetime, tempfile
-from app.utils.pdf_generator import generar_pdf_resumen
-from app.utils.email_sender import enviar_email_con_pdf
+from utils.pdf_generator import generar_pdf_resumen
+from utils.email_sender import enviar_email_con_pdf
 
 router = APIRouter()
 

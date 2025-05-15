@@ -1,20 +1,42 @@
 from fpdf import FPDF
 import os
 
-def generate_pdf(data):
+def generar_pdf_resumen(datos, firma_path=None, sello_path=None):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=12)
 
-    pdf.cell(200, 10, txt="Historia Clínica", ln=True, align="C")
+    pdf.set_title("Historia Clínica Resumida")
+
+    pdf.cell(200, 10, txt="Historia Clínica Resumida", ln=True, align="C")
     pdf.ln(10)
 
-    pdf.cell(200, 10, txt=f"Nombre del paciente: {data.patient_name}", ln=True)
-    pdf.cell(200, 10, txt=f"Diagnóstico: {data.diagnosis}", ln=True)
-    pdf.multi_cell(200, 10, txt=f"Notas: {data.notes}")
+    pdf.cell(200, 10, txt=f"Paciente: {datos['paciente']}", ln=True)
+    pdf.cell(200, 10, txt=f"DNI: {datos['dni']}", ln=True)
+    pdf.cell(200, 10, txt=f"Edad: {datos['edad']}", ln=True)
+    pdf.ln(5)
 
-    filename = f"{data.patient_name.replace(' ', '_')}.pdf"
-    output_path = os.path.join("static", filename)
+    pdf.multi_cell(0, 10, f"Motivo de consulta:\n{datos['motivo']}\n")
+    pdf.multi_cell(0, 10, f"Diagnóstico:\n{datos['diagnostico']}\n")
+    pdf.multi_cell(0, 10, f"Tratamiento:\n{datos['tratamiento']}\n")
+    pdf.multi_cell(0, 10, f"Observaciones:\n{datos['observaciones']}\n")
+
+    # Inserta firma
+    if firma_path and os.path.exists(firma_path):
+        pdf.ln(10)
+        pdf.cell(200, 10, txt="Firma del Profesional:", ln=True)
+        pdf.image(firma_path, x=10, y=pdf.get_y(), w=40)
+        pdf.ln(25)
+
+    # Inserta sello
+    if sello_path and os.path.exists(sello_path):
+        pdf.cell(200, 10, txt="Sello del Profesional:", ln=True)
+        pdf.image(sello_path, x=60, y=pdf.get_y(), w=40)
+        pdf.ln(25)
+
+    # Guardar PDF
+    filename = f\"{datos['dni']}_resumen.pdf\"
+    output_path = os.path.join(\"/tmp\", filename)
     pdf.output(output_path)
 
-    return filename
+    return output_path

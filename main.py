@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, Form, UploadFile, File, HTTPException
-from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -33,6 +33,7 @@ app.add_middleware(SessionMiddleware, secret_key="clave-super-secreta", same_sit
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
 # ╔════════════════════════════════════╗
 # ║       ARCHIVOS ESTÁTICOS          ║
 # ╚════════════════════════════════════╝
@@ -44,16 +45,18 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 # ╔════════════════════════════════════╗
-# ║          SPLASH INICIAL           ║
+# ║         TESTEO SUPABASE           ║
 # ╚════════════════════════════════════╝
-@app.get("/", response_class=HTMLResponse)
-async def root_redirect(request: Request):
-    return templates.TemplateResponse("splash_screen.html", {"request": request})
-
-@app.get("/splash-screen", response_class=HTMLResponse)
-async def splash_inicio(request: Request):
-    return templates.TemplateResponse("splash_screen.html", {"request": request})
-
+@app.get("/test-supabase")
+async def test_supabase():
+    try:
+        response = supabase.table("usuarios").select("*").limit(1).execute()
+        if response.data:
+            return {"ok": True, "mensaje": "✅ Supabase conectado correctamente", "usuario_de_muestra": response.data[0]}
+        else:
+            return {"ok": True, "mensaje": "✅ Conectado, pero la tabla está vacía"}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
 # ╔════════════════════════════════════╗
 # ║               LOGIN               ║
 # ╚════════════════════════════════════╝

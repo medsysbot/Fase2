@@ -25,12 +25,11 @@ app.add_middleware(
 # ╔════════════════════════════════════╗
 # ║        SESIÓN DE USUARIOS         ║
 # ╚════════════════════════════════════╝
-app.add_middleware(SessionMiddleware, secret_key="clave-super-secreta")
+app.add_middleware(SessionMiddleware, secret_key="clave-super-secreta", same_site="lax")
 
 # ╔════════════════════════════════════╗
 # ║        CLIENTE SUPABASE           ║
 # ╚════════════════════════════════════╝
-
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 

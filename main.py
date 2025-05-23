@@ -6,7 +6,8 @@ from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 import os
 from supabase import create_client, Client
-
+from dotenv import load_dotenv   
+load_dotenv() 
 # ╔════════════════════════════════════╗
 # ║             APP BASE               ║
 # ╚════════════════════════════════════╝

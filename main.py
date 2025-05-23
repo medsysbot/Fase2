@@ -225,12 +225,10 @@ async def mostrar_alertas(request: Request):
 # ╔════════════════════════════════════╗
 # ║     INCLUIR RUTAS EXTERNAS        ║
 # ╚════════════════════════════════════╝
-from admin_routes import router as admin_router
 from acciones_pacientes import router as pacientes_router
 from acciones_historia_clinica import router as historia_clinica_router
 from routes import historia_resumen_router
 
-app.include_router(admin_router)
 app.include_router(pacientes_router)
 app.include_router(historia_clinica_router)
 app.include_router(historia_resumen_router)

@@ -3,9 +3,9 @@ from fastapi.responses import JSONResponse
 import os
 from supabase import create_client, Client
 from fpdf import FPDF
-from dotenv import load_dotenv
 from utils.pdf_generator import generar_pdf_paciente
 from utils.email_sender import enviar_email_con_pdf
+from dotenv import load_dotenv
 
 load_dotenv()
 router = APIRouter()

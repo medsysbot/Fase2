@@ -30,10 +30,10 @@ app.add_middleware(SessionMiddleware, secret_key="clave-super-secreta")
 # ╔════════════════════════════════════╗
 # ║        CLIENTE SUPABASE           ║
 # ╚════════════════════════════════════╝
-SUPABASE_URL = "https://wolcdduoroiobtadbcup.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvbGNkZHVvcm9pb2J0YWRiY3VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyMDE0OTMsImV4cCI6MjA2MTc3NzQ5M30.rV_1sa8iM8s6eCD-5m_wViCgWpd0d2xRHA_zQxRabHU"
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # ╔════════════════════════════════════╗
 # ║       ARCHIVOS ESTÁTICOS          ║
 # ╚════════════════════════════════════╝
@@ -231,4 +231,3 @@ from routes import historia_resumen_router
 app.include_router(admin_router)
 app.include_router(pacientes_router)
 app.include_router(historia_clinica_router)
-app.include_router(historia_resumen_router)

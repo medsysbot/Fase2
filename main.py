@@ -136,8 +136,10 @@ async def busqueda(request: Request):
 
 @app.get("/estudios", response_class=HTMLResponse)
 async def estudios(request: Request):
-    return templates.TemplateResponse("estudios.html", {"request": request})
-
+    return templates.TemplateResponse(
+        "estudios.html",
+        {"request": request, "supabase_url": SUPABASE_URL}
+    )
 @app.get("/evolucion", response_class=HTMLResponse)
 async def evolucion(request: Request):
     return templates.TemplateResponse("evolucion.html", {"request": request})

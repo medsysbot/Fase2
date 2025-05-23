@@ -7,8 +7,10 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
-from supabase import create_client
-
+import os
+from supabase import create_client, Client
+from dotenv import load_dotenv   
+load_dotenv() 
 router = APIRouter()
 
 # Configuración Supabase

@@ -45,19 +45,6 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 # ╔════════════════════════════════════╗
-# ║         TESTEO SUPABASE           ║
-# ╚════════════════════════════════════╝
-@app.get("/test-supabase")
-async def test_supabase():
-    try:
-        response = supabase.table("usuarios").select("*").limit(1).execute()
-        if response.data:
-            return {"ok": True, "mensaje": "✅ Supabase conectado correctamente", "usuario_de_muestra": response.data[0]}
-        else:
-            return {"ok": True, "mensaje": "✅ Conectado, pero la tabla está vacía"}
-    except Exception as e:
-        return {"ok": False, "error": str(e)}
-# ╔════════════════════════════════════╗
 # ║               LOGIN               ║
 # ╚════════════════════════════════════╝
 @app.get("/login", response_class=HTMLResponse)

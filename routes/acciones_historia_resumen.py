@@ -73,6 +73,12 @@ async def generar_historia_resumen(
 
         pdf_url = supabase.storage.from_(BUCKET).get_public_url(nombre_archivo)
 
+        # Eliminar archivos temporales de firma y sello
+        if firma_path and os.path.exists(firma_path):
+            os.remove(firma_path)
+        if sello_path and os.path.exists(sello_path):
+            os.remove(sello_path)
+       
         # Guardar en Supabase DB
         supabase.table("historia_clinica_resumen").insert({
             "paciente": paciente,

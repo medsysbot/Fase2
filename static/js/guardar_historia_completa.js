@@ -28,7 +28,7 @@ async function guardarPDF() {
     showAlert("guardado", "Guardando Historia Clínica…", false, 3000);
     await new Promise(resolve => setTimeout(resolve, 3200));
 
-    const response = await fetch('/generar_pdf_historia_resumen', {
+    const response = await fetch('/generar_pdf_historia_completa', {     
       method: 'POST',
       body: formData
     });

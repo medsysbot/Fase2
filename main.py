@@ -92,6 +92,13 @@ async def login_post(request: Request, usuario: str = Form(...), contrasena: str
             "request": request,
             "error": f"Error de conexión o datos inválidos: {str(e)}"
         })
+# ╔════════════════════════════════════╗
+# ║               LOGOUT              ║
+# ╚════════════════════════════════════╝
+@app.get("/logout")
+async def logout(request: Request):
+    request.session.clear()
+    return RedirectResponse(url="/login", status_code=303)
 
 # ╔════════════════════════════════════╗
 # ║           SPLASH FINAL            ║

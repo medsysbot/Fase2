@@ -111,8 +111,8 @@ async def enviar_pdf_paciente(email: str = Form(...), nombres: str = Form(...), 
         filename = f"paciente_{safe_name}.pdf"
         local_path = os.path.join("static/doc", filename)
 
-        remitente = "medisys.bot@gmail.com"
-        contrasena = "yeuaugaxmdvydcou"
+        remitente = os.getenv("EMAIL_ORIGEN")
+        contrasena = os.getenv("EMAIL_PASSWORD")       
         asunto = "Registro de Pacientes - MEDSYS"
         cuerpo = f"Estimado/a {nombres} {apellido},\n\nAdjuntamos su registro en PDF.\n\nSaludos,\nEquipo MEDSYS"
 

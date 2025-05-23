@@ -5,7 +5,9 @@ from supabase import create_client, Client
 from fpdf import FPDF
 from dotenv import load_dotenv
 from utils.pdf_generator import generar_pdf_paciente
-from utils.email_sender import enviar_email_con_pdfload_dotenv() 
+from utils.email_sender import enviar_email_con_pdf
+
+load_dotenv()
 router = APIRouter()
 
 # Configuración Supabase
@@ -53,11 +55,9 @@ async def generar_pdf_paciente(
         pdf_path = generar_pdf_paciente(datos)
         filename = os.path.basename(pdf_path)
         # Subir a Supabase
-       with open(pdf_path, "rb") as file_data:           
-           supabase.storage.from_(BUCKET_PDFS).upload(filename, file_data, {"content-type": "application/pdf"})
-
-        # Guardar en base
-        supabase.table("pacientes").insert({
+        with open(pdf_path, "rb") as file_data:        
+            supabase.storage.from_(BUCKET_PDFS).upload(filename, file_data, {"content-type": "application/pdf"})        # Guardar en base
+            supabase.table("pacientes").insert({
             "dni": dni,
             "nombres": nombres,
             "apellido": apellido,

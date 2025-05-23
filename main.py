@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, Form, UploadFile, File, HTTPException
-from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -25,13 +25,13 @@ app.add_middleware(
 # ╔════════════════════════════════════╗
 # ║        SESIÓN DE USUARIOS         ║
 # ╚════════════════════════════════════╝
-app.add_middleware(SessionMiddleware, secret_key="clave-super-secreta", same_site="lax")
+app.add_middleware(SessionMiddleware, secret_key="clave-super-secreta")
 
 # ╔════════════════════════════════════╗
 # ║        CLIENTE SUPABASE           ║
 # ╚════════════════════════════════════╝
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+SUPABASE_URL = "https://wolcdduoroiobtadbcup.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvbGNkZHVvcm9pb2J0YWRiY3VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyMDE0OTMsImV4cCI6MjA2MTc3NzQ5M30.rV_1sa8iM8s6eCD-5m_wViCgWpd0d2xRHA_zQxRabHU"
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # ╔════════════════════════════════════╗
@@ -43,6 +43,17 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # ║            PLANTILLAS             ║
 # ╚════════════════════════════════════╝
 templates = Jinja2Templates(directory="templates")
+
+# ╔════════════════════════════════════╗
+# ║          SPLASH INICIAL           ║
+# ╚════════════════════════════════════╝
+@app.get("/", response_class=HTMLResponse)
+async def root_redirect(request: Request):
+    return templates.TemplateResponse("splash_screen.html", {"request": request})
+
+@app.get("/splash-screen", response_class=HTMLResponse)
+async def splash_inicio(request: Request):
+    return templates.TemplateResponse("splash_screen.html", {"request": request})
 
 # ╔════════════════════════════════════╗
 # ║               LOGIN               ║
@@ -212,10 +223,12 @@ async def mostrar_alertas(request: Request):
 # ╔════════════════════════════════════╗
 # ║     INCLUIR RUTAS EXTERNAS        ║
 # ╚════════════════════════════════════╝
+from admin_routes import router as admin_router
 from acciones_pacientes import router as pacientes_router
 from acciones_historia_clinica import router as historia_clinica_router
 from routes import historia_resumen_router
 
+app.include_router(admin_router)
 app.include_router(pacientes_router)
 app.include_router(historia_clinica_router)
 app.include_router(historia_resumen_router)

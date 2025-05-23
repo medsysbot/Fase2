@@ -62,5 +62,3 @@
 - La carpeta `/static` **ya viene incluida**. Si se elimina, el backend crashea.
 - Los PDFs generados se guardan automáticamente ahí.
 - Esta versión es estable, funcional, y lista para seguir con la Fase 2B (firmas, QR, recetas).
-
----

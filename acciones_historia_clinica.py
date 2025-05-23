@@ -47,71 +47,60 @@ async def generar_pdf_historia_completa(
         if institucion_id is None:
             return JSONResponse({"error": "Sesión sin institución activa"}, status_code=403)
 
-        safe_name = nombre.strip().replace(" ", "_")
-        filename = f"historia_completa_{safe_name}_{dni}.pdf"
-        local_path = os.path.join("static/doc", filename)
-        Path("static/doc").mkdir(parents=True, exist_ok=True)
-
-        # Crear PDF
-        pdf = FPDF()
-        pdf.add_page()
-        logo_path = "static/icons/logo-medsys-gris.png"
-        if os.path.exists(logo_path):
-            pdf.image(logo_path, x=10, y=4, w=60)
-        pdf.set_font("Arial", "B", 16)
-        pdf.cell(0, 40, "Historia Clínica Completa - MEDSYS", ln=True, align="C")
-        pdf.set_draw_color(150, 150, 150)
-        pdf.set_line_width(1)
-        pdf.line(10, 50, 200, 50)
-        pdf.set_font("Arial", size=12)
-        pdf.ln(15)
-
-        campos = [
-            ("Nombre del Paciente", nombre),
-            ("DNI", dni),
-            ("Fecha de Nacimiento", fecha_nacimiento),
-            ("Edad", edad),
-            ("Sexo", sexo),
-            ("Teléfono", telefono),
-            ("Correo Electrónico", email),
-            ("Domicilio", domicilio),
-            ("Obra Social / Prepaga", obra_social),
-            ("Número de Afiliado", numero_afiliado),
-            ("Antecedentes Personales", antecedentes_personales),
-            ("Antecedentes Familiares", antecedentes_familiares),
-            ("Hábitos", habitos),
-            ("Enfermedades Crónicas", enfermedades_cronicas),
-            ("Cirugías / Hospitalizaciones", cirugias),
-            ("Medicación Actual", medicacion),
-            ("Estudios Complementarios", estudios),
-            ("Historial de Tratamientos", historial_tratamientos),
-            ("Historial de Consultas", historial_consultas)
-        ]
-        for label, value in campos:
-            pdf.cell(0, 10, f"{label}: {value}", ln=True)
-
-        pdf.output(local_path)
-
-        # Subir a Supabase
-        with open(local_path, "rb") as file_data:
-            supabase.storage.from_(BUCKET_PDFS).upload(filename, file_data, {"content-type": "application/pdf"})
-
-        # Subir firma y sello si existen
+   datos = {
+            "nombre": nombre,
+            "dni": dni,
+            "fecha_nacimiento": fecha_nacimiento,
+            "edad": edad,
+            "sexo": sexo,
+            "telefono": telefono,
+            "email": email,
+            "domicilio": domicilio,
+            "obra_social": obra_social,
+            "numero_afiliado": numero_afiliado,
+            "antecedentes_personales": antecedentes_personales,
+            "antecedentes_familiares": antecedentes_familiares,
+            "habitos": habitos,
+            "enfermedades_cronicas": enfermedades_cronicas,
+            "cirugias": cirugias,
+            "medicacion": medicacion,
+            "estudios": estudios,
+            "historial_tratamientos": historial_tratamientos,
+            "historial_consultas": historial_consultas,
+        }
         firma_url = ""
         sello_url = ""
-
+        firma_path = sello_path = None       
         if firma:
             firma_nombre = f"{dni}-firma.png"
-            contenido = await firma.read()
-            supabase.storage.from_(BUCKET_FIRMAS).upload(firma_nombre, contenido, {"content-type": firma.content_type})
+            contenido_firma = await firma.read()
+            supabase.storage.from_(BUCKET_FIRMAS).upload(firma_nombre, contenido_firma, {"content-type": firma.content_type})            
             firma_url = f"{BUCKET_FIRMAS}/{firma_nombre}"
-
+            tmp_firma = tempfile.NamedTemporaryFile(delete=False)
+            tmp_firma.write(contenido_firma)
+            tmp_firma.close()
+            firma_path = tmp_firma.name        
+            
         if sello:
             sello_nombre = f"{dni}-sello.png"
-            contenido = await sello.read()
-            supabase.storage.from_(BUCKET_FIRMAS).upload(sello_nombre, contenido, {"content-type": sello.content_type})
+            supabase.storage.from_(BUCKET_FIRMAS).upload(sello_nombre, contenido_sello, {"content-type": sello.content_type})            
             sello_url = f"{BUCKET_FIRMAS}/{sello_nombre}"
+            tmp_sello = tempfile.NamedTemporaryFile(delete=False)
+            tmp_sello.write(contenido_sello)
+            tmp_sello.close()
+            sello_path = tmp_sello.name
 
+        pdf_path = generar_pdf_historia_completa(datos, firma_path, sello_path)
+        filename = os.path.basename(pdf_path)
+
+        # Subir a Supabase
+        with open(pdf_path, "rb") as file_data:
+            supabase.storage.from_(BUCKET_PDFS).upload(filename, file_data, {"content-type": "application/pdf"})
+
+        if firma_path and os.path.exists(firma_path):
+            os.remove(firma_path)
+        if sello_path and os.path.exists(sello_path):
+            os.remove(sello_path)
         # Guardar en base
         supabase.table("historia_clinica_completa").insert({
             "paciente_id": dni,
@@ -151,28 +140,14 @@ async def enviar_pdf_historia_completa(email: str = Form(...), nombre: str = For
     try:
         safe_name = nombre.strip().replace(" ", "_")
         filename = f"historia_completa_{safe_name}_{dni}.pdf"
-        local_path = os.path.join("static/doc", filename)
+            pdf_url = supabase.storage.from_(BUCKET_PDFS).get_public_url(filename)
 
-        remitente = os.getenv("EMAIL_ORIGEN")
-        contrasena = os.getenv("EMAIL_PASSWORD")       
-        asunto = "Historia Clínica Completa - MEDSYS"
-        cuerpo = f"Estimado/a {nombre},\n\nAdjuntamos su historia clínica en formato PDF.\n\nSaludos,\nEquipo MEDSYS"
-
-        mensaje = MIMEMultipart()
-        mensaje["From"] = remitente
-        mensaje["To"] = email
-        mensaje["Subject"] = asunto
-        mensaje.attach(MIMEText(cuerpo, "plain"))
-
-        with open(local_path, "rb") as f:
-            parte = MIMEApplication(f.read(), Name=filename)
-            parte["Content-Disposition"] = f'attachment; filename="{filename}"'
-            mensaje.attach(parte)
-
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
-            servidor.login(remitente, contrasena)
-            servidor.send_message(mensaje)
-
+        enviar_email_con_pdf(
+            email_destino=email,
+            asunto="Historia Clínica Completa - MEDSYS",
+            cuerpo=f"Estimado/a {nombre},\n\nAdjuntamos su historia clínica en formato PDF.\n\nSaludos,\nEquipo MEDSYS",
+            url_pdf=pdf_url
+        )
         return JSONResponse({"exito": True})
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)

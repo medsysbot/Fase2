@@ -1,15 +1,11 @@
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import JSONResponse
-from fpdf import FPDF
-from pathlib import Path
 import os
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.mime.application import MIMEApplication
 from supabase import create_client, Client
-from dotenv import load_dotenv   
-load_dotenv() 
+from fpdf import FPDF
+from dotenv import load_dotenv
+from utils.pdf_generator import generar_pdf_paciente
+from utils.email_sender import enviar_email_con_pdfload_dotenv() 
 router = APIRouter()
 
 # Configuración Supabase
@@ -42,45 +38,23 @@ async def generar_pdf_paciente(
         existe = supabase.table("pacientes").select("dni").eq("dni", dni).eq("institucion_id", institucion_id).execute()
         if existe.data:
             return JSONResponse({"mensaje": "El paciente ya está registrado."}, status_code=200)
-
-        safe_name = f"{nombres.strip().replace(' ', '_')}_{apellido.strip().replace(' ', '_')}"
-        filename = f"paciente_{safe_name}.pdf"
-        local_path = os.path.join("static/doc", filename)
-        Path("static/doc").mkdir(parents=True, exist_ok=True)
-
-        # Crear PDF
-        pdf = FPDF()
-        pdf.add_page()
-        logo_path = "static/icons/logo-medsys-gris.png"
-        if os.path.exists(logo_path):
-            pdf.image(logo_path, x=10, y=4, w=60)
-        pdf.set_font("Arial", "B", 16)
-        pdf.cell(0, 40, "Registro de Pacientes - MEDSYS", ln=True, align="C")
-        pdf.set_draw_color(150, 150, 150)
-        pdf.set_line_width(1)
-        pdf.line(10, 50, 200, 50)
-        pdf.set_font("Arial", size=12)
-        pdf.ln(15)
-
-        campos = [
-            ("Nombre y Apellido", f"{nombres} {apellido}"),
-            ("DNI", dni),
-            ("Fecha de Nacimiento", fecha_nacimiento),
-            ("Teléfono", telefono),
-            ("Correo Electrónico", email),
-            ("Domicilio", domicilio),
-            ("Obra Social / Prepaga", obra_social),
-            ("Número de Afiliado", numero_afiliado),
-            ("Contacto de Emergencia", contacto_emergencia)
-        ]
-        for label, value in campos:
-            pdf.cell(0, 10, f"{label}: {value}", ln=True)
-
-        pdf.output(local_path)
-
+        datos = {
+            "nombres": nombres,
+            "apellido": apellido,
+            "dni": dni,
+            "fecha_nacimiento": fecha_nacimiento,
+            "telefono": telefono,
+            "email": email,
+            "domicilio": domicilio,
+            "obra_social": obra_social,
+            "numero_afiliado": numero_afiliado,
+            "contacto_emergencia": contacto_emergencia,
+        }
+        pdf_path = generar_pdf_paciente(datos)
+        filename = os.path.basename(pdf_path)
         # Subir a Supabase
-        with open(local_path, "rb") as file_data:
-            supabase.storage.from_(BUCKET_PDFS).upload(filename, file_data, {"content-type": "application/pdf"})
+       with open(pdf_path, "rb") as file_data:           
+           supabase.storage.from_(BUCKET_PDFS).upload(filename, file_data, {"content-type": "application/pdf"})
 
         # Guardar en base
         supabase.table("pacientes").insert({
@@ -108,28 +82,15 @@ async def generar_pdf_paciente(
 async def enviar_pdf_paciente(email: str = Form(...), nombres: str = Form(...), apellido: str = Form(...)):
     try:
         safe_name = f"{nombres.strip().replace(' ', '_')}_{apellido.strip().replace(' ', '_')}"
-        filename = f"paciente_{safe_name}.pdf"
-        local_path = os.path.join("static/doc", filename)
+        filename = f"paciente_{safe_nam}.pdf"
+        pdf_url = supabase.storage.from_(BUCKET_PDFS).get_public_url(filename)
 
-        remitente = os.getenv("EMAIL_ORIGEN")
-        contrasena = os.getenv("EMAIL_PASSWORD")       
-        asunto = "Registro de Pacientes - MEDSYS"
-        cuerpo = f"Estimado/a {nombres} {apellido},\n\nAdjuntamos su registro en PDF.\n\nSaludos,\nEquipo MEDSYS"
-
-        mensaje = MIMEMultipart()
-        mensaje["From"] = remitente
-        mensaje["To"] = email
-        mensaje["Subject"] = asunto
-        mensaje.attach(MIMEText(cuerpo, "plain"))
-
-        with open(local_path, "rb") as f:
-            parte = MIMEApplication(f.read(), Name=filename)
-            parte["Content-Disposition"] = f'attachment; filename="{filename}"'
-            mensaje.attach(parte)
-
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
-            servidor.login(remitente, contrasena)
-            servidor.send_message(mensaje)
+        enviar_email_con_pdf(
+            email_destino=email,
+            asunto="Registro de Pacientes - MEDSYS",
+            cuerpo=f"Estimado/a {nombres} {apellido},\n\nAdjuntamos su registro en PDF.\n\nSaludos,\nEquipo MEDSYS",
+            url_pdf=pdf_url
+        )      
 
         return JSONResponse({"exito": True})
     except Exception as e:

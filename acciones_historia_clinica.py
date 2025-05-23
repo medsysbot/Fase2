@@ -1,14 +1,11 @@
 from fastapi import APIRouter, Form, Request, UploadFile, File
 from fastapi.responses import JSONResponse
-from fpdf import FPDF
-from pathlib import Path
 import os
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.mime.application import MIMEApplication
 from supabase import create_client
+import tempfile
 from dotenv import load_dotenv
+from utils.pdf_generator import generar_pdf_historia_completa
+from utils.email_sender import enviar_email_con_pdffrom dotenv import load_dotenv
 load_dotenv()
 router = APIRouter()
 

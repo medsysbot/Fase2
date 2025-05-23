@@ -8,14 +8,14 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 from supabase import create_client
-
+from dotenv import load_dotenv
+load_dotenv()
 router = APIRouter()
 
 # Configuración Supabase
-SUPABASE_URL = "https://wolcdduoroiobtadbcup.supabase.com"
-SUPABASE_KEY_SERVICE = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvbGNkZHVvcm9pb2J0YWRiY3VwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NjIwMTQ5MywiZXhwIjoyMDYxNzc3NDkzfQ.GJtQkyj4PBLxekNQXJq7-mqnnqpcb_Gp0O0nmpLxICM"
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY_SERVICE = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY_SERVICE)
-
 BUCKET_PDFS = "pdfs"
 BUCKET_FIRMAS = "firma-sello-usuarios"
 

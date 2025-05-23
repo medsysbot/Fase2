@@ -156,8 +156,8 @@ async def enviar_pdf_historia_completa(email: str = Form(...), nombre: str = For
         filename = f"historia_completa_{safe_name}_{dni}.pdf"
         local_path = os.path.join("static/doc", filename)
 
-        remitente = "medisys.bot@gmail.com"
-        contrasena = "yeuaugaxmdvydcou"
+        remitente = os.getenv("EMAIL_ORIGEN")
+        contrasena = os.getenv("EMAIL_PASSWORD")       
         asunto = "Historia Clínica Completa - MEDSYS"
         cuerpo = f"Estimado/a {nombre},\n\nAdjuntamos su historia clínica en formato PDF.\n\nSaludos,\nEquipo MEDSYS"
 

@@ -27,9 +27,10 @@
      uvicorn main:app --host=0.0.0.0 --port=${PORT}
      ```
 
-4. **Variables de entorno (opcional):**  
-   Por ahora no necesita, salvo que se agreguen integraciones externas.
-
+4. **Variables de entorno:**
+   Copiá el archivo `.env.example` a `.env` y completá tus valores de
+   `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `EMAIL_ORIGEN` y
+   `EMAIL_PASSWORD`.
 5. Una vez desplegado, podés testear las rutas:
 
    #### `GET /`

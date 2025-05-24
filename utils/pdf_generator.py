@@ -131,3 +131,37 @@ def generar_pdf_historia_completa(datos, firma_path=None, sello_path=None):
     pdf.output(output_path)
 
     return output_path
+
+def generar_pdf_receta(datos, firma_path=None, sello_path=None):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+
+    pdf.set_title("Receta Médica")
+    pdf.cell(0, 10, txt="Receta Médica", ln=True, align="C")
+    pdf.ln(10)
+
+    pdf.cell(0, 10, f"Paciente: {datos['nombre']}", ln=True)
+    pdf.cell(0, 10, f"DNI: {datos['dni']}", ln=True)
+    pdf.cell(0, 10, f"Fecha: {datos['fecha']}", ln=True)
+    pdf.ln(5)
+
+    pdf.multi_cell(0, 10, f"Diagnóstico:\n{datos['diagnostico']}\n")
+    pdf.multi_cell(0, 10, f"Medicamentos indicados:\n{datos['medicamentos']}\n")
+
+    if firma_path and os.path.exists(firma_path):
+        pdf.ln(10)
+        pdf.cell(200, 10, txt="Firma del Profesional:", ln=True)
+        pdf.image(firma_path, x=10, y=pdf.get_y(), w=40)
+        pdf.ln(25)
+
+    if sello_path and os.path.exists(sello_path):
+        pdf.cell(200, 10, txt="Sello del Profesional:", ln=True)
+        pdf.image(sello_path, x=60, y=pdf.get_y(), w=40)
+        pdf.ln(25)
+
+    filename = f"{datos['dni']}_receta.pdf"
+    output_path = os.path.join("/tmp", filename)
+    pdf.output(output_path)
+
+    return output_path

@@ -81,13 +81,29 @@ function eliminarImagen(inputId, imgId, btnId) {
   fetch('/eliminar_imagen_receta', { method: 'POST', body: formData });
 }
 
+async function obtenerEmailPorDni(dni) {
+  try {
+    const formData = new FormData();
+    formData.append('dni', dni);
+    const res = await fetch('/obtener_email_receta', {
+      method: 'POST',
+      body: formData
+    });
+    const data = await res.json();
+    return data.email || null;
+  } catch (e) {
+    console.error('Error al obtener email:', e);
+    return null;
+  }
+}
+
 async function enviarPorCorreo() {
   const nombre = document.getElementById('nombre').value.trim();
   const dni = document.getElementById('dni').value.trim();
-  const email = prompt('Correo electrónico del paciente:');
+  const email = await obtenerEmailPorDni(dni);
 
   if (!email) {
-    showAlert('error', 'El campo de correo está vacío.', false, 3000);
+    showAlert('error', 'No se encontró un e-mail para este DNI.', false, 3000);
     return;
   }
 

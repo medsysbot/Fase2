@@ -36,7 +36,7 @@ def generar_pdf_resumen(datos, firma_path=None, sello_path=None):
     output_path = os.path.join("/tmp", filename)
     pdf.output(output_path)
 
-    
+    return output_path
 
 def generar_pdf_paciente(datos):
     pdf = FPDF()

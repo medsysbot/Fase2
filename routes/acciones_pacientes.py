@@ -95,19 +95,59 @@ async def guardar_paciente(
         return JSONResponse({"error": error_text}, status_code=500)
 
 # ---------- ENVIAR PDF POR EMAIL ----------
-@router.post("/enviar_pdf_paciente")
-async def enviar_pdf_paciente(email: str = Form(...), nombres: str = Form(...), apellido: str = Form(...)):
+@router.post("/obtener_email_paciente")
+async def obtener_email_paciente(dni: str = Form(...)):
+    """Devuelve el email del paciente a partir de su DNI."""
     try:
+        resultado = (
+            supabase.table("pacientes")
+            .select("email")
+            .eq("dni", dni)
+            .single()
+            .execute()
+        )
+        email = resultado.data.get("email") if resultado.data else None
+        return {"email": email}
+    except Exception as e:
+        return JSONResponse({"exito": False, "mensaje": str(e)}, status_code=500)
+
+
+@router.post("/enviar_pdf_paciente")
+async def enviar_pdf_paciente(dni: str = Form(...)):
+    """Envía por correo el PDF generado del paciente."""
+    try:
+        # Obtener datos del paciente
+        consulta = (
+            supabase.table("pacientes")
+            .select("nombres, apellido, email")
+            .eq("dni", dni)
+            .single()
+            .execute()
+        )
+        datos = consulta.data
+        if not datos:
+            return JSONResponse({"error": "Paciente no encontrado"}, status_code=404)
+
+        email = datos.get("email")
+        nombres = datos.get("nombres", "")
+        apellido = datos.get("apellido", "")
+
+        if not email:
+            return JSONResponse({"error": "Paciente sin email registrado"}, status_code=400)
+
         safe_name = f"{nombres.strip().replace(' ', '_')}_{apellido.strip().replace(' ', '_')}"
         filename = f"paciente_{safe_name}.pdf"
-        pdf_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_PDFS}/{filename}"
+        pdf_url = supabase.storage.from_(BUCKET_PDFS).get_public_url(filename)
 
         enviar_email_con_pdf(
             email_destino=email,
             asunto="Registro de Pacientes - MEDSYS",
-            cuerpo=f"Estimado/a {nombres} {apellido},\n\nAdjuntamos su registro en PDF.\n\nSaludos,\nEquipo MEDSYS",
-            url_pdf=pdf_url
-        )      
+            cuerpo=(
+                f"Estimado/a {nombres} {apellido},\n\n"
+                "Adjuntamos su registro en PDF.\n\nSaludos,\nEquipo MEDSYS"
+            ),
+            url_pdf=pdf_url,
+        )
 
         return JSONResponse({"exito": True})
     except Exception as e:

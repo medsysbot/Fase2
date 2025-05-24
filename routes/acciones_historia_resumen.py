@@ -19,6 +19,7 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 BUCKET = "historia-resumen"
+BUCKET_FIRMAS = "firma-sello-usuarios"
 
 
 # ╔════════════════════════════════════════════════════════════╗
@@ -39,6 +40,8 @@ async def generar_historia_resumen(
     sello: UploadFile = File(None)
 ):
     try:
+        usuario = request.session.get("usuario")
+        institucion_id = request.session.get("institucion_id")
         datos = {
             "paciente": paciente,
             "dni": dni,
@@ -52,16 +55,56 @@ async def generar_historia_resumen(
         # Firma y sello temporales
         firma_path = sello_path = None
         if firma:
+            contenido_firma = await firma.read()
             tmp_firma = tempfile.NamedTemporaryFile(delete=False)
-            tmp_firma.write(await firma.read())
+            tmp_firma.write(contenido_firma)
             tmp_firma.close()
             firma_path = tmp_firma.name
+            if usuario and institucion_id is not None:
+                supabase.storage.from_(BUCKET_FIRMAS).upload(
+                    f"firma-{usuario}--{institucion_id}.png",
+                    contenido_firma,
+                    {"content-type": firma.content_type},
+                    upsert=True
+                )
+        elif usuario and institucion_id is not None:
+            try:
+                contenido_firma = supabase.storage.from_(BUCKET_FIRMAS).download(
+                    f"firma-{usuario}--{institucion_id}.png"
+                )
+                if contenido_firma:
+                    tmp_firma = tempfile.NamedTemporaryFile(delete=False)
+                    tmp_firma.write(contenido_firma)
+                    tmp_firma.close()
+                    firma_path = tmp_firma.name
+            except Exception:
+                pass
 
         if sello:
+            contenido_sello = await sello.read()
             tmp_sello = tempfile.NamedTemporaryFile(delete=False)
-            tmp_sello.write(await sello.read())
+            tmp_sello.write(contenido_sello)
             tmp_sello.close()
             sello_path = tmp_sello.name
+            if usuario and institucion_id is not None:
+                supabase.storage.from_(BUCKET_FIRMAS).upload(
+                    f"sello-{usuario}--{institucion_id}.png",
+                    contenido_sello,
+                    {"content-type": sello.content_type},
+                    upsert=True
+                )
+        elif usuario and institucion_id is not None:
+            try:
+                contenido_sello = supabase.storage.from_(BUCKET_FIRMAS).download(
+                    f"sello-{usuario}--{institucion_id}.png"
+                )
+                if contenido_sello:
+                    tmp_sello = tempfile.NamedTemporaryFile(delete=False)
+                    tmp_sello.write(contenido_sello)
+                    tmp_sello.close()
+                    sello_path = tmp_sello.name
+            except Exception:
+                pass
 
         # Generar PDF
         pdf_path = generar_pdf_resumen(datos, firma_path, sello_path)

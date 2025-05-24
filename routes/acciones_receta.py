@@ -29,6 +29,7 @@ async def generar_receta(
 ):
     try:
         usuario = request.session.get("usuario")
+        institucion_id = request.session.get("institucion_id")
         datos = {
             "nombre": nombre,
             "dni": dni,
@@ -42,7 +43,7 @@ async def generar_receta(
         # ---------- FIRMA ----------
         if firma:
             contenido_firma = await firma.read()
-            nombre_firma = f"{usuario}-firma.png"
+            nombre_firma = f"firma-{usuario}--{institucion_id}.png"
             supabase.storage.from_(BUCKET_FIRMAS).upload(
                 nombre_firma,
                 contenido_firma,
@@ -53,9 +54,11 @@ async def generar_receta(
             tmp_firma.write(contenido_firma)
             tmp_firma.close()
             firma_path = tmp_firma.name
-        elif usuario:
+        elif usuario and institucion_id is not None:
             try:
-                contenido_firma = supabase.storage.from_(BUCKET_FIRMAS).download(f"{usuario}-firma.png")
+                contenido_firma = supabase.storage.from_(BUCKET_FIRMAS).download(
+                    f"firma-{usuario}--{institucion_id}.png"
+                )
                 if contenido_firma:
                     tmp_firma = tempfile.NamedTemporaryFile(delete=False)
                     tmp_firma.write(contenido_firma)
@@ -67,7 +70,7 @@ async def generar_receta(
         # ---------- SELLO ----------
         if sello:
             contenido_sello = await sello.read()
-            nombre_sello = f"{usuario}-sello.png"
+            nombre_sello = f"sello-{usuario}--{institucion_id}.png"
             supabase.storage.from_(BUCKET_FIRMAS).upload(
                 nombre_sello,
                 contenido_sello,
@@ -78,9 +81,11 @@ async def generar_receta(
             tmp_sello.write(contenido_sello)
             tmp_sello.close()
             sello_path = tmp_sello.name
-        elif usuario:
+        elif usuario and institucion_id is not None:
             try:
-                contenido_sello = supabase.storage.from_(BUCKET_FIRMAS).download(f"{usuario}-sello.png")
+                contenido_sello = supabase.storage.from_(BUCKET_FIRMAS).download(
+                    f"sello-{usuario}--{institucion_id}.png"
+                )
                 if contenido_sello:
                     tmp_sello = tempfile.NamedTemporaryFile(delete=False)
                     tmp_sello.write(contenido_sello)
@@ -120,21 +125,25 @@ async def generar_receta(
 @router.get("/obtener_firma_sello")
 async def obtener_firma_sello(request: Request):
     usuario = request.session.get("usuario")
-    if not usuario:
+    institucion_id = request.session.get("institucion_id")
+    if not usuario or institucion_id is None:
         return JSONResponse({"exito": False, "mensaje": "Usuario no autenticado"}, status_code=403)
 
-    firma_url = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(f"{usuario}-firma.png")
-    sello_url = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(f"{usuario}-sello.png")
+    firma_nombre = f"firma-{usuario}--{institucion_id}.png"
+    sello_nombre = f"sello-{usuario}--{institucion_id}.png"
+    firma_url = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(firma_nombre)
+    sello_url = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(sello_nombre)
     return {"firma_url": firma_url, "sello_url": sello_url}
 
 
-@router.post("/eliminar_imagen_receta")
-async def eliminar_imagen_receta(request: Request, tipo: str = Form(...)):
+@router.post("/eliminar_firma_sello")
+async def eliminar_firma_sello(request: Request, tipo: str = Form(...)):
     usuario = request.session.get("usuario")
-    if not usuario:
+    institucion_id = request.session.get("institucion_id")
+    if not usuario or institucion_id is None:
         return JSONResponse({"exito": False, "mensaje": "Usuario no autenticado"}, status_code=403)
 
-    nombre_archivo = f"{usuario}-{tipo}.png"
+    nombre_archivo = f"{tipo}-{usuario}--{institucion_id}.png"
     try:
         supabase.storage.from_(BUCKET_FIRMAS).remove(nombre_archivo)
         return {"exito": True}

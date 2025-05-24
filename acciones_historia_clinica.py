@@ -45,7 +45,8 @@ async def generar_pdf_historia_completa(
 ):
     try:
         institucion_id = request.session.get("institucion_id")
-        if institucion_id is None:
+        usuario = request.session.get("usuario")
+        if institucion_id is None or not usuario:
             return JSONResponse({"error": "Sesión sin institución activa"}, status_code=403)
 
         datos = {
@@ -73,29 +74,58 @@ async def generar_pdf_historia_completa(
         sello_url = ""
         firma_path = sello_path = None       
         if firma:
-            firma_nombre = f"{dni}-firma.png"
+            firma_nombre = f"firma-{usuario}--{institucion_id}.png"
             contenido_firma = await firma.read()
-            supabase.storage.from_(BUCKET_FIRMAS).upload(firma_nombre, contenido_firma, {"content-type": firma.content_type})            
+            supabase.storage.from_(BUCKET_FIRMAS).upload(
+                firma_nombre,
+                contenido_firma,
+                {"content-type": firma.content_type},
+                upsert=True
+            )
             firma_url = f"{BUCKET_FIRMAS}/{firma_nombre}"
             tmp_firma = tempfile.NamedTemporaryFile(delete=False)
             tmp_firma.write(contenido_firma)
             tmp_firma.close()
-            firma_path = tmp_firma.name        
-            
+            firma_path = tmp_firma.name
+        elif usuario:
+            try:
+                contenido_firma = supabase.storage.from_(BUCKET_FIRMAS).download(
+                    f"firma-{usuario}--{institucion_id}.png"
+                )
+                if contenido_firma:
+                    tmp_firma = tempfile.NamedTemporaryFile(delete=False)
+                    tmp_firma.write(contenido_firma)
+                    tmp_firma.close()
+                    firma_path = tmp_firma.name
+            except Exception:
+                pass
+
         if sello:
-            sello_nombre = f"{dni}-sello.png"
+            sello_nombre = f"sello-{usuario}--{institucion_id}.png"
             contenido_sello = await sello.read()
             supabase.storage.from_(BUCKET_FIRMAS).upload(
                 sello_nombre,
                 contenido_sello,
                 {"content-type": sello.content_type},
+                upsert=True
             )
             sello_url = f"{BUCKET_FIRMAS}/{sello_nombre}"
             tmp_sello = tempfile.NamedTemporaryFile(delete=False)
             tmp_sello.write(contenido_sello)
             tmp_sello.close()
             sello_path = tmp_sello.name
-
+        elif usuario:
+            try:
+                contenido_sello = supabase.storage.from_(BUCKET_FIRMAS).download(
+                    f"sello-{usuario}--{institucion_id}.png"
+                )
+                if contenido_sello:
+                    tmp_sello = tempfile.NamedTemporaryFile(delete=False)
+                    tmp_sello.write(contenido_sello)
+                    tmp_sello.close()
+                    sello_path = tmp_sello.name
+            except Exception:
+                pass
         pdf_path = generar_pdf_historia_completa(datos, firma_path, sello_path)
         filename = os.path.basename(pdf_path)
 

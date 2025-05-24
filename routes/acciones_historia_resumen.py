@@ -65,7 +65,6 @@ async def generar_historia_resumen(
                     f"firma-{usuario}--{institucion_id}.png",
                     contenido_firma,
                     {"content-type": firma.content_type},
-                    upsert=True
                 )
         elif usuario and institucion_id is not None:
             try:
@@ -91,7 +90,6 @@ async def generar_historia_resumen(
                     f"sello-{usuario}--{institucion_id}.png",
                     contenido_sello,
                     {"content-type": sello.content_type},
-                    upsert=True
                 )
         elif usuario and institucion_id is not None:
             try:

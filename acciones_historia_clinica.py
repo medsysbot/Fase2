@@ -48,7 +48,7 @@ async def generar_pdf_historia_completa(
         if institucion_id is None:
             return JSONResponse({"error": "Sesión sin institución activa"}, status_code=403)
 
-   datos = {
+        datos = {
             "nombre": nombre,
             "dni": dni,
             "fecha_nacimiento": fecha_nacimiento,
@@ -84,7 +84,12 @@ async def generar_pdf_historia_completa(
             
         if sello:
             sello_nombre = f"{dni}-sello.png"
-            supabase.storage.from_(BUCKET_FIRMAS).upload(sello_nombre, contenido_sello, {"content-type": sello.content_type})            
+            contenido_sello = await sello.read()
+            supabase.storage.from_(BUCKET_FIRMAS).upload(
+                sello_nombre,
+                contenido_sello,
+                {"content-type": sello.content_type},
+            )
             sello_url = f"{BUCKET_FIRMAS}/{sello_nombre}"
             tmp_sello = tempfile.NamedTemporaryFile(delete=False)
             tmp_sello.write(contenido_sello)
@@ -141,7 +146,7 @@ async def enviar_pdf_historia_completa(email: str = Form(...), nombre: str = For
     try:
         safe_name = nombre.strip().replace(" ", "_")
         filename = f"historia_completa_{safe_name}_{dni}.pdf"
-            pdf_url = supabase.storage.from_(BUCKET_PDFS).get_public_url(filename)
+        pdf_url = supabase.storage.from_(BUCKET_PDFS).get_public_url(filename)
 
         enviar_email_con_pdf(
             email_destino=email,

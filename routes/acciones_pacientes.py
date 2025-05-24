@@ -37,9 +37,16 @@ async def guardar_paciente(
         if institucion_id is None:
             return JSONResponse({"error": "Sesión sin institución activa"}, status_code=403)
 
-        existe = supabase.table("pacientes").select("dni").eq("dni", dni).eq("institucion_id", institucion_id).execute()
+        existe = (
+            supabase
+            .table("pacientes")
+            .select("dni")
+            .eq("dni", dni)
+            .eq("institucion_id", institucion_id)
+            .execute()
+        )
         if existe.data:
-            return JSONResponse({"mensaje": "El paciente ya está registrado."}, status_code=200)
+            return JSONResponse({"mensaje": "Ya existe un paciente con ese DNI."}, status_code=200)
         datos = {
             "nombres": nombres,
             "apellido": apellido,
@@ -82,7 +89,10 @@ async def guardar_paciente(
         return JSONResponse({"exito": True, "pdf_url": public_url})
 
     except Exception as e:
-        return JSONResponse({"error": str(e)}, status_code=500)
+        error_text = str(e)
+        if "Duplicate" in error_text or "duplicate" in error_text:
+            return JSONResponse({"error": "No se pudo guardar el paciente. Verifica si el DNI ya existe."}, status_code=400)
+        return JSONResponse({"error": error_text}, status_code=500)
 
 # ---------- ENVIAR PDF POR EMAIL ----------
 @router.post("/enviar_pdf_paciente")

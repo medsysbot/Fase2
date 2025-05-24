@@ -49,7 +49,7 @@ async function guardarPDF() {
       showAlert("suceso", "Paciente Guardado Con Éxito", false, 3000);
       sessionStorage.setItem('pdfURL', resultado.pdf_url);
     } else if (resultado.mensaje) {
-      showAlert("pacienteCargado", "El Paciente Ya Está Registrado", false, 3000);
+      showAlert("pacienteCargado", "Ya existe un paciente con ese DNI", false, 3000);
     } else if (resultado.error) {
       showAlert("error", `Error al guardar: ${resultado.error}`, false, 4000);
     } else {

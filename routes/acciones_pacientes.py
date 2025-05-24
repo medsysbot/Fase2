@@ -90,7 +90,7 @@ async def enviar_pdf_paciente(email: str = Form(...), nombres: str = Form(...), 
     try:
         safe_name = f"{nombres.strip().replace(' ', '_')}_{apellido.strip().replace(' ', '_')}"
         filename = f"paciente_{safe_name}.pdf"
-        pdf_url = supabase.storage.from_(BUCKET_PDFS).get_public_url(filename)
+        pdf_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_PDFS}/{filename}"
 
         enviar_email_con_pdf(
             email_destino=email,

@@ -80,7 +80,6 @@ async def generar_pdf_historia_completa(
                 firma_nombre,
                 contenido_firma,
                 {"content-type": firma.content_type},
-                upsert=True
             )
             firma_url = f"{BUCKET_FIRMAS}/{firma_nombre}"
             tmp_firma = tempfile.NamedTemporaryFile(delete=False)
@@ -107,7 +106,6 @@ async def generar_pdf_historia_completa(
                 sello_nombre,
                 contenido_sello,
                 {"content-type": sello.content_type},
-                upsert=True
             )
             sello_url = f"{BUCKET_FIRMAS}/{sello_nombre}"
             tmp_sello = tempfile.NamedTemporaryFile(delete=False)

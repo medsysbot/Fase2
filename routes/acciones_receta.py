@@ -48,7 +48,6 @@ async def generar_receta(
                 nombre_firma,
                 contenido_firma,
                 {"content-type": firma.content_type},
-                upsert=True,
             )
             tmp_firma = tempfile.NamedTemporaryFile(delete=False)
             tmp_firma.write(contenido_firma)
@@ -75,7 +74,6 @@ async def generar_receta(
                 nombre_sello,
                 contenido_sello,
                 {"content-type": sello.content_type},
-                upsert=True,
             )
             tmp_sello = tempfile.NamedTemporaryFile(delete=False)
             tmp_sello.write(contenido_sello)

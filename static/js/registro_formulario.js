@@ -66,12 +66,15 @@ async function guardarPDF() {
 /*──────────────────────────────────────────*/
 
 async function enviarPorCorreo() {
-  const nombres = document.getElementById('nombres').value.trim();
-  const apellido = document.getElementById('apellido').value.trim();
-  const email = document.getElementById('email').value.trim();
+  const dni = document.getElementById('dni').value.trim();
+  if (!dni) {
+    showAlert('error', 'Debes ingresar un DNI válido.', false, 3000);
+    return;
+  }
 
+  const email = await obtenerEmailPorDni(dni);
   if (!email) {
-    showAlert("error", "El campo de correo electrónico está vacío.", false, 3000);
+    showAlert('error', 'No se encontró un e-mail para este DNI.', false, 3000);
     return;
   }
 
@@ -80,9 +83,7 @@ async function enviarPorCorreo() {
     await new Promise(resolve => setTimeout(resolve, 3200));
 
     const formData = new FormData();
-    formData.append("nombres", nombres);
-    formData.append("apellido", apellido);
-    formData.append("email", email);
+    formData.append('dni', dni);
 
     const response = await fetch('/enviar_pdf_paciente', {
       method: 'POST',
@@ -99,6 +100,22 @@ async function enviarPorCorreo() {
   } catch (error) {
     console.error('Error al enviar el e-mail:', error);
     showAlert("error", "Error Al Enviar el E-mail", false, 3000);
+  }
+}
+
+async function obtenerEmailPorDni(dni) {
+  try {
+    const formData = new FormData();
+    formData.append('dni', dni);
+    const res = await fetch('/obtener_email_paciente', {
+      method: 'POST',
+      body: formData
+    });
+    const data = await res.json();
+    return data.email || null;
+  } catch (e) {
+    console.error('Error al obtener email:', e);
+    return null;
   }
 }
 

@@ -162,3 +162,14 @@ async def enviar_pdf_receta(email: str = Form(...), nombre: str = Form(...), dni
 
     except Exception as e:
         return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)
+
+
+@router.post("/obtener_email_receta")
+async def obtener_email_receta(dni: str = Form(...)):
+    """Devuelve el email del paciente a partir de su DNI."""
+    try:
+        resultado = supabase.table("pacientes").select("email").eq("dni", dni).single().execute()
+        email = resultado.data.get("email") if resultado.data else None
+        return {"email": email}
+    except Exception as e:
+        return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)

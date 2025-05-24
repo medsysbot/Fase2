@@ -18,8 +18,8 @@ BUCKET_PDFS = "pdfs"
 BUCKET_BACKUPS = "backups"
 
 # ---------- REGISTRAR PACIENTE Y GENERAR PDF ----------
-@router.post("/generar_pdf_paciente")
-async def generar_pdf_paciente(
+@router.post("/guardar_paciente")
+async def guardar_paciente(
     request: Request,
     nombres: str = Form(...),
     apellido: str = Form(...),
@@ -54,10 +54,17 @@ async def generar_pdf_paciente(
         }
         pdf_path = generar_pdf_paciente(datos)
         filename = os.path.basename(pdf_path)
+
         # Subir a Supabase
-        with open(pdf_path, "rb") as file_data:        
-            supabase.storage.from_(BUCKET_PDFS).upload(filename, file_data, {"content-type": "application/pdf"})        # Guardar en base
-            supabase.table("pacientes").insert({
+        with open(pdf_path, "rb") as file_data:
+            supabase.storage.from_(BUCKET_PDFS).upload(
+                filename,
+                file_data,
+                {"content-type": "application/pdf"}
+            )
+
+        # Guardar en base
+        supabase.table("pacientes").insert({
             "dni": dni,
             "nombres": nombres,
             "apellido": apellido,

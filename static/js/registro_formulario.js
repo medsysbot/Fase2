@@ -38,7 +38,7 @@ async function guardarPDF() {
       formData.append(key, datos[key]);
     }
 
-    const response = await fetch('/generar_pdf_paciente', {
+    const response = await fetch('/guardar_paciente', {
       method: 'POST',
       body: formData
     });
@@ -50,12 +50,14 @@ async function guardarPDF() {
       sessionStorage.setItem('pdfURL', resultado.pdf_url);
     } else if (resultado.mensaje) {
       showAlert("pacienteCargado", "El Paciente Ya Está Registrado", false, 3000);
+    } else if (resultado.error) {
+      showAlert("error", `Error al guardar: ${resultado.error}`, false, 4000);
     } else {
       showAlert("error", "Error Al Guardar El Paciente", false, 4000);
     }
   } catch (error) {
     console.error('Error al guardar:', error);
-    showAlert("error", "Error Al Guardar El Paciente", false, 4000);
+    showAlert("error", `Error al guardar: ${error.message}`, false, 4000);
   }
 }
 

@@ -57,12 +57,12 @@ async function guardarPDF() {
 async function enviarPorCorreo() {
   const form = document.getElementById("form-resumen");
 
-  const email = form.querySelector('[name="email"]')?.value.trim() || "";
   const paciente = form.querySelector('[name="paciente"]')?.value.trim() || "";
   const dni = form.querySelector('[name="dni"]')?.value.trim() || "";
+  const email = await obtenerEmailPorDni(dni);
 
   if (!email) {
-    showAlert("error", "El campo de correo está vacío.", false, 3000);
+    showAlert("error", "No se encontró un e-mail para este DNI.", false, 3000);
     return;
   }
 
@@ -112,5 +112,21 @@ function abrirPDF() {
     }, 1000);
   } else {
     showAlert("pdf", "Error Al Cargar El PDF", false, 3000);
+  }
+}
+
+async function obtenerEmailPorDni(dni) {
+  try {
+    const formData = new FormData();
+    formData.append('dni', dni);
+    const res = await fetch('/obtener_email_paciente', {
+      method: 'POST',
+      body: formData
+    });
+    const data = await res.json();
+    return data.email || null;
+  } catch (e) {
+    console.error('Error al obtener email:', e);
+    return null;
   }
 }

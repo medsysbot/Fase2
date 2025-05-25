@@ -17,7 +17,7 @@ router = APIRouter()
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-BUCKET_PDFS = "recetas"
+BUCKET_PDFS = "recetas-medicas"
 BUCKET_FIRMAS = "firma-sello-usuarios"
 
 @router.post("/generar_pdf_receta")
@@ -102,7 +102,7 @@ async def generar_receta(
 
         pdf_path = generar_pdf_receta(datos, firma_path, sello_path)
 
-        nombre_archivo = f"{dni}.pdf"
+        nombre_archivo = f"{dni}_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.pdf"
         with open(pdf_path, "rb") as f:
             supabase.storage.from_(BUCKET_PDFS).upload(nombre_archivo, f, upsert=True)
 

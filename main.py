@@ -5,6 +5,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 import os
+import tempfile
 from supabase import create_client, Client
 from dotenv import load_dotenv   
 load_dotenv() 
@@ -188,27 +189,30 @@ async def turnos(request: Request):
 # ╚════════════════════════════════════╝
 @app.get("/listar-estudios")
 async def listar_estudios():
-    carpeta = "static/estudios"
-    if os.path.exists(carpeta):
-        return {"archivos": os.listdir(carpeta)}
-    else:
+    try:
+        archivos = supabase.storage.from_("estudios-medicos").list()
+        nombres = [a.get("name") for a in archivos]
+        return {"archivos": nombres}
+    except Exception:
         raise HTTPException(status_code=404, detail="Directorio no encontrado")
 
 @app.post("/eliminar-estudio")
 async def eliminar_estudio(nombre_archivo: str = Form(...)):
-    ruta = f"static/estudios/{nombre_archivo}"
-    if os.path.exists(ruta):
-        os.remove(ruta)
+    try:
+        supabase.storage.from_("estudios-medicos").remove(nombre_archivo)
         return {"status": "success", "message": "Archivo eliminado"}
-    else:
+    except Exception:
         raise HTTPException(status_code=404, detail="Archivo no encontrado")
 
 @app.get("/descargar-estudio/{nombre_archivo}")
 async def descargar_estudio(nombre_archivo: str):
-    ruta = f"static/estudios/{nombre_archivo}"
-    if os.path.exists(ruta):
-        return FileResponse(ruta, media_type="application/pdf", filename=nombre_archivo)
-    else:
+    try:
+        contenido = supabase.storage.from_("estudios-medicos").download(nombre_archivo)
+        tmp = tempfile.NamedTemporaryFile(delete=False)
+        tmp.write(contenido)
+        tmp.close()
+        return FileResponse(tmp.name, media_type="application/pdf", filename=nombre_archivo)
+    except Exception:
         raise HTTPException(status_code=404, detail="Archivo no encontrado")
 
 @app.post("/subir-estudio")
@@ -217,10 +221,8 @@ async def subir_estudio(archivo: UploadFile = File(...)):
     extension = os.path.splitext(archivo.filename)[1].lower()
     if extension not in extensiones_permitidas:
         raise HTTPException(status_code=400, detail="Formato no permitido")
-    ruta_guardado = f"static/estudios/{archivo.filename}"
-    with open(ruta_guardado, "wb") as f:
-        contenido = await archivo.read()
-        f.write(contenido)
+    contenido = await archivo.read()
+    supabase.storage.from_("estudios-medicos").upload(archivo.filename, contenido, {"content-type": archivo.content_type})
     return {"status": "success", "message": "Archivo subido correctamente"}
 
 # ╔════════════════════════════════════╗

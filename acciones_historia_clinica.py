@@ -17,7 +17,7 @@ router = APIRouter()
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY_SERVICE = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY_SERVICE)
-BUCKET_PDFS = "pdfs"
+BUCKET_PDFS = "historia-completa"
 BUCKET_FIRMAS = "firma-sello-usuarios"
 
 # ╔══════════════════════════════════════════════╗

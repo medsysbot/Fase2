@@ -1,7 +1,7 @@
 function guardarPDF() {
   const formData = new FormData(document.getElementById("form-evolucion"));
 
-  fetch('/generar-pdf-historia-evolucion', {
+  fetch('/generar_pdf_evolucion', {
     method: 'POST',
     body: formData
   })

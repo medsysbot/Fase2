@@ -9,7 +9,7 @@ function guardarPDF() {
     return;
   }
 
-  fetch('/generar-pdf-indicaciones', {
+  fetch('/generar_pdf_indicaciones', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ nombre, dni, fecha, indicaciones })

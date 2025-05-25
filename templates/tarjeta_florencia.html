@@ -7,12 +7,58 @@
   <link rel="stylesheet" href="/static/css/tarjeta_florencia.css">
 </head>
 <body>
-  <div class="fondo-animado"></div>
-  <div class="contenido">
-    <div id="animacion-vals" class="dancers">💃🏻🕺</div>
-    <h1 class="nombre">María Florencia Pérez</h1>
-    <div id="contador" class="contador"></div>
+  <div id="inicio" class="pantalla-inicio">
+    <h1 class="nombre-inicio">María Florencia Pérez</h1>
+    <button id="btn-ingresar" class="btn-ingresar">Ingresar</button>
   </div>
+
+  <button id="btn-musica" class="btn-musica">▶️</button>
+  <audio id="audio-fondo" loop>
+    <source src="https://assets.mixkit.co/music/preview/mixkit-silk-touch-891.mp3" type="audio/mpeg">
+  </audio>
+
+  <div id="contenido" class="oculto">
+    <section class="seccion seccion-contador">
+      <div id="contador"></div>
+    </section>
+    <section class="seccion">
+      <h2>Nuestra Historia</h2>
+      <p>Estamos felices de compartir este día especial con vos. ¡Gracias por acompañarnos!</p>
+    </section>
+    <section class="seccion">
+      <h2>Ubicación</h2>
+      <p>Salón Aurora, 21:00 hs</p>
+    </section>
+    <section class="seccion">
+      <h2>Galería</h2>
+      <div class="galeria">
+        <img src="https://via.placeholder.com/300x200?text=Foto+1" class="active" alt="Foto 1">
+        <img src="https://via.placeholder.com/300x200?text=Foto+2" alt="Foto 2">
+        <img src="https://via.placeholder.com/300x200?text=Foto+3" alt="Foto 3">
+        <img src="https://via.placeholder.com/300x200?text=Foto+4" alt="Foto 4">
+      </div>
+    </section>
+    <section class="seccion">
+      <h2>Confirmá tu asistencia</h2>
+      <form id="form-confirmacion">
+        <label>Nombre
+          <input type="text" name="nombre" required>
+        </label>
+        <label>¿Asistirá?
+          <select name="asistira">
+            <option value="si">Sí</option>
+            <option value="no">No</option>
+          </select>
+        </label>
+        <label>Comentario
+          <textarea name="comentarios" rows="3"></textarea>
+        </label>
+        <button type="submit">Confirmar asistencia</button>
+      </form>
+    </section>
+    <a href="#inicio" class="volver-inicio">Volver al inicio</a>
+  </div>
+
   <script src="/static/js/tarjeta_florencia.js"></script>
 </body>
 </html>

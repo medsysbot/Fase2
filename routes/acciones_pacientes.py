@@ -1,3 +1,6 @@
+# ╔════════════════════════════════════════════════════════════╗
+# ║              ACCIONES BACKEND - PACIENTES                 ║
+# ╚════════════════════════════════════════════════════════════╝
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import JSONResponse
 import os
@@ -17,7 +20,9 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 BUCKET_PDFS = "pdfs"
 BUCKET_BACKUPS = "backups"
 
-# ---------- REGISTRAR PACIENTE Y GENERAR PDF ----------
+# ╔══════════════════════════════════════════════╗
+# ║   REGISTRAR PACIENTE Y GENERAR PDF           ║
+# ╚══════════════════════════════════════════════╝
 @router.post("/guardar_paciente")
 async def guardar_paciente(
     request: Request,
@@ -94,7 +99,9 @@ async def guardar_paciente(
             return JSONResponse({"error": "No se pudo guardar el paciente. Verifica si el DNI ya existe."}, status_code=400)
         return JSONResponse({"error": error_text}, status_code=500)
 
-# ---------- ENVIAR PDF POR EMAIL ----------
+# ╔══════════════════════════════════════════════╗
+# ║              ENVIAR PDF POR EMAIL            ║
+# ╚══════════════════════════════════════════════╝
 @router.post("/obtener_email_paciente")
 async def obtener_email_paciente(dni: str = Form(...)):
     """Devuelve el email del paciente a partir de su DNI."""
@@ -153,7 +160,9 @@ async def enviar_pdf_paciente(dni: str = Form(...)):
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
 
-# ---------- ELIMINAR PACIENTE CON BACKUP ----------
+# ╔══════════════════════════════════════════════╗
+# ║         ELIMINAR PACIENTE CON BACKUP          ║
+# ╚══════════════════════════════════════════════╝
 @router.post("/eliminar_paciente")
 async def eliminar_paciente(request: Request):
     try:

@@ -1,3 +1,6 @@
+# ╔════════════════════════════════════════════════════════════╗
+# ║           ACCIONES BACKEND - HISTORIA CLÍNICA             ║
+# ╚════════════════════════════════════════════════════════════╝
 from fastapi import APIRouter, Form, Request, UploadFile, File
 from fastapi.responses import JSONResponse
 import os
@@ -17,7 +20,9 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY_SERVICE)
 BUCKET_PDFS = "pdfs"
 BUCKET_FIRMAS = "firma-sello-usuarios"
 
-# ---------- REGISTRAR HISTORIA CLÍNICA Y GENERAR PDF ----------
+# ╔══════════════════════════════════════════════╗
+# ║      REGISTRAR HISTORIA CLÍNICA Y GENERAR PDF ║
+# ╚══════════════════════════════════════════════╝
 @router.post("/generar_pdf_historia_completa")
 async def generar_pdf_historia_completa(
     request: Request,
@@ -168,7 +173,9 @@ async def generar_pdf_historia_completa(
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
 
-# ---------- ENVIAR PDF POR EMAIL ----------
+# ╔══════════════════════════════════════════════╗
+# ║             ENVIAR PDF POR EMAIL             ║
+# ╚══════════════════════════════════════════════╝
 @router.post("/enviar_pdf_historia_completa")
 async def enviar_pdf_historia_completa(email: str = Form(...), nombre: str = Form(...), dni: str = Form(...)):
     try:

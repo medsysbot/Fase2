@@ -1,97 +1,54 @@
-
 README - MedSys | Sistema Médico Modular
 Descripción General
-MedSys es un sistema médico modular diseñado para clínicas y profesionales de la salud.
-Permite registrar pacientes, generar historiales clínicos, emitir recetas y enviar documentos PDF por correo electrónico.
-Funciona con tecnologías modernas y es 100% integrable con Supabase y Railway.
-
+MedSys es un sistema médico modular diseñado para clínicas y profesionales de la salud. Permite registrar pacientes,
+generar historiales, emitir recetas y enviar documentos PDF por correo electrónico. Funciona con tecnologías modernas
+y es 100% integrable a Supabase y Railway.
 Tecnologías Usadas
-Backend: Python + FastAPI
-
-Frontend: HTML5, CSS3, JavaScript
-
-Base de datos: Supabase
-
-Emails: SMTP configurable
-
-Deploy: Railway
-
+- Backend: Python + FastAPI
+- Frontend: HTML5, CSS3, JavaScript
+- Base de datos: Supabase
+- Emails: SMTP configurable
+- Deploy: Railway
 Estructura de Carpetas
-csharp
-Copy
-Edit
 /
-├── main.py                  # Punto de entrada de la app FastAPI
-├── routes/                  # Endpoints (registro, recetas, historia clínica, etc.)
-├── static/                  # Archivos estáticos (PDFs, CSS, JS)
-├── templates/               # Formularios HTML
-├── utils/                   # Funciones reutilizables
-├── requirements.txt         # Dependencias del proyecto
-└── README.md                # Este documento
+??? main.py # Punto de entrada FastAPI
+??? routes/ # Módulos backend (registro, recetas, historia clínica, etc.)
+??? static/ # Archivos estáticos como estilos, scripts, PDFs
+??? templates/ # Formularios HTML
+??? utils/ # Funciones reutilizables
+??? requirements.txt # Dependencias
+??? README.md # Documentación
 Cómo Desplegar en Railway
-Crear un nuevo proyecto en Railway.
-
-Subir el ZIP del backend o conectar el repositorio de GitHub.
-
-Railway detecta automáticamente:
-
-Lenguaje: Python
-
-Framework: FastAPI
-
-Start Command:
-
-nginx
-Copy
-Edit
-uvicorn main:app --host=0.0.0.0 --port=${PORT}
-Si no lo detecta, configurarlo manualmente.
-
-Cargar las variables de entorno requeridas.
-
+1. Crear un nuevo proyecto en Railway
+2. Subir el ZIP del proyecto o conectarlo a GitHub
+3. Railway detecta automáticamente:
+ - Lenguaje: Python
+ - Framework: FastAPI
+ - Start Command: uvicorn main:app --host=0.0.0.0 --port=${PORT}
+README - MedSys | Sistema Médico Modular
+4. Si no lo detecta, configurarlo manualmente
+5. Cargar las variables de entorno requeridas.
 Variables de Entorno
-Nombre	Tipo	Descripción
-SUPABASE_URL	Pública	URL del proyecto Supabase
-SUPABASE_SERVICE_ROLE_KEY	Privada	Clave secreta de Supabase
-EMAIL_ORIGEN	Pública	Correo remitente del sistema
-EMAIL_PASSWORD	Privada	Contraseña de ese correo
-SMTP_SERVER	Pública	Servidor SMTP (ej: smtp.gmail.com)
-SMTP_PORT	Pública	Puerto SMTP (ej: 587)
-
+- SUPABASE_URL (pública)
+- SUPABASE_SERVICE_ROLE_KEY (privada)
+- EMAIL_ORIGEN (pública)
+- EMAIL_PASSWORD (privada)
+- SMTP_SERVER (pública)
+- SMTP_PORT (pública)
 Test de Funcionamiento
-GET /
-Debe responder:
-
-json
-Copy
-Edit
-{ "status": "OK" }
-POST /generate
-Enviar un JSON como este:
-
-json
-Copy
-Edit
+GET / ? Debe responder {"status": "OK"}
+POST /generate ? Enviar JSON con datos del paciente:
 {
-  "patient_name": "Juan Pérez",
-  "diagnosis": "Hipertensión arterial",
-  "notes": "Paciente estable. Controlar en 15 días."
+ "patient_name": "Juan Pérez",
+ "diagnosis": "Hipertensión arterial",
+ "notes": "Paciente estable. Controlar en 15 días."
 }
-Respuesta esperada:
-
-json
-Copy
-Edit
-{
-  "pdf": "https://<tu-app>.railway.app/static/Juan_Perez.pdf"
-}
+Respuesta: URL del PDF generado
 Notas Importantes
-La carpeta /static no debe eliminarse, ya que almacena los archivos PDF generados.
-
-El sistema está listo para ser ampliado con módulos como firmas digitales, código QR, recetas y más.
-
-Compatible con Codex para automatización de desarrollo.
-
+- La carpeta /static no debe eliminarse
+- Los PDFs se guardan automáticamente ahí
+- Esta versión es estable y lista para ampliaciones (firmas, QR, etc.)
 Contacto
-Desarrollado por: Max & ChatGPT Codex
-Correo oficial: medisys.bot@gmail.com
+Desarrollado por Max & ChatGPT Codex
+README - MedSys | Sistema Médico Modular
+Contacto oficial: medisys.bot@gmail.com

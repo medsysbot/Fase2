@@ -1,18 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const pantallaInicio = document.getElementById('inicio');
-  const btnIngresar = document.getElementById('btn-ingresar');
-  const contenido = document.getElementById('contenido');
   const btnMusica = document.getElementById('btn-musica');
   const audio = document.getElementById('audio-fondo');
   const contador = document.getElementById('contador');
-
-  if (btnIngresar) {
-    btnIngresar.addEventListener('click', () => {
-      pantallaInicio.classList.add('oculto');
-      contenido.classList.remove('oculto');
-      document.body.style.overflow = 'auto';
-    });
-  }
 
   if (btnMusica && audio) {
     btnMusica.addEventListener('click', () => {

@@ -129,3 +129,8 @@ function abrirPDF() {
     showAlert('error', 'No hay PDF para mostrar', false, 3000);
   }
 }
+
+// Cuando el usuario selecciona una fecha se carga el PDF correspondiente
+document.getElementById('fecha').addEventListener('change', function (e) {
+  mostrarPDF(e.target.value);
+});

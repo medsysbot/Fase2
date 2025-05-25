@@ -131,6 +131,52 @@ async def guardar_estudio(
     except Exception as e:
         return JSONResponse({"exito": False, "mensaje": str(e)}, status_code=500)
 
+@router.post("/enviar_pdf_estudio")
+async def enviar_pdf_estudio(dni: str = Form(...), estudio_id: int = Form(...)):
+    """Envía por correo el PDF de un estudio al email del paciente."""
+    try:
+        paciente = (
+            supabase.table("pacientes")
+            .select("nombres, apellido, email")
+            .eq("dni", dni)
+            .single()
+            .execute()
+        )
+        datos = paciente.data
+        if not datos or not datos.get("email"):
+            return JSONResponse(
+                {"exito": False, "mensaje": "Paciente sin email registrado"},
+                status_code=404,
+            )
+
+        estudio = (
+            supabase.table("estudios")
+            .select("pdf_url, tipo_estudio")
+            .eq("id", estudio_id)
+            .single()
+            .execute()
+        )
+        datos_estudio = estudio.data
+        if not datos_estudio:
+            return JSONResponse(
+                {"exito": False, "mensaje": "Estudio no encontrado"},
+                status_code=404,
+            )
+
+        enviar_email_con_pdf(
+            email_destino=datos["email"],
+            asunto="Estudio Médico",
+            cuerpo=(
+                f"Estimado/a {datos.get('nombres','')} {datos.get('apellido','')},\n"
+                f"Adjuntamos su estudio de {datos_estudio.get('tipo_estudio','')}."
+            ),
+            url_pdf=datos_estudio.get("pdf_url"),
+        )
+        return {"exito": True}
+
+    except Exception as e:
+        return JSONResponse({"exito": False, "mensaje": str(e)}, status_code=500)
+
 # Función para iniciar el monitor desde main
 async def iniciar_monitor():
     asyncio.create_task(monitor_correos())

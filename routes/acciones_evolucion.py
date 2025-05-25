@@ -103,7 +103,7 @@ async def generar_evolucion(
         if sello_path and os.path.exists(sello_path):
             os.remove(sello_path)
 
-        supabase.table("evoluciones").insert({
+        supabase.table("consultas").insert({
             "paciente": paciente,
             "dni": dni,
             "fecha": fecha,
@@ -121,7 +121,7 @@ async def generar_evolucion(
 @router.post("/enviar_pdf_evolucion")
 async def enviar_pdf_evolucion(email: str = Form(...), paciente: str = Form(...), dni: str = Form(...)):
     try:
-        registros = supabase.table("evoluciones").select("pdf_url").eq("dni", dni).order("id", desc=True).limit(1).execute()
+        registros = supabase.table("consultas").select("pdf_url").eq("dni", dni).order("id", desc=True).limit(1).execute()
         pdf_url = registros.data[0]["pdf_url"] if registros.data else None
         if not pdf_url:
             return JSONResponse({"exito": False, "mensaje": "No se encontró el PDF."}, status_code=404)

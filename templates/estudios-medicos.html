@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Estudios Médicos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="/static/styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -15,10 +15,7 @@
 
   <form id="form-estudio">
     <label>DNI del Paciente:</label>
-    <input type="number" id="paciente_id" name="paciente_id" required>
-
-    <label>ID de Institución:</label>
-    <input type="number" id="institucion_id" name="institucion_id" required>
+    <input type="number" id="paciente_id" name="paciente_id" required />
 
     <label>Tipo de Estudio:</label>
     <select id="tipo_estudio" name="tipo_estudio" required>
@@ -42,15 +39,12 @@
       <option value="Otros">Otros…</option>
     </select>
 
-    <label>Fecha del Estudio:</label>
-    <input type="date" id="fecha" name="fecha" required>
+    <label id="label-fecha" style="display:none;">Fecha del Estudio:</label>
+    <select id="fecha" name="fecha" style="display:none;"></select>
 
     <label>Descripción:</label>
     <textarea id="descripcion" name="descripcion" rows="3"></textarea>
-
-    <label>Archivo PDF:</label>
-    <input type="file" id="archivo_pdf" name="archivo_pdf" accept="application/pdf">
-    <input type="hidden" id="pdf_url" name="pdf_url">
+    <input type="hidden" id="pdf_url" name="pdf_url" />
   </form>
 
   <div class="visor-pdf">
@@ -58,14 +52,17 @@
   </div>
 
   <div class="botones-flotantes">
-    <button type="button" onclick="verEstudio()" title="Ver Estudio">
-      <img src="/static/icons/icono-ver-pdf.png" alt="Ver Estudio">
+    <button type="button" ondblclick="marcarCamposVoz()" title="Reconocimiento por voz">
+      <img src="/static/icons/microfono.png" alt="Voz" />
     </button>
-    <button type="button" onclick="guardarEstudio()" title="Guardar">
-      <img src="/static/icons/guardar.png" alt="Guardar">
+    <button type="button" onclick="buscarEstudio()" title="Buscar">
+      <img src="/static/icons/busqueda.png" alt="Buscar" />
     </button>
-    <button type="button" onclick="abrirPDF()" title="Abrir PDF">
-      <img src="/static/icons/icono-ver-pdf.png" alt="Abrir PDF">
+    <button type="button" onclick="enviarPorCorreo()" title="Enviar por Email">
+      <img src="/static/icons/enviar.png" alt="Enviar por Email" />
+    </button>
+    <button type="button" id="btn-guardar" onclick="guardarEstudio()" title="Guardar" style="display:none;">
+      <img src="/static/icons/guardar.png" alt="Guardar" />
     </button>
   </div>
 
@@ -83,5 +80,6 @@
 
   <script src="/static/js/alertas.js"></script>
   <script src="/static/js/estudios_medicos.js"></script>
+  <script src="/static/js/registro_voz.js"></script>
 </body>
 </html>

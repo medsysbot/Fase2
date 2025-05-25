@@ -39,7 +39,7 @@
       <option value="Otros">Otros…</option>
     </select>
 
-    <label id="label-fecha" style="display:none;">Fecha del Estudio:</label>
+    <label id="label-fecha" style="display:none;">Seleccionar fecha del estudio</label>
     <select id="fecha" name="fecha" style="display:none;"></select>
 
     <label>Descripción:</label>
@@ -47,9 +47,9 @@
     <input type="hidden" id="pdf_url" name="pdf_url" />
   </form>
 
-  <div class="visor-pdf">
-    <iframe id="visorPDF" width="100%" height="500px"></iframe>
-  </div>
+    <div id="visorContainer" style="width:100%; height:600px; overflow:auto;">
+      <iframe id="visorPDF" width="100%" height="100%" frameborder="0"></iframe>
+    </div>
 
   <div class="botones-flotantes">
     <button type="button" ondblclick="marcarCamposVoz()" title="Reconocimiento por voz">

@@ -231,6 +231,19 @@ async def mostrar_alertas(request: Request):
     return templates.TemplateResponse("alertas.html", {"request": request})
 
 # ╔════════════════════════════════════╗
+# ║    VERIFICAR VARIABLES DE EMAIL    ║
+# ╚════════════════════════════════════╝
+@app.get("/verificar_variables_email")
+async def verificar_variables_email():
+    """Devuelve las variables de entorno usadas para enviar emails."""
+    return {
+        "EMAIL_ORIGEN": os.getenv("EMAIL_ORIGEN"),
+        "EMAIL_PASSWORD": os.getenv("EMAIL_PASSWORD"),
+        "SMTP_SERVER": os.getenv("SMTP_SERVER"),
+        "SMTP_PORT": os.getenv("SMTP_PORT"),
+    }
+
+# ╔════════════════════════════════════╗
 # ║     INCLUIR RUTAS EXTERNAS        ║
 # ╚════════════════════════════════════╝
 from acciones_historia_clinica import router as historia_clinica_router

@@ -11,6 +11,7 @@ async function verEstudio() {
     if (data.exito) {
       document.getElementById('visorPDF').src = data.pdf_url;
       sessionStorage.setItem('pdfURL', data.pdf_url);
+      document.getElementById('pdf_url').value = data.pdf_url;
     } else {
       document.getElementById('visorPDF').src = '';
       showAlert('error', 'No se encontró el estudio solicitado', false, 3000);
@@ -37,6 +38,7 @@ async function guardarEstudio() {
       if (data.pdf_url) {
         document.getElementById('visorPDF').src = data.pdf_url;
         sessionStorage.setItem('pdfURL', data.pdf_url);
+        document.getElementById('pdf_url').value = data.pdf_url;
       }
     } else {
       showAlert('error', data.mensaje || 'Error al guardar', false, 4000);

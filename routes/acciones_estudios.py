@@ -103,17 +103,20 @@ async def guardar_estudio(
     tipo_estudio: str = Form(...),
     fecha: str = Form(...),
     descripcion: str = Form(""),
-    archivo_pdf: UploadFile = File(None)
+    archivo_pdf: UploadFile = File(None),
+    pdf_url: str = Form("")
 ):
     try:
-        pdf_url = ""
+        pdf_url_final = pdf_url
         if archivo_pdf:
             nombre_archivo = f"{paciente_id}-{tipo_estudio}.pdf".replace(" ", "_")
             contenido = await archivo_pdf.read()
             supabase.storage.from_(BUCKET_PDFS).upload(
-                nombre_archivo, contenido, {"content-type": archivo_pdf.content_type}
+                nombre_archivo,
+                contenido,
+                {"content-type": archivo_pdf.content_type},
             )
-            pdf_url = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_archivo)
+            pdf_url_final = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_archivo)
 
         supabase.table("estudios").insert({
             "paciente_id": paciente_id,
@@ -121,10 +124,10 @@ async def guardar_estudio(
             "tipo_estudio": tipo_estudio,
             "fecha": fecha,
             "descripcion": descripcion,
-            "pdf_url": pdf_url,
+            "pdf_url": pdf_url_final,
         }).execute()
 
-        return {"exito": True, "pdf_url": pdf_url}
+        return {"exito": True, "pdf_url": pdf_url_final}
     except Exception as e:
         return JSONResponse({"exito": False, "mensaje": str(e)}, status_code=500)
 

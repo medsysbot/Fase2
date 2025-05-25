@@ -7,7 +7,8 @@ from starlette.middleware.sessions import SessionMiddleware
 import os
 import tempfile
 from supabase import create_client, Client
-from dotenv import load_dotenv   
+from dotenv import load_dotenv
+import asyncio
 load_dotenv() 
 # ╔════════════════════════════════════╗
 # ║             APP BASE               ║
@@ -148,6 +149,10 @@ async def estudios(request: Request):
         "estudios.html",
         {"request": request, "supabase_url": SUPABASE_URL}
     )
+
+@app.get("/estudios-medicos", response_class=HTMLResponse)
+async def estudios_medicos(request: Request):
+    return templates.TemplateResponse("estudios-medicos.html", {"request": request})
 @app.get("/evolucion", response_class=HTMLResponse)
 async def evolucion(request: Request):
     return templates.TemplateResponse("evolucion.html", {"request": request})
@@ -244,7 +249,9 @@ from routes import (
     evolucion_router,
     turnos_router,
     busqueda_router,
+    estudios_router,
 )
+from routes.acciones_estudios import iniciar_monitor
 app.include_router(pacientes_router)
 app.include_router(historia_clinica_router)
 app.include_router(historia_resumen_router)
@@ -253,3 +260,8 @@ app.include_router(indicaciones_router)
 app.include_router(evolucion_router)
 app.include_router(turnos_router)
 app.include_router(busqueda_router)
+app.include_router(estudios_router)
+
+@app.on_event("startup")
+async def startup_event():
+    await iniciar_monitor()

@@ -121,7 +121,7 @@ async def generar_historia_resumen(
             os.remove(sello_path)
        
         # Guardar en Supabase DB
-        supabase.table("historia_clinica_resumen").insert({
+        supabase.table("historia_clinica_resumida").insert({
             "paciente": paciente,
             "dni": dni,
             "edad": edad,
@@ -148,7 +148,7 @@ async def enviar_historia_resumen(
     dni: str = Form(...)
 ):
     try:
-        registros = supabase.table("historia_clinica_resumen").select("pdf_url").eq("dni", dni).order("id", desc=True).limit(1).execute()
+        registros = supabase.table("historia_clinica_resumida").select("pdf_url").eq("dni", dni).order("id", desc=True).limit(1).execute()
         pdf_url = registros.data[0]['pdf_url'] if registros.data else None
 
         if not pdf_url:

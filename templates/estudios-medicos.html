@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Estudios Médicos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header>
+    <img src="/static/icons/estudios.png" alt="Estudios Médicos" class="logo-grande" />
+    <h2>Estudios Médicos</h2>
+  </header>
+
+  <div class="selector-area" style="max-width:400px;margin:30px auto;">
+    <label for="dni">DNI del Paciente:</label>
+    <input type="text" id="dni" onchange="buscarEstudios()" placeholder="Ingrese DNI...">
+
+    <label style="margin-top:15px;">Seleccionar Estudio:</label>
+    <select id="lista-estudios" onchange="mostrarEstudio(this.value)">
+      <option value="">Seleccione un estudio...</option>
+    </select>
+  </div>
+
+  <div class="visor-pdf" style="text-align:center;margin-top:30px;">
+    <iframe id="visor" src="" style="width:90%;height:500px;border:2px solid #09394f;border-radius:10px;"></iframe>
+  </div>
+
+  <script src="/static/js/estudios_visualizacion.js"></script>
+</body>
+</html>

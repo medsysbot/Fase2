@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Confirmación de Asistencia</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/static/css/tarjeta_florencia.css">
+</head>
+<body>
+  <div class="form-contenedor">
+    <h2>Confirmación de Asistencia</h2>
+    <form id="form-confirmacion">
+      <label>Nombre y apellido
+        <input type="text" name="nombre" required>
+      </label>
+      <label>¿Asistirá?
+        <select name="asistira">
+          <option value="si">Sí</option>
+          <option value="no">No</option>
+        </select>
+      </label>
+      <label>Comentarios
+        <textarea name="comentarios" rows="3"></textarea>
+      </label>
+      <button type="submit">Confirmar asistencia</button>
+      <a href="/tarjeta-florencia" class="volver">Volver a la tarjeta</a>
+    </form>
+  </div>
+  <script src="/static/js/tarjeta_florencia.js"></script>
+</body>
+</html>

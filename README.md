@@ -1,64 +1,97 @@
-# Backend Fase 2 MEDSYS  
-**Versión estable con carpeta `static/` incluida**
 
----
+README - MedSys | Sistema Médico Modular
+Descripción General
+MedSys es un sistema médico modular diseñado para clínicas y profesionales de la salud.
+Permite registrar pacientes, generar historiales clínicos, emitir recetas y enviar documentos PDF por correo electrónico.
+Funciona con tecnologías modernas y es 100% integrable con Supabase y Railway.
 
-## RITMIC – Deploy Railway Instantáneo Totalmente Modular, Inteligente y Consistente
+Tecnologías Usadas
+Backend: Python + FastAPI
 
----
+Frontend: HTML5, CSS3, JavaScript
 
-### PASOS PARA DESPLEGAR EN RAILWAY
+Base de datos: Supabase
 
-1. **Subí el ZIP** ya corregido:  
-   `backend_fase2_corregido_con_static.zip`
+Emails: SMTP configurable
 
-2. Railway detecta automáticamente:
-   - Lenguaje: **Python**
-   - Framework: **FastAPI**
-   - Archivo principal: `main.py`
-   - Procfile:  
-     ```
-     web: uvicorn main:app --host=0.0.0.0 --port=${PORT}
-     ```
+Deploy: Railway
 
-3. Si no lo detecta, configurá manualmente:
-   - **Start Command**:
-     ```
-     uvicorn main:app --host=0.0.0.0 --port=${PORT}
-     ```
+Estructura de Carpetas
+csharp
+Copy
+Edit
+/
+├── main.py                  # Punto de entrada de la app FastAPI
+├── routes/                  # Endpoints (registro, recetas, historia clínica, etc.)
+├── static/                  # Archivos estáticos (PDFs, CSS, JS)
+├── templates/               # Formularios HTML
+├── utils/                   # Funciones reutilizables
+├── requirements.txt         # Dependencias del proyecto
+└── README.md                # Este documento
+Cómo Desplegar en Railway
+Crear un nuevo proyecto en Railway.
 
-4. **Variables de entorno:**
-   Copiá el archivo `.env.example` a `.env` y completá tus valores de
-   `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `EMAIL_ORIGEN`,
-   `EMAIL_PASSWORD`, `SMTP_SERVER` y `SMTP_PORT`.
-5. Una vez desplegado, podés testear las rutas:
+Subir el ZIP del backend o conectar el repositorio de GitHub.
 
-   #### `GET /`
-   Respuesta esperada:
-   ```json
-   { "status": "OK" }
-   ```
+Railway detecta automáticamente:
 
-   #### `POST /generate`
-   Enviá un JSON como este:
-   ```json
-   {
-     "patient_name": "Juan Pérez",
-     "diagnosis": "Hipertensión arterial",
-     "notes": "Paciente estable. Controlar en 15 días."
-   }
-   ```
-   Respuesta esperada:
-   ```json
-   {
-     "pdf": "https://<tu-app>.railway.app/static/Juan_Perez.pdf"
-   }
-   ```
+Lenguaje: Python
 
----
+Framework: FastAPI
 
-### NOTAS IMPORTANTES
+Start Command:
 
-- La carpeta `/static` **ya viene incluida**. Si se elimina, el backend crashea.
-- Los PDFs generados se guardan automáticamente ahí.
-- Esta versión es estable, funcional, y lista para seguir con la Fase 2B (firmas, QR, recetas).
+nginx
+Copy
+Edit
+uvicorn main:app --host=0.0.0.0 --port=${PORT}
+Si no lo detecta, configurarlo manualmente.
+
+Cargar las variables de entorno requeridas.
+
+Variables de Entorno
+Nombre	Tipo	Descripción
+SUPABASE_URL	Pública	URL del proyecto Supabase
+SUPABASE_SERVICE_ROLE_KEY	Privada	Clave secreta de Supabase
+EMAIL_ORIGEN	Pública	Correo remitente del sistema
+EMAIL_PASSWORD	Privada	Contraseña de ese correo
+SMTP_SERVER	Pública	Servidor SMTP (ej: smtp.gmail.com)
+SMTP_PORT	Pública	Puerto SMTP (ej: 587)
+
+Test de Funcionamiento
+GET /
+Debe responder:
+
+json
+Copy
+Edit
+{ "status": "OK" }
+POST /generate
+Enviar un JSON como este:
+
+json
+Copy
+Edit
+{
+  "patient_name": "Juan Pérez",
+  "diagnosis": "Hipertensión arterial",
+  "notes": "Paciente estable. Controlar en 15 días."
+}
+Respuesta esperada:
+
+json
+Copy
+Edit
+{
+  "pdf": "https://<tu-app>.railway.app/static/Juan_Perez.pdf"
+}
+Notas Importantes
+La carpeta /static no debe eliminarse, ya que almacena los archivos PDF generados.
+
+El sistema está listo para ser ampliado con módulos como firmas digitales, código QR, recetas y más.
+
+Compatible con Codex para automatización de desarrollo.
+
+Contacto
+Desarrollado por: Max & ChatGPT Codex
+Correo oficial: medisys.bot@gmail.com

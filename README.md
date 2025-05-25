@@ -29,8 +29,8 @@
 
 4. **Variables de entorno:**
    Copiá el archivo `.env.example` a `.env` y completá tus valores de
-   `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `EMAIL_ORIGEN` y
-   `EMAIL_PASSWORD`.
+   `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `EMAIL_ORIGEN`,
+   `EMAIL_PASSWORD`, `SMTP_SERVER` y `SMTP_PORT`.
 5. Una vez desplegado, podés testear las rutas:
 
    #### `GET /`

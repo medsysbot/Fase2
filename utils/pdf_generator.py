@@ -165,3 +165,120 @@ def generar_pdf_receta(datos, firma_path=None, sello_path=None):
     pdf.output(output_path)
 
     return output_path
+
+
+def generar_pdf_indicaciones(datos, firma_path=None, sello_path=None):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+
+    pdf.set_title("Indicaciones Médicas")
+    pdf.cell(0, 10, txt="Indicaciones Médicas", ln=True, align="C")
+    pdf.ln(10)
+
+    pdf.cell(0, 10, f"Paciente: {datos['nombre']}", ln=True)
+    pdf.cell(0, 10, f"DNI: {datos['dni']}", ln=True)
+    pdf.cell(0, 10, f"Fecha: {datos['fecha']}", ln=True)
+    pdf.ln(5)
+
+    pdf.multi_cell(0, 10, f"Diagnóstico:\n{datos['diagnostico']}\n")
+    pdf.multi_cell(0, 10, f"Indicaciones:\n{datos['indicaciones']}\n")
+
+    if firma_path and os.path.exists(firma_path):
+        pdf.ln(10)
+        pdf.cell(200, 10, txt="Firma del Profesional:", ln=True)
+        pdf.image(firma_path, x=10, y=pdf.get_y(), w=40)
+        pdf.ln(25)
+
+    if sello_path and os.path.exists(sello_path):
+        pdf.cell(200, 10, txt="Sello del Profesional:", ln=True)
+        pdf.image(sello_path, x=60, y=pdf.get_y(), w=40)
+        pdf.ln(25)
+
+    filename = f"{datos['dni']}_indicaciones.pdf"
+    output_path = os.path.join("/tmp", filename)
+    pdf.output(output_path)
+
+    return output_path
+
+
+def generar_pdf_evolucion(datos, firma_path=None, sello_path=None):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+
+    pdf.set_title("Evolución Diaria")
+    pdf.cell(0, 10, txt="Evolución Diaria", ln=True, align="C")
+    pdf.ln(10)
+
+    pdf.cell(0, 10, f"Paciente: {datos['paciente']}", ln=True)
+    pdf.cell(0, 10, f"DNI: {datos['dni']}", ln=True)
+    pdf.cell(0, 10, f"Fecha: {datos['fecha']}", ln=True)
+    pdf.ln(5)
+
+    pdf.multi_cell(0, 10, f"Diagnóstico:\n{datos['diagnostico']}\n")
+    pdf.multi_cell(0, 10, f"Evolución:\n{datos['evolucion']}\n")
+    pdf.multi_cell(0, 10, f"Indicaciones:\n{datos['indicaciones']}\n")
+
+    if firma_path and os.path.exists(firma_path):
+        pdf.ln(10)
+        pdf.cell(200, 10, txt="Firma del Profesional:", ln=True)
+        pdf.image(firma_path, x=10, y=pdf.get_y(), w=40)
+        pdf.ln(25)
+
+    if sello_path and os.path.exists(sello_path):
+        pdf.cell(200, 10, txt="Sello del Profesional:", ln=True)
+        pdf.image(sello_path, x=60, y=pdf.get_y(), w=40)
+        pdf.ln(25)
+
+    filename = f"{datos['dni']}_evolucion.pdf"
+    output_path = os.path.join("/tmp", filename)
+    pdf.output(output_path)
+
+    return output_path
+
+
+def generar_pdf_turno(datos):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+
+    pdf.set_title("Turno Médico")
+    pdf.cell(0, 10, txt="Turno Médico", ln=True, align="C")
+    pdf.ln(10)
+
+    campos = [
+        ("Paciente", datos['nombre']),
+        ("DNI", datos['dni']),
+        ("Especialidad", datos.get('especialidad', '')),
+        ("Fecha", datos['fecha']),
+        ("Horario", datos['horario']),
+        ("Profesional", datos.get('profesional', '')),
+    ]
+    for label, value in campos:
+        pdf.cell(0, 10, f"{label}: {value}", ln=True)
+
+    filename = f"{datos['dni']}_turno.pdf"
+    output_path = os.path.join("/tmp", filename)
+    pdf.output(output_path)
+
+    return output_path
+
+
+def generar_pdf_busqueda(datos):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+
+    pdf.set_title("Resultado de Búsqueda")
+    pdf.cell(0, 10, txt="Resultado de Búsqueda", ln=True, align="C")
+    pdf.ln(10)
+
+    for key, value in datos.items():
+        pdf.cell(0, 10, f"{key}: {value}", ln=True)
+
+    filename = f"{datos.get('dni', 'busqueda')}.pdf"
+    output_path = os.path.join("/tmp", filename)
+    pdf.output(output_path)
+
+    return output_path

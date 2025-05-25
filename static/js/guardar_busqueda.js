@@ -11,10 +11,11 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       try {
-        const response = await fetch("/guardar_busqueda", {
+        const formData = new FormData();
+        formData.append('dni', busqueda);
+        const response = await fetch("/buscar_paciente", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ busqueda: busqueda })
+          body: formData
         });
 
         if (response.ok) {

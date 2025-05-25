@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Invitación María Luz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/static/css/tarjeta_marialuz.css">
+</head>
+<body>
+  <button id="btn-musica" class="btn-musica">▶️</button>
+  <audio id="audio-fondo" loop>
+    <source src="https://assets.mixkit.co/music/preview/mixkit-silk-touch-891.mp3" type="audio/mpeg">
+  </audio>
+
+  <header class="portada">
+    <h1 id="titulo-nombre">
+      <span class="letra letra-m">M</span>aría 
+      <span class="letra">L</span>u<span class="letra letra-z">z</span>
+      <img src="/static/img/mariposas/mariposa1.svg" class="mariposa mariposa-m" alt="Mariposa M">
+      <img src="/static/img/mariposas/mariposa2.svg" class="mariposa mariposa-z" alt="Mariposa Z">
+    </h1>
+  </header>
+
+  <div id="contenido">
+    <section class="seccion seccion-contador">
+      <div id="contador"></div>
+    </section>
+    <section class="seccion">
+      <h2>Historia</h2>
+      <p>Estamos felices de compartir este día especial con vos. ¡Gracias por acompañarnos!</p>
+    </section>
+    <section class="seccion">
+      <h2>Lugar del evento</h2>
+      <p>Salón Aurora, 21:00 hs</p>
+    </section>
+    <section class="seccion">
+      <h2>Galería</h2>
+      <div class="galeria">
+        <img src="https://via.placeholder.com/300x200?text=Foto+1" class="active" alt="Foto 1">
+        <img src="https://via.placeholder.com/300x200?text=Foto+2" alt="Foto 2">
+        <img src="https://via.placeholder.com/300x200?text=Foto+3" alt="Foto 3">
+        <img src="https://via.placeholder.com/300x200?text=Foto+4" alt="Foto 4">
+      </div>
+    </section>
+    <section class="seccion">
+      <h2>Confirmá tu asistencia</h2>
+      <form id="form-confirmacion">
+        <label>Nombre del invitado
+          <input type="text" name="nombre" required>
+        </label>
+        <label>¿Asistirá?
+          <select name="asistira">
+            <option value="si">Sí</option>
+            <option value="no">No</option>
+          </select>
+        </label>
+        <label>Comentarios
+          <textarea name="comentarios" rows="3"></textarea>
+        </label>
+        <button type="submit">Confirmar asistencia</button>
+      </form>
+    </section>
+    <a href="#titulo-nombre" class="volver-inicio">Volver al inicio</a>
+  </div>
+
+  <script src="/static/js/tarjeta_marialuz.js"></script>
+</body>
+</html>

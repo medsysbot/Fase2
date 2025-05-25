@@ -1,4 +1,5 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Form, UploadFile, File, Request
+from fastapi.responses import JSONResponse
 from supabase import create_client
 import os, asyncio, imaplib, email, re
 from email.header import decode_header
@@ -82,6 +83,52 @@ async def obtener_estudio(estudio_id: int):
     url = res.data.get("url_pdf") if res.data else None
     return {"url_pdf": url}
 
+
+@router.get("/ver_estudio/{dni}/{tipo_estudio}")
+async def ver_estudio(dni: str, tipo_estudio: str):
+    nombre = f"{dni}-{tipo_estudio}.pdf".replace(" ", "_")
+    try:
+        supabase.storage.from_(BUCKET_PDFS).download(nombre)
+    except Exception:
+        return JSONResponse({"exito": False}, status_code=404)
+    url = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre)
+    return {"exito": True, "pdf_url": url}
+
+
+@router.post("/guardar_estudio")
+async def guardar_estudio(
+    request: Request,
+    paciente_id: int = Form(...),
+    institucion_id: int = Form(...),
+    tipo_estudio: str = Form(...),
+    fecha: str = Form(...),
+    descripcion: str = Form(""),
+    archivo_pdf: UploadFile = File(None)
+):
+    try:
+        pdf_url = ""
+        if archivo_pdf:
+            nombre_archivo = f"{paciente_id}-{tipo_estudio}.pdf".replace(" ", "_")
+            contenido = await archivo_pdf.read()
+            supabase.storage.from_(BUCKET_PDFS).upload(
+                nombre_archivo, contenido, {"content-type": archivo_pdf.content_type}
+            )
+            pdf_url = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_archivo)
+
+        supabase.table("estudios").insert({
+            "paciente_id": paciente_id,
+            "institucion_id": institucion_id,
+            "tipo_estudio": tipo_estudio,
+            "fecha": fecha,
+            "descripcion": descripcion,
+            "pdf_url": pdf_url,
+        }).execute()
+
+        return {"exito": True, "pdf_url": pdf_url}
+    except Exception as e:
+        return JSONResponse({"exito": False, "mensaje": str(e)}, status_code=500)
+
 # Función para iniciar el monitor desde main
 async def iniciar_monitor():
     asyncio.create_task(monitor_correos())
+

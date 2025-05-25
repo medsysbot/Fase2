@@ -3,30 +3,84 @@
 <head>
   <meta charset="UTF-8">
   <title>Estudios Médicos</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/static/styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
   <header>
-    <img src="/static/icons/estudios.png" alt="Estudios Médicos" class="logo-grande" />
+    <img src="/static/icons/estudios.png" alt="Estudios Médicos" class="logo-grande">
     <h2>Estudios Médicos</h2>
   </header>
 
-  <div class="selector-area" style="max-width:400px;margin:30px auto;">
-    <label for="dni">DNI del Paciente:</label>
-    <input type="text" id="dni" onchange="buscarEstudios()" placeholder="Ingrese DNI...">
+  <form id="form-estudio">
+    <label>DNI del Paciente:</label>
+    <input type="number" id="paciente_id" name="paciente_id" required>
 
-    <label style="margin-top:15px;">Seleccionar Estudio:</label>
-    <select id="lista-estudios" onchange="mostrarEstudio(this.value)">
-      <option value="">Seleccione un estudio...</option>
+    <label>ID de Institución:</label>
+    <input type="number" id="institucion_id" name="institucion_id" required>
+
+    <label>Tipo de Estudio:</label>
+    <select id="tipo_estudio" name="tipo_estudio" required>
+      <option value="">Seleccionar…</option>
+      <option value="Radiografia de Torax">Radiografía de Tórax</option>
+      <option value="Tomografia TAC">Tomografía (TAC)</option>
+      <option value="Resonancia Magnetica">Resonancia Magnética (RMN)</option>
+      <option value="Electrocardiograma">Electrocardiograma (ECG)</option>
+      <option value="Ecografia Abdominal">Ecografía Abdominal</option>
+      <option value="Ecografia Transvaginal">Ecografía Transvaginal</option>
+      <option value="Mamografia">Mamografía</option>
+      <option value="Analisis de Sangre">Análisis de Sangre</option>
+      <option value="Analisis de Orina">Análisis de Orina</option>
+      <option value="Colonoscopia">Colonoscopía</option>
+      <option value="Endoscopia">Endoscopía</option>
+      <option value="Espirometria">Espirometría</option>
+      <option value="Audiometria">Audiometría</option>
+      <option value="TAC de craneo">TAC de cráneo</option>
+      <option value="RMN de columna">RMN de columna</option>
+      <option value="Densitometria">Densitometría</option>
+      <option value="Otros">Otros…</option>
     </select>
+
+    <label>Fecha del Estudio:</label>
+    <input type="date" id="fecha" name="fecha" required>
+
+    <label>Descripción:</label>
+    <textarea id="descripcion" name="descripcion" rows="3"></textarea>
+
+    <label>Archivo PDF:</label>
+    <input type="file" id="archivo_pdf" name="archivo_pdf" accept="application/pdf">
+  </form>
+
+  <div class="visor-pdf">
+    <iframe id="visorPDF" width="100%" height="500px"></iframe>
   </div>
 
-  <div class="visor-pdf" style="text-align:center;margin-top:30px;">
-    <iframe id="visor" src="" style="width:90%;height:500px;border:2px solid #09394f;border-radius:10px;"></iframe>
+  <div class="botones-flotantes">
+    <button type="button" onclick="verEstudio()" title="Ver Estudio">
+      <img src="/static/icons/icono-ver-pdf.png" alt="Ver Estudio">
+    </button>
+    <button type="button" onclick="guardarEstudio()" title="Guardar">
+      <img src="/static/icons/guardar.png" alt="Guardar">
+    </button>
+    <button type="button" onclick="abrirPDF()" title="Abrir PDF">
+      <img src="/static/icons/icono-ver-pdf.png" alt="Abrir PDF">
+    </button>
   </div>
 
-  <script src="/static/js/estudios_visualizacion.js"></script>
+  <!-- ALERT MANAGER -->
+  <div id="alert-manager" class="alert-container" style="display:none;">
+    <div class="alert-box">
+      <img id="alert-icon" src="" alt="icono-alerta" class="alert-icon" />
+      <span id="alert-text" class="alert-message">Texto de alerta</span>
+      <div id="alert-buttons" class="alert-buttons" style="display:none;">
+        <img src="/static/icons/alerta/alerta-boton-borrar.png" id="btn-borrar" class="alert-btn" />
+        <img src="/static/icons/alerta/alerta-boton-no.png" id="btn-no" class="alert-btn" />
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/alertas.js"></script>
+  <script src="/static/js/estudios_medicos.js"></script>
 </body>
 </html>

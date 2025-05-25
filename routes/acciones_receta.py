@@ -1,6 +1,10 @@
 from dotenv import load_dotenv
 load_dotenv()
 
+# ╔════════════════════════════════════════════════════════════╗
+# ║               ACCIONES BACKEND - RECETAS                  ║
+# ╚════════════════════════════════════════════════════════════╝
+
 from fastapi import APIRouter, Form, UploadFile, File, Request
 from fastapi.responses import JSONResponse
 from supabase import create_client
@@ -40,7 +44,9 @@ async def generar_receta(
 
         firma_path = sello_path = None
 
-        # ---------- FIRMA ----------
+        # ╔══════════════════════════════════════════════╗
+        # ║                    FIRMA                     ║
+        # ╚══════════════════════════════════════════════╝
         if firma:
             contenido_firma = await firma.read()
             nombre_firma = f"firma-{usuario}--{institucion_id}.png"
@@ -66,7 +72,9 @@ async def generar_receta(
             except Exception:
                 pass
 
-        # ---------- SELLO ----------
+        # ╔══════════════════════════════════════════════╗
+        # ║                    SELLO                     ║
+        # ╚══════════════════════════════════════════════╝
         if sello:
             contenido_sello = await sello.read()
             nombre_sello = f"sello-{usuario}--{institucion_id}.png"

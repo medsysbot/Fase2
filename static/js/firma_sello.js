@@ -25,9 +25,6 @@ function eliminarImagen(tipo, imgId, btnId) {
   btn.style.display = 'none';
   document.getElementById(tipo).style.display = 'block';
 
-  const formData = new FormData();
-  formData.append('tipo', tipo);
-  fetch('/eliminar_firma_sello', { method: 'POST', body: formData });
 }
 
 async function cargarFirmas() {

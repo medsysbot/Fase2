@@ -129,13 +129,31 @@ async def generar_evolucion(
         return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)
 
 
-@router.post("/enviar_pdf_evolucion")
-async def enviar_pdf_evolucion(email: str = Form(...), paciente: str = Form(...), dni: str = Form(...)):
+@router.post("/obtener_email_evolucion")
+async def obtener_email_evolucion(dni: str = Form(...)):
+    """Devuelve el email del paciente a partir de su DNI."""
     try:
+        resultado = supabase.table("pacientes").select("email").eq("dni", dni).single().execute()
+        email = resultado.data.get("email") if resultado.data else None
+        return {"email": email}
+    except Exception as e:
+        return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)
+
+
+@router.post("/enviar_pdf_evolucion")
+async def enviar_pdf_evolucion(paciente: str = Form(...), dni: str = Form(...)):
+    try:
+        resultado = supabase.table("pacientes").select("email").eq("dni", dni).single().execute()
+        email = resultado.data.get("email") if resultado.data else None
+
+        if not email:
+            return JSONResponse({"exito": False, "mensaje": "No se encontró un e-mail para este DNI."}, status_code=404)
+
         registros = supabase.table("consultas").select("pdf_url").eq("dni", dni).order("id", desc=True).limit(1).execute()
         pdf_url = registros.data[0]["pdf_url"] if registros.data else None
         if not pdf_url:
             return JSONResponse({"exito": False, "mensaje": "No se encontró el PDF."}, status_code=404)
+
         enviar_email_con_pdf(
             email_destino=email,
             asunto="Evolución Diaria",

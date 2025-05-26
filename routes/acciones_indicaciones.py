@@ -106,7 +106,8 @@ async def generar_indicaciones(
                 {"content-type": "application/pdf"},
             )
 
-        pdf_url = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_pdf)
+        pdf_obj = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_pdf)
+        pdf_url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
 
         if firma_path and os.path.exists(firma_path):
             os.remove(firma_path)

@@ -186,7 +186,8 @@ async def enviar_pdf_historia_completa(email: str = Form(...), nombre: str = For
     try:
         safe_name = nombre.strip().replace(" ", "_")
         filename = f"historia_completa_{safe_name}_{dni}.pdf"
-        pdf_url = supabase.storage.from_(BUCKET_PDFS).get_public_url(filename)
+        pdf_obj = supabase.storage.from_(BUCKET_PDFS).get_public_url(filename)
+        pdf_url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
 
         enviar_email_con_pdf(
             email_destino=email,

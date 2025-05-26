@@ -120,7 +120,8 @@ async def generar_historia_resumen(
                 f,
             )
 
-        pdf_url = supabase.storage.from_(BUCKET).get_public_url(nombre_archivo)
+        pdf_obj = supabase.storage.from_(BUCKET).get_public_url(nombre_archivo)
+        pdf_url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
 
         # Eliminar archivos temporales de firma y sello
         if firma_path and os.path.exists(firma_path):

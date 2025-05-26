@@ -52,7 +52,8 @@ async def procesar_correos():
                     pdf_data = part.get_payload(decode=True)
                     nombre_archivo = f"{dni or 'sin_dni'}_{tipo_estudio}_{fecha_email}.pdf"
                     supabase.storage.from_(BUCKET_PDFS).upload(nombre_archivo, pdf_data, {"content-type": "application/pdf"})
-                    url = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_archivo)
+                    pdf_obj = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_archivo)
+                    url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
                     supabase.table("estudios").insert({
                         "dni": dni,
                         "tipo_estudio": tipo_estudio,
@@ -91,7 +92,8 @@ async def ver_estudio(dni: str, tipo_estudio: str):
         supabase.storage.from_(BUCKET_PDFS).download(nombre)
     except Exception:
         return JSONResponse({"exito": False}, status_code=404)
-    url = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre)
+    pdf_obj = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre)
+    url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
     return {"exito": True, "pdf_url": url}
 
 
@@ -116,7 +118,8 @@ async def guardar_estudio(
                 contenido,
                 {"content-type": archivo_pdf.content_type},
             )
-            pdf_url_final = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_archivo)
+            pdf_obj = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_archivo)
+            pdf_url_final = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
 
         supabase.table("estudios").insert({
             "paciente_id": paciente_id,

@@ -41,12 +41,15 @@ async def generar_indicaciones(
         }
 
         firma_path = sello_path = None
+        nombre_firma = f"firma_{usuario}_{institucion_id}.png"
+        nombre_sello = f"sello_{usuario}_{institucion_id}.png"
         if firma:
             contenido_firma = await firma.read()
             supabase.storage.from_(BUCKET_FIRMAS).upload(
-                f"firma-{usuario}--{institucion_id}.png",
+                nombre_firma,
                 contenido_firma,
                 {"content-type": firma.content_type},
+                upsert=True,
             )
             tmp_firma = tempfile.NamedTemporaryFile(delete=False)
             tmp_firma.write(contenido_firma)
@@ -55,7 +58,7 @@ async def generar_indicaciones(
         elif usuario and institucion_id is not None:
             try:
                 contenido_firma = supabase.storage.from_(BUCKET_FIRMAS).download(
-                    f"firma-{usuario}--{institucion_id}.png"
+                    nombre_firma
                 )
                 if contenido_firma:
                     tmp_firma = tempfile.NamedTemporaryFile(delete=False)
@@ -68,9 +71,10 @@ async def generar_indicaciones(
         if sello:
             contenido_sello = await sello.read()
             supabase.storage.from_(BUCKET_FIRMAS).upload(
-                f"sello-{usuario}--{institucion_id}.png",
+                nombre_sello,
                 contenido_sello,
                 {"content-type": sello.content_type},
+                upsert=True,
             )
             tmp_sello = tempfile.NamedTemporaryFile(delete=False)
             tmp_sello.write(contenido_sello)
@@ -79,7 +83,7 @@ async def generar_indicaciones(
         elif usuario and institucion_id is not None:
             try:
                 contenido_sello = supabase.storage.from_(BUCKET_FIRMAS).download(
-                    f"sello-{usuario}--{institucion_id}.png"
+                    nombre_sello
                 )
                 if contenido_sello:
                     tmp_sello = tempfile.NamedTemporaryFile(delete=False)

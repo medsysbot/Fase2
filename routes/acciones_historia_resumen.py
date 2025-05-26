@@ -62,14 +62,15 @@ async def generar_historia_resumen(
             firma_path = tmp_firma.name
             if usuario and institucion_id is not None:
                 supabase.storage.from_(BUCKET_FIRMAS).upload(
-                    f"firma-{usuario}--{institucion_id}.png",
+                    f"firma_{usuario}_{institucion_id}.png",
                     contenido_firma,
                     {"content-type": firma.content_type},
+                    upsert=True,
                 )
         elif usuario and institucion_id is not None:
             try:
                 contenido_firma = supabase.storage.from_(BUCKET_FIRMAS).download(
-                    f"firma-{usuario}--{institucion_id}.png"
+                    f"firma_{usuario}_{institucion_id}.png"
                 )
                 if contenido_firma:
                     tmp_firma = tempfile.NamedTemporaryFile(delete=False)
@@ -87,14 +88,15 @@ async def generar_historia_resumen(
             sello_path = tmp_sello.name
             if usuario and institucion_id is not None:
                 supabase.storage.from_(BUCKET_FIRMAS).upload(
-                    f"sello-{usuario}--{institucion_id}.png",
+                    f"sello_{usuario}_{institucion_id}.png",
                     contenido_sello,
                     {"content-type": sello.content_type},
+                    upsert=True,
                 )
         elif usuario and institucion_id is not None:
             try:
                 contenido_sello = supabase.storage.from_(BUCKET_FIRMAS).download(
-                    f"sello-{usuario}--{institucion_id}.png"
+                    f"sello_{usuario}_{institucion_id}.png"
                 )
                 if contenido_sello:
                     tmp_sello = tempfile.NamedTemporaryFile(delete=False)

@@ -101,14 +101,14 @@
 <!--        FIRMAS PROFESIONALES       -->
 <!--────────────────────────────────────-->
   <label>Firma del Profesional:</label>
-  <input type="file" id="firma" name="firma" accept="image/*" onchange="mostrarVistaPrevia(this, 'firma-preview', 'firma-delete')" />
+  <input type="file" id="firma" name="firma" accept="image/*" onchange="mostrarVistaPrevia(this, 'firma-preview', 'firma-delete', 'firma')" />
   <img id="firma-preview" class="vista-previa" style="display:none;" />
-  <button type="button" id="firma-delete" class="btn-eliminar" onclick="eliminarImagen('firma', 'firma-preview', 'firma-delete')" style="display:none;">Eliminar</button>
+  <button type="button" id="firma-delete" class="btn-eliminar-firma" onclick="eliminarImagen('firma', 'firma-preview', 'firma-delete')" style="display:none;">Eliminar</button>
 
   <label>Sello del Profesional:</label>
-  <input type="file" id="sello" name="sello" accept="image/*" onchange="mostrarVistaPrevia(this, 'sello-preview', 'sello-delete')" />
+  <input type="file" id="sello" name="sello" accept="image/*" onchange="mostrarVistaPrevia(this, 'sello-preview', 'sello-delete', 'sello')" />
   <img id="sello-preview" class="vista-previa" style="display:none;" />
-  <button type="button" id="sello-delete" class="btn-eliminar" onclick="eliminarImagen('sello', 'sello-preview', 'sello-delete')" style="display:none;">Eliminar</button>
+  <button type="button" id="sello-delete" class="btn-eliminar-sello" onclick="eliminarImagen('sello', 'sello-preview', 'sello-delete')" style="display:none;">Eliminar</button>
 </form>
 
 <!--────────────────────────────────────-->

@@ -17,6 +17,8 @@ from utils.image_utils import (
     descargar_imagen,
     eliminar_imagen,
     ALLOWED_EXTENSIONS,
+    validar_imagen,
+    obtener_mime,
 )
 
 router = APIRouter()
@@ -60,7 +62,7 @@ async def generar_receta(
         if firma:
             contenido_firma = await firma.read()
             ext_firma = os.path.splitext(firma.filename)[1].lower()
-            if ext_firma not in ALLOWED_EXTENSIONS:
+            if not validar_imagen(contenido_firma, ext_firma):
                 return JSONResponse(
                     {"exito": False, "mensaje": "Formato de imagen no soportado para firma o sello"},
                     status_code=400,
@@ -70,7 +72,7 @@ async def generar_receta(
             supabase.storage.from_(BUCKET_FIRMAS).upload(
                 nombre_firma,
                 contenido_firma,
-                {"content-type": firma.content_type},
+                {"content-type": obtener_mime(contenido_firma)},
             )
         elif usuario and institucion_id is not None:
             contenido_firma, nombre_firma = descargar_imagen(
@@ -83,7 +85,7 @@ async def generar_receta(
         if sello:
             contenido_sello = await sello.read()
             ext_sello = os.path.splitext(sello.filename)[1].lower()
-            if ext_sello not in ALLOWED_EXTENSIONS:
+            if not validar_imagen(contenido_sello, ext_sello):
                 return JSONResponse(
                     {"exito": False, "mensaje": "Formato de imagen no soportado para firma o sello"},
                     status_code=400,
@@ -93,7 +95,7 @@ async def generar_receta(
             supabase.storage.from_(BUCKET_FIRMAS).upload(
                 nombre_sello,
                 contenido_sello,
-                {"content-type": sello.content_type},
+                {"content-type": obtener_mime(contenido_sello)},
             )
         elif usuario and institucion_id is not None:
             contenido_sello, nombre_sello = descargar_imagen(
@@ -200,7 +202,7 @@ async def subir_firma_sello(
     try:
         contenido = await archivo.read()
         extension = os.path.splitext(archivo.filename)[1].lower()
-        if extension not in ALLOWED_EXTENSIONS:
+        if not validar_imagen(contenido, extension):
             return JSONResponse(
                 {"exito": False, "mensaje": "Formato de imagen no soportado para firma o sello"},
                 status_code=400,
@@ -211,7 +213,7 @@ async def subir_firma_sello(
         supabase.storage.from_(BUCKET_FIRMAS).upload(
             nombre_obj,
             contenido,
-            {"content-type": archivo.content_type},
+            {"content-type": obtener_mime(contenido)},
         )
         return {"exito": True}
     except Exception as e:

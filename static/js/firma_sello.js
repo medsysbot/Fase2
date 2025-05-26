@@ -4,7 +4,7 @@
 async function mostrarVistaPrevia(input, imgId, btnId, tipo) {
   const file = input.files[0];
   if (!file) return;
-  if (!file.type.startsWith("image/")) {
+  if (!file.type.match(/image\/(png|jpeg)/)) {
     showAlert("error", "Solo se permiten archivos PNG o JPG.", false, 3000);
     input.value = "";
     return;

@@ -5,15 +5,7 @@ async function guardarPDF() {
   const form = document.getElementById("form-receta");
   const formData = new FormData(form);
 
-  const firma = document.getElementById("firma");
-  const sello = document.getElementById("sello");
-
-  if (firma && firma.files.length > 0) {
-    formData.append("firma", firma.files[0]);
-  }
-  if (sello && sello.files.length > 0) {
-    formData.append("sello", sello.files[0]);
-  }
+  // Los campos de tipo file ya forman parte del FormData generado
 
   try {
     showAlert("guardado", "Guardando receta…", false, 3000);

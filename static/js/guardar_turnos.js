@@ -1,28 +1,19 @@
 async function guardarPDF() {
-  const form = document.getElementById('form-indicaciones');
+  const form = document.getElementById('form-turnos');
   const formData = new FormData(form);
 
-  const firma = document.getElementById('firma');
-  const sello = document.getElementById('sello');
-  if (firma && firma.files.length > 0) {
-    formData.append('firma', firma.files[0]);
-  }
-  if (sello && sello.files.length > 0) {
-    formData.append('sello', sello.files[0]);
-  }
-
   try {
-    showAlert('guardado', 'Guardando indicaciones…', false, 3000);
+    showAlert('guardado', 'Guardando turno…', false, 3000);
     await new Promise(r => setTimeout(r, 3200));
 
-    const response = await fetch('/generar_pdf_indicaciones', {
+    const response = await fetch('/generar_pdf_turno', {
       method: 'POST',
       body: formData
     });
     const resultado = await response.json();
 
     if (resultado.exito && resultado.pdf_url) {
-      showAlert('suceso', 'Indicaciones guardadas', false, 3000);
+      showAlert('suceso', 'Turno guardado', false, 3000);
       sessionStorage.setItem('pdfURL', resultado.pdf_url);
     } else {
       showAlert('error', resultado.mensaje || 'Error al guardar', false, 4000);
@@ -85,7 +76,7 @@ async function enviarPorCorreo() {
     formData.append('nombre', nombre);
     formData.append('dni', dni);
 
-    const response = await fetch('/enviar_pdf_indicaciones', {
+    const response = await fetch('/enviar_pdf_turno', {
       method: 'POST',
       body: formData
     });

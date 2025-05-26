@@ -5,136 +5,7 @@
   <title>Indicaciones Médicas</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/static/styles.css" />
-  <style>
-    body {
-      background: linear-gradient(to bottom left, #0a2a3d, #155f82);
-      font-family: 'Poppins', sans-serif;
-      color: #d3d3d3;
-      margin: 0;
-      padding: 0;
-    }
-
-    header {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    .logo-grande {
-      width: 180px;
-      height: auto;
-      margin-bottom: 10px;
-    }
-
-    h2 {
-      text-align: center;
-      font-style: italic;
-      font-weight: 600;
-      font-size: 28px;
-      margin-top: 10px;
-      color: #d3d3d3;
-    }
-
-form {
-  max-width: 400px;  
-  width: 90%;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: 500;
-      font-size: 17px;
-      color: #d3d3d3;
-    }
-
-input {
-  width: 100%;
-  padding: 6px 10px;
-  font-size: 17.5px;
-  border: none;
-  border-radius: 8px;
-  background-color: white;
-  color: black;
-  box-sizing: border-box;
-  min-height: 45px;
-}
-
-textarea {
-  width: 100%;
-  padding: 6px 10px;
-  font-size: 17.5px;
-  border: none;
-  border-radius: 8px;
-  background-color: white;
-  color: black;
-  box-sizing: border-box;
-  min-height: 45px;
-  resize: vertical;
-  line-height: 1.4;
-}
-
-    textarea {
-      resize: vertical;
-      height: auto;
-    }
-
-    .vista-previa {
-      display: block;
-      margin-top: 10px;
-      max-height: 100px;
-    }
-
-    .btn-eliminar {
-      margin-top: 5px;
-      background-color: crimson;
-      border: none;
-      color: white;
-      padding: 4px 8px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .visor-pdf {
-      margin-top: 40px;
-      text-align: center;
-    }
-
-    .visor-pdf iframe {
-      width: 90%;
-      height: 500px;
-      border: 2px solid #09394f;
-      border-radius: 10px;
-    }
-
-.botones-flotantes {
-  position: fixed;
-  right: 20px;
-  bottom: 20px; /* cambio clave */
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  z-index: 1000;
-}
-
-    .botones-flotantes button {
-      background-color: #4A90E2;
-      border: none;
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .botones-flotantes img {
-      width: 30px;
-      height: 30px;
-    }
-  </style>
+  <link rel="stylesheet" href="/static/css/styles.css" />
 </head>
 <body>
   <header>
@@ -169,10 +40,6 @@ textarea {
     <button type="button" id="sello-delete" class="btn-eliminar" onclick="eliminarImagen('sello', 'sello-preview', 'sello-delete')" style="display:none;">Eliminar</button>
   </form>
 
-  <div class="visor-pdf">
-    <h3>Vista previa del documento PDF:</h3>
-    <iframe id="pdf-visor" src="/static/doc/indicaciones-generadas.pdf" type="application/pdf"></iframe>
-  </div>
 
 <div class="botones-flotantes">
   <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
@@ -181,14 +48,11 @@ textarea {
   <button type="button" onclick="guardarPDF()" title="Guardar">
     <img src="/static/icons/guardar.png" alt="Guardar" />
   </button>
-  <button type="submit" form="form-resumen" title="Enviar">
+  <button type="button" onclick="enviarPorCorreo()" title="Enviar">
     <img src="/static/icons/enviar.png" alt="Enviar" />
   </button>
-  <button type="button" onclick="imprimirPDF()" title="Imprimir">
-    <img src="/static/icons/imprimir.png" alt="Imprimir" />
-  </button>
-  <button type="button" onclick="document.getElementById('form-resumen').reset()" title="Borrar">
-    <img src="/static/icons/borrar.png" alt="Borrar" />
+  <button type="button" onclick="abrirPDF()" title="Ver PDF">
+    <img src="/static/icons/icono-ver-pdf.png" alt="Ver PDF" />
   </button>
 </div>
 
@@ -209,5 +73,6 @@ textarea {
     }
   </script>
   <script src="/static/js/firma_sello.js"></script>
+  <script src="/static/js/guardar_indicaciones.js"></script>
 </body>
 </html>

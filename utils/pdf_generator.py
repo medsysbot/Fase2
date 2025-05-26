@@ -1,5 +1,6 @@
 from fpdf import FPDF
 import os
+import datetime
 
 def generar_pdf_resumen(datos, firma_path=None, sello_path=None):
     pdf = FPDF()
@@ -247,11 +248,18 @@ def generar_pdf_turno(datos):
     pdf.cell(0, 10, txt="Turno Médico", ln=True, align="C")
     pdf.ln(10)
 
+    fecha = datos.get('fecha')
+    try:
+        fecha_obj = datetime.datetime.strptime(fecha, "%Y-%m-%d")
+        fecha = fecha_obj.strftime("%d/%m/%Y")
+    except Exception:
+        pass
+
     campos = [
         ("Paciente", datos['nombre']),
         ("DNI", datos['dni']),
         ("Especialidad", datos.get('especialidad', '')),
-        ("Fecha", datos['fecha']),
+        ("Fecha", fecha),
         ("Horario", datos['horario']),
         ("Profesional", datos.get('profesional', '')),
     ]

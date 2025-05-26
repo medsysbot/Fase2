@@ -15,6 +15,8 @@ from utils.image_utils import (
     descargar_imagen,
     eliminar_imagen,
     ALLOWED_EXTENSIONS,
+    validar_imagen,
+    obtener_mime,
 )
 
 router = APIRouter()
@@ -64,7 +66,7 @@ async def generar_historia_resumen(
         if firma:
             contenido_firma = await firma.read()
             ext_firma = os.path.splitext(firma.filename)[1].lower()
-            if ext_firma not in ALLOWED_EXTENSIONS:
+            if not validar_imagen(contenido_firma, ext_firma):
                 return JSONResponse(
                     {"exito": False, "mensaje": "Formato de imagen no soportado para firma o sello"},
                     status_code=400,
@@ -74,8 +76,7 @@ async def generar_historia_resumen(
             supabase.storage.from_(BUCKET_FIRMAS).upload(
                 nombre_firma,
                 contenido_firma,
-                {"content-type": firma.content_type},
-                upsert=True,
+                {"content-type": obtener_mime(contenido_firma)},
             )
         elif usuario and institucion_id is not None:
             contenido_firma, nombre_firma = descargar_imagen(
@@ -84,7 +85,7 @@ async def generar_historia_resumen(
         if sello:
             contenido_sello = await sello.read()
             ext_sello = os.path.splitext(sello.filename)[1].lower()
-            if ext_sello not in ALLOWED_EXTENSIONS:
+            if not validar_imagen(contenido_sello, ext_sello):
                 return JSONResponse(
                     {"exito": False, "mensaje": "Formato de imagen no soportado para firma o sello"},
                     status_code=400,
@@ -94,8 +95,7 @@ async def generar_historia_resumen(
             supabase.storage.from_(BUCKET_FIRMAS).upload(
                 nombre_sello,
                 contenido_sello,
-                {"content-type": sello.content_type},
-                upsert=True,
+                {"content-type": obtener_mime(contenido_sello)},
             )
         elif usuario and institucion_id is not None:
             contenido_sello, nombre_sello = descargar_imagen(
@@ -115,7 +115,10 @@ async def generar_historia_resumen(
         # Subir a Supabase
         nombre_archivo = f"{dni}_resumen_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.pdf"
         with open(pdf_path, "rb") as f:
-            supabase.storage.from_(BUCKET).upload(nombre_archivo, f, upsert=True)
+            supabase.storage.from_(BUCKET).upload(
+                nombre_archivo,
+                f,
+            )
 
         pdf_url = supabase.storage.from_(BUCKET).get_public_url(nombre_archivo)
 

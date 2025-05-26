@@ -149,6 +149,38 @@ textarea {
   height: 30px;
 }
 
+/* Estilo para los botones flotantes de evolución diaria */
+.botones-evolucion {
+  position: fixed;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 999;
+}
+.botones-evolucion button {
+  background-color: #4A90E2;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  transition: transform 0.2s;
+}
+.botones-evolucion button:hover {
+  transform: scale(1.1);
+}
+.botones-evolucion img {
+  width: 30px;
+  height: 30px;
+}
+
 /* ╔══════════════════════════════╗ */
 /* ║        MENÚ PRINCIPAL        ║ */
 /* ╚══════════════════════════════╝ */

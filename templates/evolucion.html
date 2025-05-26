@@ -52,12 +52,12 @@
   <textarea name="indicaciones" id="indicaciones"></textarea>
 
   <label>Firma del Profesional:</label>
-  <input type="file" id="firma" name="firma" accept="image/png, image/jpeg" onchange="mostrarVistaPrevia(this, 'firma-preview', 'firma-delete', 'firma')" />
+  <input type="file" id="firma" name="firma" accept="image/png" onchange="mostrarVistaPrevia(this, 'firma-preview', 'firma-delete', 'firma')" />
   <img id="firma-preview" class="vista-previa" style="display:none;" />
   <button type="button" id="firma-delete" class="btn-eliminar-firma" onclick="eliminarImagen('firma', 'firma-preview', 'firma-delete')" style="display:none;">Eliminar</button>
 
   <label>Sello del Profesional:</label>
-  <input type="file" id="sello" name="sello" accept="image/png, image/jpeg" onchange="mostrarVistaPrevia(this, 'sello-preview', 'sello-delete', 'sello')" />
+  <input type="file" id="sello" name="sello" accept="image/png" onchange="mostrarVistaPrevia(this, 'sello-preview', 'sello-delete', 'sello')" />
   <img id="sello-preview" class="vista-previa" style="display:none;" />
   <button type="button" id="sello-delete" class="btn-eliminar-sello" onclick="eliminarImagen('sello', 'sello-preview', 'sello-delete')" style="display:none;">Eliminar</button>
 </form>
@@ -65,18 +65,15 @@
 <!--────────────────────────────────────-->
 <!--         BOTONES DE ACCIÓN          -->
 <!--────────────────────────────────────-->
-<div class="botones-flotantes">
-  <button type="button" ondblclick="iniciarReconocimiento()" title="Reconocimiento por voz">
+<div class="botones-evolucion">
+  <button type="button" onclick="iniciarReconocimiento()" title="Reconocimiento por voz">
     <img src="/static/icons/microfono.png" alt="Voz" />
-  </button>
-  <button type="button" onclick="guardarPDF()" title="Guardar">
-    <img src="/static/icons/guardar.png" alt="Guardar" />
   </button>
   <button type="button" onclick="enviarPorCorreo()" title="Enviar">
     <img src="/static/icons/enviar.png" alt="Enviar" />
   </button>
-  <button type="button" onclick="abrirPDF()" title="Ver PDF">
-    <img src="/static/icons/icono-ver-pdf.png" alt="Ver PDF" />
+  <button type="button" onclick="window.location.href='/busqueda'" title="Buscar">
+    <img src="/static/icons/busquedas.png" alt="Buscar" />
   </button>
 </div>
 

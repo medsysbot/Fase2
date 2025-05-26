@@ -34,10 +34,3 @@ function iniciarReconocimiento() {
   recognition.onerror = (e) => console.error("Error de voz:", e.error);
   recognition.start();
 }
-
-document.addEventListener("keydown", (e) => {
-  if (e.code === "Space") {
-    e.preventDefault();
-    iniciarReconocimiento();
-  }
-});

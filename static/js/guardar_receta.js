@@ -20,7 +20,7 @@ async function guardarPDF() {
 
     if (resultado.exito && resultado.pdf_url) {
       showAlert("suceso", "Receta guardada", false, 3000);
-      sessionStorage.setItem('pdfURL', resultado.pdf_url);
+      sessionStorage.setItem('pdfURL_receta', resultado.pdf_url);
     } else {
       const mensaje = resultado.mensaje || "Error al guardar la receta";
       if (mensaje.includes('receta') && mensaje.includes('datos')) {
@@ -36,7 +36,7 @@ async function guardarPDF() {
 }
 
 function abrirPDF() {
-  const url = sessionStorage.getItem('pdfURL');
+  const url = sessionStorage.getItem('pdfURL_receta');
   if (url) {
     showAlert("cargaPDF", "Cargando PDF…", false, 3000);
     const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);

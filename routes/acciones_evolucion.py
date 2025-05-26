@@ -51,6 +51,7 @@ async def generar_evolucion(
         }
 
         firma_path = sello_path = None
+        firma_url = sello_url = None
         base_firma = f"firma_{usuario}_{institucion_id}"
         base_sello = f"sello_{usuario}_{institucion_id}"
         if firma:
@@ -68,10 +69,13 @@ async def generar_evolucion(
                     contenido_firma,
                     {"content-type": obtener_mime(contenido_firma)},
                 )
+            firma_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_FIRMAS}/{nombre_firma}"
         elif usuario and institucion_id is not None:
             contenido_firma, nombre_firma = descargar_imagen(
                 supabase, BUCKET_FIRMAS, base_firma
             )
+            if nombre_firma:
+                firma_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_FIRMAS}/{nombre_firma}"
 
         if sello:
             contenido_sello = await sello.read()
@@ -88,10 +92,13 @@ async def generar_evolucion(
                     contenido_sello,
                     {"content-type": obtener_mime(contenido_sello)},
                 )
+            sello_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_FIRMAS}/{nombre_sello}"
         elif usuario and institucion_id is not None:
             contenido_sello, nombre_sello = descargar_imagen(
                 supabase, BUCKET_FIRMAS, base_sello
             )
+            if nombre_sello:
+                sello_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_FIRMAS}/{nombre_sello}"
 
         if contenido_firma:
             firma_path = guardar_imagen_temporal(contenido_firma, nombre_firma)
@@ -108,8 +115,7 @@ async def generar_evolucion(
                 {"content-type": "application/pdf"},
             )
 
-        pdf_obj = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_pdf)
-        pdf_url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
+        pdf_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_PDFS}/{nombre_pdf}"
 
         if firma_path and os.path.exists(firma_path):
             os.remove(firma_path)
@@ -123,6 +129,10 @@ async def generar_evolucion(
             "diagnostico": diagnostico,
             "evolucion": evolucion,
             "indicaciones": indicaciones,
+            "usuario_id": usuario,
+            "institucion_id": institucion_id,
+            "firma_url": firma_url,
+            "sello_url": sello_url,
             "pdf_url": pdf_url,
         }).execute()
 

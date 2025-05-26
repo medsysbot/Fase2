@@ -6,6 +6,7 @@ load_dotenv()
 # ╚════════════════════════════════════════════════════════════╝
 
 from fastapi import APIRouter, Form, UploadFile, File, Request
+import base64
 from fastapi.responses import JSONResponse
 from supabase import create_client
 import os, tempfile, datetime
@@ -18,7 +19,6 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 BUCKET_PDFS = "recetas-medicas"
-BUCKET_FIRMAS = "firma-sello-usuarios"
 
 @router.post("/generar_pdf_receta")
 async def generar_receta(
@@ -43,32 +43,26 @@ async def generar_receta(
         }
 
         firma_path = sello_path = None
+        contenido_firma = contenido_sello = None
 
         # ╔══════════════════════════════════════════════╗
         # ║                    FIRMA                     ║
         # ╚══════════════════════════════════════════════╝
         if firma:
             contenido_firma = await firma.read()
-            nombre_firma = f"firma-{usuario}--{institucion_id}.png"
-            supabase.storage.from_(BUCKET_FIRMAS).upload(
-                nombre_firma,
-                contenido_firma,
-                {"content-type": firma.content_type},
-            )
-            tmp_firma = tempfile.NamedTemporaryFile(delete=False)
-            tmp_firma.write(contenido_firma)
-            tmp_firma.close()
-            firma_path = tmp_firma.name
         elif usuario and institucion_id is not None:
             try:
-                contenido_firma = supabase.storage.from_(BUCKET_FIRMAS).download(
-                    f"firma-{usuario}--{institucion_id}.png"
+                res_firma = (
+                    supabase.table("recetas")
+                    .select("firma")
+                    .eq("usuario_id", usuario)
+                    .eq("institucion_id", institucion_id)
+                    .order("id", desc=True)
+                    .limit(1)
+                    .execute()
                 )
-                if contenido_firma:
-                    tmp_firma = tempfile.NamedTemporaryFile(delete=False)
-                    tmp_firma.write(contenido_firma)
-                    tmp_firma.close()
-                    firma_path = tmp_firma.name
+                if res_firma.data:
+                    contenido_firma = res_firma.data[0].get("firma")
             except Exception:
                 pass
 
@@ -77,28 +71,33 @@ async def generar_receta(
         # ╚══════════════════════════════════════════════╝
         if sello:
             contenido_sello = await sello.read()
-            nombre_sello = f"sello-{usuario}--{institucion_id}.png"
-            supabase.storage.from_(BUCKET_FIRMAS).upload(
-                nombre_sello,
-                contenido_sello,
-                {"content-type": sello.content_type},
-            )
+        elif usuario and institucion_id is not None:
+            try:
+                res_sello = (
+                    supabase.table("recetas")
+                    .select("sello")
+                    .eq("usuario_id", usuario)
+                    .eq("institucion_id", institucion_id)
+                    .order("id", desc=True)
+                    .limit(1)
+                    .execute()
+                )
+                if res_sello.data:
+                    contenido_sello = res_sello.data[0].get("sello")
+            except Exception:
+                pass
+
+        if contenido_firma:
+            tmp_firma = tempfile.NamedTemporaryFile(delete=False)
+            tmp_firma.write(contenido_firma)
+            tmp_firma.close()
+            firma_path = tmp_firma.name
+
+        if contenido_sello:
             tmp_sello = tempfile.NamedTemporaryFile(delete=False)
             tmp_sello.write(contenido_sello)
             tmp_sello.close()
             sello_path = tmp_sello.name
-        elif usuario and institucion_id is not None:
-            try:
-                contenido_sello = supabase.storage.from_(BUCKET_FIRMAS).download(
-                    f"sello-{usuario}--{institucion_id}.png"
-                )
-                if contenido_sello:
-                    tmp_sello = tempfile.NamedTemporaryFile(delete=False)
-                    tmp_sello.write(contenido_sello)
-                    tmp_sello.close()
-                    sello_path = tmp_sello.name
-            except Exception:
-                pass
 
         pdf_path = generar_pdf_receta(datos, firma_path, sello_path)
 
@@ -120,6 +119,10 @@ async def generar_receta(
             "diagnostico": diagnostico,
             "medicamentos": medicamentos,
             "pdf_url": pdf_url,
+            "firma": contenido_firma,
+            "sello": contenido_sello,
+            "usuario_id": usuario,
+            "institucion_id": institucion_id,
         }).execute()
 
         return {"exito": True, "pdf_url": pdf_url}
@@ -139,11 +142,30 @@ async def obtener_firma_sello(request: Request):
     if not usuario or institucion_id is None:
         return JSONResponse({"exito": False, "mensaje": "Usuario no autenticado"}, status_code=403)
 
-    firma_nombre = f"firma-{usuario}--{institucion_id}.png"
-    sello_nombre = f"sello-{usuario}--{institucion_id}.png"
-    firma_url = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(firma_nombre)
-    sello_url = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(sello_nombre)
-    return {"firma_url": firma_url, "sello_url": sello_url}
+    try:
+        res = (
+            supabase.table("recetas")
+            .select("firma, sello")
+            .eq("usuario_id", usuario)
+            .eq("institucion_id", institucion_id)
+            .order("id", desc=True)
+            .limit(1)
+            .execute()
+        )
+        data = res.data[0] if res.data else {}
+        firma_bytes = data.get("firma") if data else None
+        sello_bytes = data.get("sello") if data else None
+        firma_url = (
+            f"data:image/png;base64,{base64.b64encode(firma_bytes).decode()}"
+            if firma_bytes else None
+        )
+        sello_url = (
+            f"data:image/png;base64,{base64.b64encode(sello_bytes).decode()}"
+            if sello_bytes else None
+        )
+        return {"firma_url": firma_url, "sello_url": sello_url}
+    except Exception as e:
+        return JSONResponse({"exito": False, "mensaje": str(e)}, status_code=500)
 
 
 @router.post("/eliminar_firma_sello")
@@ -153,12 +175,7 @@ async def eliminar_firma_sello(request: Request, tipo: str = Form(...)):
     if not usuario or institucion_id is None:
         return JSONResponse({"exito": False, "mensaje": "Usuario no autenticado"}, status_code=403)
 
-    nombre_archivo = f"{tipo}-{usuario}--{institucion_id}.png"
-    try:
-        supabase.storage.from_(BUCKET_FIRMAS).remove(nombre_archivo)
-        return {"exito": True}
-    except Exception as e:
-        return JSONResponse({"exito": False, "mensaje": str(e)}, status_code=500)
+    return {"exito": True}
 
 
 @router.post("/enviar_pdf_receta")

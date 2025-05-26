@@ -17,6 +17,7 @@ from utils.image_utils import (
     eliminar_imagen,
     validar_imagen,
     obtener_mime,
+    imagen_existe,
 )
 
 router = APIRouter()
@@ -65,13 +66,13 @@ async def generar_receta(
                     {"exito": False, "mensaje": "Formato de imagen no soportado para firma o sello"},
                     status_code=400,
                 )
-            eliminar_imagen(supabase, BUCKET_FIRMAS, base_firma)
             nombre_firma = f"{base_firma}{ext_firma}"
-            supabase.storage.from_(BUCKET_FIRMAS).upload(
-                nombre_firma,
-                contenido_firma,
-                {"content-type": obtener_mime(contenido_firma)},
-            )
+            if not imagen_existe(supabase, BUCKET_FIRMAS, base_firma):
+                supabase.storage.from_(BUCKET_FIRMAS).upload(
+                    nombre_firma,
+                    contenido_firma,
+                    {"content-type": obtener_mime(contenido_firma)},
+                )
             firma_url = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(nombre_firma)
             print("URL firma:", firma_url)
         elif usuario and institucion_id is not None:
@@ -93,13 +94,13 @@ async def generar_receta(
                     {"exito": False, "mensaje": "Formato de imagen no soportado para firma o sello"},
                     status_code=400,
                 )
-            eliminar_imagen(supabase, BUCKET_FIRMAS, base_sello)
             nombre_sello = f"{base_sello}{ext_sello}"
-            supabase.storage.from_(BUCKET_FIRMAS).upload(
-                nombre_sello,
-                contenido_sello,
-                {"content-type": obtener_mime(contenido_sello)},
-            )
+            if not imagen_existe(supabase, BUCKET_FIRMAS, base_sello):
+                supabase.storage.from_(BUCKET_FIRMAS).upload(
+                    nombre_sello,
+                    contenido_sello,
+                    {"content-type": obtener_mime(contenido_sello)},
+                )
             sello_url = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(nombre_sello)
             print("URL sello:", sello_url)
         elif usuario and institucion_id is not None:
@@ -205,13 +206,13 @@ async def subir_firma_sello(
                 status_code=400,
             )
         base_name = f"{tipo}_{usuario}_{institucion_id}"
-        eliminar_imagen(supabase, BUCKET_FIRMAS, base_name)
         nombre_obj = f"{base_name}{extension}"
-        supabase.storage.from_(BUCKET_FIRMAS).upload(
-            nombre_obj,
-            contenido,
-            {"content-type": obtener_mime(contenido)},
-        )
+        if not imagen_existe(supabase, BUCKET_FIRMAS, base_name):
+            supabase.storage.from_(BUCKET_FIRMAS).upload(
+                nombre_obj,
+                contenido,
+                {"content-type": obtener_mime(contenido)},
+            )
         return {"exito": True}
     except Exception as e:
         return JSONResponse({"exito": False, "mensaje": str(e)}, status_code=500)

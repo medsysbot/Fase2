@@ -3,7 +3,7 @@ import tempfile
 import imghdr
 from typing import Optional, Tuple
 
-ALLOWED_EXTENSIONS = {'.png', '.jpg', '.jpeg'}
+ALLOWED_EXTENSIONS = {'.png'}
 
 
 def _extension_from_bytes(contenido: bytes) -> Optional[str]:
@@ -19,8 +19,6 @@ def _extension_from_bytes(contenido: bytes) -> Optional[str]:
 def obtener_mime(contenido: bytes) -> Optional[str]:
     """Obtiene el mime type a partir del contenido."""
     ext = _extension_from_bytes(contenido)
-    if ext == ".jpg":
-        return "image/jpeg"
     if ext == ".png":
         return "image/png"
     return None
@@ -31,10 +29,7 @@ def validar_imagen(contenido: bytes, extension: str) -> bool:
     real_ext = _extension_from_bytes(contenido)
     if not real_ext or real_ext not in ALLOWED_EXTENSIONS:
         return False
-    extension = extension.lower()
-    if extension == ".jpeg":
-        extension = ".jpg"
-    return real_ext == extension
+    return real_ext == extension.lower()
 
 def guardar_imagen_temporal(contenido: bytes, nombre_archivo: str) -> str:
     """Guarda la imagen en un archivo temporal con la extension correcta."""
@@ -64,3 +59,9 @@ def eliminar_imagen(client, bucket: str, nombre_base: str) -> None:
             client.storage.from_(bucket).remove(f"{nombre_base}{ext}")
         except Exception:
             pass
+
+
+def imagen_existe(client, bucket: str, nombre_base: str) -> bool:
+    """Devuelve True si existe una imagen con el nombre base."""
+    contenido, _ = descargar_imagen(client, bucket, nombre_base)
+    return contenido is not None

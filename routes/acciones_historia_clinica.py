@@ -10,7 +10,7 @@ from utils.email_sender import enviar_email_con_pdf
 from utils.image_utils import (
     guardar_imagen_temporal,
     descargar_imagen,
-    eliminar_imagen,
+    imagen_existe,
     ALLOWED_EXTENSIONS,
     validar_imagen,
     obtener_mime,
@@ -95,13 +95,13 @@ async def generar_pdf_historia_completa(
                     {"error": "Formato de imagen no soportado para firma o sello"},
                     status_code=400,
                 )
-            eliminar_imagen(supabase, BUCKET_FIRMAS, base_firma)
             nombre_firma = f"{base_firma}{ext_firma}"
-            supabase.storage.from_(BUCKET_FIRMAS).upload(
-                nombre_firma,
-                contenido_firma,
-                {"content-type": obtener_mime(contenido_firma)},
-            )
+            if not imagen_existe(supabase, BUCKET_FIRMAS, base_firma):
+                supabase.storage.from_(BUCKET_FIRMAS).upload(
+                    nombre_firma,
+                    contenido_firma,
+                    {"content-type": obtener_mime(contenido_firma)},
+                )
             firma_url = f"{BUCKET_FIRMAS}/{nombre_firma}"
         elif usuario:
             contenido_firma, nombre_firma = descargar_imagen(
@@ -115,13 +115,13 @@ async def generar_pdf_historia_completa(
                     {"error": "Formato de imagen no soportado para firma o sello"},
                     status_code=400,
                 )
-            eliminar_imagen(supabase, BUCKET_FIRMAS, base_sello)
             nombre_sello = f"{base_sello}{ext_sello}"
-            supabase.storage.from_(BUCKET_FIRMAS).upload(
-                nombre_sello,
-                contenido_sello,
-                {"content-type": obtener_mime(contenido_sello)},
-            )
+            if not imagen_existe(supabase, BUCKET_FIRMAS, base_sello):
+                supabase.storage.from_(BUCKET_FIRMAS).upload(
+                    nombre_sello,
+                    contenido_sello,
+                    {"content-type": obtener_mime(contenido_sello)},
+                )
             sello_url = f"{BUCKET_FIRMAS}/{nombre_sello}"
         elif usuario:
             contenido_sello, nombre_sello = descargar_imagen(

@@ -13,10 +13,8 @@ import os, datetime
 from utils.pdf_generator import generar_pdf_receta
 from utils.email_sender import enviar_email_con_pdf
 from utils.image_utils import (
-    guardar_imagen_temporal,
     descargar_imagen,
     eliminar_imagen,
-    ALLOWED_EXTENSIONS,
     validar_imagen,
     obtener_mime,
 )
@@ -51,7 +49,7 @@ async def generar_receta(
             "medicamentos": medicamentos,
         }
 
-        firma_path = sello_path = None
+        firma_url = sello_url = None
         contenido_firma = contenido_sello = None
         base_firma = f"firma_{usuario}_{institucion_id}"
         base_sello = f"sello_{usuario}_{institucion_id}"
@@ -74,10 +72,15 @@ async def generar_receta(
                 contenido_firma,
                 {"content-type": obtener_mime(contenido_firma)},
             )
+            firma_url = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(nombre_firma)
+            print("URL firma:", firma_url)
         elif usuario and institucion_id is not None:
             contenido_firma, nombre_firma = descargar_imagen(
                 supabase, BUCKET_FIRMAS, base_firma
             )
+            if nombre_firma:
+                firma_url = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(nombre_firma)
+                print("URL firma:", firma_url)
 
         # ╔══════════════════════════════════════════════╗
         # ║                    SELLO                     ║
@@ -97,18 +100,17 @@ async def generar_receta(
                 contenido_sello,
                 {"content-type": obtener_mime(contenido_sello)},
             )
+            sello_url = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(nombre_sello)
+            print("URL sello:", sello_url)
         elif usuario and institucion_id is not None:
             contenido_sello, nombre_sello = descargar_imagen(
                 supabase, BUCKET_FIRMAS, base_sello
             )
+            if nombre_sello:
+                sello_url = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(nombre_sello)
+                print("URL sello:", sello_url)
 
-        if contenido_firma:
-            firma_path = guardar_imagen_temporal(contenido_firma, nombre_firma)
-
-        if contenido_sello:
-            sello_path = guardar_imagen_temporal(contenido_sello, nombre_sello)
-
-        pdf_path = generar_pdf_receta(datos, firma_path, sello_path)
+        pdf_path = generar_pdf_receta(datos, firma_url, sello_url)
 
         nombre_archivo = f"{dni}_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.pdf"
         # Verificar si ya existe una receta con el mismo nombre
@@ -121,11 +123,6 @@ async def generar_receta(
             supabase.storage.from_(BUCKET_PDFS).upload(nombre_archivo, f)
 
         pdf_url = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_archivo)
-
-        if firma_path and os.path.exists(firma_path):
-            os.remove(firma_path)
-        if sello_path and os.path.exists(sello_path):
-            os.remove(sello_path)
 
         supabase.table("recetas").insert({
             "nombre": nombre,

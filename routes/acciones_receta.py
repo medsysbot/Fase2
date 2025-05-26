@@ -9,9 +9,15 @@ from fastapi import APIRouter, Form, UploadFile, File, Request
 import base64
 from fastapi.responses import JSONResponse
 from supabase import create_client
-import os, tempfile, datetime
+import os, datetime
 from utils.pdf_generator import generar_pdf_receta
 from utils.email_sender import enviar_email_con_pdf
+from utils.image_utils import (
+    guardar_imagen_temporal,
+    descargar_imagen,
+    eliminar_imagen,
+    ALLOWED_EXTENSIONS,
+)
 
 router = APIRouter()
 
@@ -45,64 +51,60 @@ async def generar_receta(
 
         firma_path = sello_path = None
         contenido_firma = contenido_sello = None
-        nombre_firma = f"firma_{usuario}_{institucion_id}.png"
-        nombre_sello = f"sello_{usuario}_{institucion_id}.png"
+        base_firma = f"firma_{usuario}_{institucion_id}"
+        base_sello = f"sello_{usuario}_{institucion_id}"
 
         # ╔══════════════════════════════════════════════╗
         # ║                    FIRMA                     ║
         # ╚══════════════════════════════════════════════╝
         if firma:
             contenido_firma = await firma.read()
-            try:
-                supabase.storage.from_(BUCKET_FIRMAS).remove(nombre_firma)
-            except Exception:
-                pass
+            ext_firma = os.path.splitext(firma.filename)[1].lower()
+            if ext_firma not in ALLOWED_EXTENSIONS:
+                return JSONResponse(
+                    {"exito": False, "mensaje": "Formato de imagen no soportado para firma o sello"},
+                    status_code=400,
+                )
+            eliminar_imagen(supabase, BUCKET_FIRMAS, base_firma)
+            nombre_firma = f"{base_firma}{ext_firma}"
             supabase.storage.from_(BUCKET_FIRMAS).upload(
                 nombre_firma,
                 contenido_firma,
                 {"content-type": firma.content_type},
             )
         elif usuario and institucion_id is not None:
-            try:
-                contenido_firma = supabase.storage.from_(BUCKET_FIRMAS).download(
-                    nombre_firma
-                )
-            except Exception:
-                contenido_firma = None
+            contenido_firma, nombre_firma = descargar_imagen(
+                supabase, BUCKET_FIRMAS, base_firma
+            )
 
         # ╔══════════════════════════════════════════════╗
         # ║                    SELLO                     ║
         # ╚══════════════════════════════════════════════╝
         if sello:
             contenido_sello = await sello.read()
-            try:
-                supabase.storage.from_(BUCKET_FIRMAS).remove(nombre_sello)
-            except Exception:
-                pass
+            ext_sello = os.path.splitext(sello.filename)[1].lower()
+            if ext_sello not in ALLOWED_EXTENSIONS:
+                return JSONResponse(
+                    {"exito": False, "mensaje": "Formato de imagen no soportado para firma o sello"},
+                    status_code=400,
+                )
+            eliminar_imagen(supabase, BUCKET_FIRMAS, base_sello)
+            nombre_sello = f"{base_sello}{ext_sello}"
             supabase.storage.from_(BUCKET_FIRMAS).upload(
                 nombre_sello,
                 contenido_sello,
                 {"content-type": sello.content_type},
             )
         elif usuario and institucion_id is not None:
-            try:
-                contenido_sello = supabase.storage.from_(BUCKET_FIRMAS).download(
-                    nombre_sello
-                )
-            except Exception:
-                contenido_sello = None
+            contenido_sello, nombre_sello = descargar_imagen(
+                supabase, BUCKET_FIRMAS, base_sello
+            )
 
         if contenido_firma:
-            tmp_firma = tempfile.NamedTemporaryFile(delete=False)
-            tmp_firma.write(contenido_firma)
-            tmp_firma.close()
-            firma_path = tmp_firma.name
+            firma_path = guardar_imagen_temporal(contenido_firma, nombre_firma)
 
         if contenido_sello:
-            tmp_sello = tempfile.NamedTemporaryFile(delete=False)
-            tmp_sello.write(contenido_sello)
-            tmp_sello.close()
-            sello_path = tmp_sello.name
+            sello_path = guardar_imagen_temporal(contenido_sello, nombre_sello)
 
         pdf_path = generar_pdf_receta(datos, firma_path, sello_path)
 
@@ -152,25 +154,18 @@ async def obtener_firma_sello(request: Request):
         return JSONResponse({"exito": False, "mensaje": "Usuario no autenticado"}, status_code=403)
 
     try:
-        firma_bytes = sello_bytes = None
-        try:
-            firma_bytes = supabase.storage.from_(BUCKET_FIRMAS).download(
-                f"firma_{usuario}_{institucion_id}.png"
-            )
-        except Exception:
-            pass
-        try:
-            sello_bytes = supabase.storage.from_(BUCKET_FIRMAS).download(
-                f"sello_{usuario}_{institucion_id}.png"
-            )
-        except Exception:
-            pass
+        firma_bytes, nombre_firma = descargar_imagen(
+            supabase, BUCKET_FIRMAS, f"firma_{usuario}_{institucion_id}"
+        )
+        sello_bytes, nombre_sello = descargar_imagen(
+            supabase, BUCKET_FIRMAS, f"sello_{usuario}_{institucion_id}"
+        )
         firma_url = (
-            f"data:image/png;base64,{base64.b64encode(firma_bytes).decode()}"
+            f"data:image/{os.path.splitext(nombre_firma)[1][1:]};base64,{base64.b64encode(firma_bytes).decode()}"
             if firma_bytes else None
         )
         sello_url = (
-            f"data:image/png;base64,{base64.b64encode(sello_bytes).decode()}"
+            f"data:image/{os.path.splitext(nombre_sello)[1][1:]};base64,{base64.b64encode(sello_bytes).decode()}"
             if sello_bytes else None
         )
         return {"firma_url": firma_url, "sello_url": sello_url}
@@ -186,9 +181,7 @@ async def eliminar_firma_sello(request: Request, tipo: str = Form(...)):
         return JSONResponse({"exito": False, "mensaje": "Usuario no autenticado"}, status_code=403)
 
     try:
-        supabase.storage.from_(BUCKET_FIRMAS).remove(
-            f"{tipo}_{usuario}_{institucion_id}.png"
-        )
+        eliminar_imagen(supabase, BUCKET_FIRMAS, f"{tipo}_{usuario}_{institucion_id}")
         return {"exito": True}
     except Exception as e:
         return JSONResponse({"exito": False, "mensaje": str(e)}, status_code=500)
@@ -206,11 +199,15 @@ async def subir_firma_sello(
 
     try:
         contenido = await archivo.read()
-        nombre_obj = f"{tipo}_{usuario}_{institucion_id}.png"
-        try:
-            supabase.storage.from_(BUCKET_FIRMAS).remove(nombre_obj)
-        except Exception:
-            pass
+        extension = os.path.splitext(archivo.filename)[1].lower()
+        if extension not in ALLOWED_EXTENSIONS:
+            return JSONResponse(
+                {"exito": False, "mensaje": "Formato de imagen no soportado para firma o sello"},
+                status_code=400,
+            )
+        base_name = f"{tipo}_{usuario}_{institucion_id}"
+        eliminar_imagen(supabase, BUCKET_FIRMAS, base_name)
+        nombre_obj = f"{base_name}{extension}"
         supabase.storage.from_(BUCKET_FIRMAS).upload(
             nombre_obj,
             contenido,

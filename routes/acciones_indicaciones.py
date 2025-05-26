@@ -7,7 +7,13 @@ from supabase import create_client
 from utils.pdf_generator import generar_pdf_indicaciones
 from utils.email_sender import enviar_email_con_pdf
 from dotenv import load_dotenv
-import os, tempfile
+import os
+from utils.image_utils import (
+    guardar_imagen_temporal,
+    descargar_imagen,
+    eliminar_imagen,
+    ALLOWED_EXTENSIONS,
+)
 
 load_dotenv()
 router = APIRouter()
@@ -41,57 +47,55 @@ async def generar_indicaciones(
         }
 
         firma_path = sello_path = None
-        nombre_firma = f"firma_{usuario}_{institucion_id}.png"
-        nombre_sello = f"sello_{usuario}_{institucion_id}.png"
+        base_firma = f"firma_{usuario}_{institucion_id}"
+        base_sello = f"sello_{usuario}_{institucion_id}"
         if firma:
             contenido_firma = await firma.read()
+            ext_firma = os.path.splitext(firma.filename)[1].lower()
+            if ext_firma not in ALLOWED_EXTENSIONS:
+                return JSONResponse(
+                    {"exito": False, "mensaje": "Formato de imagen no soportado para firma o sello"},
+                    status_code=400,
+                )
+            eliminar_imagen(supabase, BUCKET_FIRMAS, base_firma)
+            nombre_firma = f"{base_firma}{ext_firma}"
             supabase.storage.from_(BUCKET_FIRMAS).upload(
                 nombre_firma,
                 contenido_firma,
                 {"content-type": firma.content_type},
                 upsert=True,
             )
-            tmp_firma = tempfile.NamedTemporaryFile(delete=False)
-            tmp_firma.write(contenido_firma)
-            tmp_firma.close()
-            firma_path = tmp_firma.name
         elif usuario and institucion_id is not None:
-            try:
-                contenido_firma = supabase.storage.from_(BUCKET_FIRMAS).download(
-                    nombre_firma
-                )
-                if contenido_firma:
-                    tmp_firma = tempfile.NamedTemporaryFile(delete=False)
-                    tmp_firma.write(contenido_firma)
-                    tmp_firma.close()
-                    firma_path = tmp_firma.name
-            except Exception:
-                pass
+            contenido_firma, nombre_firma = descargar_imagen(
+                supabase, BUCKET_FIRMAS, base_firma
+            )
 
         if sello:
             contenido_sello = await sello.read()
+            ext_sello = os.path.splitext(sello.filename)[1].lower()
+            if ext_sello not in ALLOWED_EXTENSIONS:
+                return JSONResponse(
+                    {"exito": False, "mensaje": "Formato de imagen no soportado para firma o sello"},
+                    status_code=400,
+                )
+            eliminar_imagen(supabase, BUCKET_FIRMAS, base_sello)
+            nombre_sello = f"{base_sello}{ext_sello}"
             supabase.storage.from_(BUCKET_FIRMAS).upload(
                 nombre_sello,
                 contenido_sello,
                 {"content-type": sello.content_type},
                 upsert=True,
             )
-            tmp_sello = tempfile.NamedTemporaryFile(delete=False)
-            tmp_sello.write(contenido_sello)
-            tmp_sello.close()
-            sello_path = tmp_sello.name
         elif usuario and institucion_id is not None:
-            try:
-                contenido_sello = supabase.storage.from_(BUCKET_FIRMAS).download(
-                    nombre_sello
-                )
-                if contenido_sello:
-                    tmp_sello = tempfile.NamedTemporaryFile(delete=False)
-                    tmp_sello.write(contenido_sello)
-                    tmp_sello.close()
-                    sello_path = tmp_sello.name
-            except Exception:
-                pass
+            contenido_sello, nombre_sello = descargar_imagen(
+                supabase, BUCKET_FIRMAS, base_sello
+            )
+
+        if contenido_firma:
+            firma_path = guardar_imagen_temporal(contenido_firma, nombre_firma)
+
+        if contenido_sello:
+            sello_path = guardar_imagen_temporal(contenido_sello, nombre_sello)
 
         pdf_path = generar_pdf_indicaciones(datos, firma_path, sello_path)
         nombre_pdf = os.path.basename(pdf_path)

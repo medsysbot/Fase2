@@ -36,7 +36,8 @@ async def buscar_paciente(dni: str = Form(...)):
                 f,
                 {"content-type": "application/pdf"},
             )
-        pdf_url = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_pdf)
+        pdf_obj = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_pdf)
+        pdf_url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
         return {"exito": True, "datos": datos, "pdf_url": pdf_url}
     except Exception as e:
         return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)

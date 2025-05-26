@@ -73,14 +73,16 @@ async def generar_receta(
                     contenido_firma,
                     {"content-type": obtener_mime(contenido_firma)},
                 )
-            firma_url = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(nombre_firma)
+            pdf_obj = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(nombre_firma)
+            firma_url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
             print("URL firma:", firma_url)
         elif usuario and institucion_id is not None:
             contenido_firma, nombre_firma = descargar_imagen(
                 supabase, BUCKET_FIRMAS, base_firma
             )
             if nombre_firma:
-                firma_url = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(nombre_firma)
+                pdf_obj = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(nombre_firma)
+                firma_url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
                 print("URL firma:", firma_url)
 
         # ╔══════════════════════════════════════════════╗
@@ -101,14 +103,16 @@ async def generar_receta(
                     contenido_sello,
                     {"content-type": obtener_mime(contenido_sello)},
                 )
-            sello_url = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(nombre_sello)
+            pdf_obj = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(nombre_sello)
+            sello_url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
             print("URL sello:", sello_url)
         elif usuario and institucion_id is not None:
             contenido_sello, nombre_sello = descargar_imagen(
                 supabase, BUCKET_FIRMAS, base_sello
             )
             if nombre_sello:
-                sello_url = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(nombre_sello)
+                pdf_obj = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(nombre_sello)
+                sello_url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
                 print("URL sello:", sello_url)
 
         pdf_path = generar_pdf_receta(datos, firma_url, sello_url)
@@ -127,7 +131,8 @@ async def generar_receta(
                 {"content-type": "application/pdf"},
             )
 
-        pdf_url = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_archivo)
+        pdf_obj = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_archivo)
+        pdf_url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
 
         supabase.table("recetas").insert({
             "nombre": nombre,

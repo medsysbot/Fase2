@@ -125,7 +125,11 @@ async def generar_receta(
         return {"exito": True, "pdf_url": pdf_url}
 
     except Exception as e:
-        return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)
+        error_text = str(e)
+        if "Duplicate" in error_text or "duplicate" in error_text:
+            mensaje = "Ya existe una receta para este paciente con esos datos."
+            return JSONResponse(content={"exito": False, "mensaje": mensaje}, status_code=400)
+        return JSONResponse(content={"exito": False, "mensaje": error_text}, status_code=500)
 
 
 @router.get("/obtener_firma_sello")

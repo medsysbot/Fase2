@@ -15,7 +15,7 @@ async function mostrarVistaPrevia(input, imgId, btnId, tipo) {
     const btn = document.getElementById(btnId);
     img.src = e.target.result;
     img.style.display = 'block';
-    img.style.maxWidth = '150px';
+    img.style.maxWidth = '100px';
     img.style.height = 'auto';
     btn.style.display = 'inline-block';
     input.style.display = 'none';
@@ -63,7 +63,7 @@ async function cargarFirmas() {
       const img = document.getElementById('firma-preview');
       img.src = data.firma_url;
       img.style.display = 'block';
-      img.style.maxWidth = '150px';
+      img.style.maxWidth = '100px';
       img.style.height = 'auto';
       document.getElementById('firma-delete').style.display = 'inline-block';
       document.getElementById('firma').style.display = 'none';
@@ -72,7 +72,7 @@ async function cargarFirmas() {
       const img = document.getElementById('sello-preview');
       img.src = data.sello_url;
       img.style.display = 'block';
-      img.style.maxWidth = '150px';
+      img.style.maxWidth = '100px';
       img.style.height = 'auto';
       document.getElementById('sello-delete').style.display = 'inline-block';
       document.getElementById('sello').style.display = 'none';

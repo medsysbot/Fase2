@@ -1,3 +1,6 @@
+// ╔════════════════════════════════════╗
+// ║      guardar_indicaciones.js      ║
+// ╚════════════════════════════════════╝
 async function guardarPDF() {
   const form = document.getElementById('form-indicaciones');
   const formData = new FormData(form);

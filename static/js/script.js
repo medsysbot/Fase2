@@ -1,3 +1,6 @@
+// ╔════════════════════════════════════╗
+// ║      script.js      ║
+// ╚════════════════════════════════════╝
 function guardarFormulario() {
     const contenido = document.getElementById("contenido-formulario");
     if (!contenido) {

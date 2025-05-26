@@ -1,3 +1,6 @@
+// ╔════════════════════════════════════╗
+// ║      guardar_busqueda.js      ║
+// ╚════════════════════════════════════╝
 document.addEventListener("DOMContentLoaded", function () {
   const botonGuardar = document.querySelector("button[title='Guardar']");
 

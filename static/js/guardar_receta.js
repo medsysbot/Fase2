@@ -1,3 +1,6 @@
+// ╔════════════════════════════════════╗
+// ║      guardar_receta.js      ║
+// ╚════════════════════════════════════╝
 async function guardarPDF() {
   const form = document.getElementById("form-receta");
   const formData = new FormData(form);

@@ -1,3 +1,6 @@
+// ╔════════════════════════════════════╗
+// ║      firma_sello.js      ║
+// ╚════════════════════════════════════╝
 function mostrarVistaPrevia(input, imgId, btnId) {
   const file = input.files[0];
   if (!file) return;

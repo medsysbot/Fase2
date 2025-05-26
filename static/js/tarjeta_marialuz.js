@@ -1,3 +1,6 @@
+// ╔════════════════════════════════════╗
+// ║      tarjeta_marialuz.js      ║
+// ╚════════════════════════════════════╝
 document.addEventListener('DOMContentLoaded', () => {
   const btnMusica = document.getElementById('btn-musica');
   const audio = document.getElementById('audio-fondo');

@@ -1,3 +1,6 @@
+// ╔════════════════════════════════════╗
+// ║      registro_voz.js      ║
+// ╚════════════════════════════════════╝
 // Activar reconocimiento de voz y completar el campo activo
 function marcarCamposVoz() {
   try {

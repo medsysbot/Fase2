@@ -3,18 +3,15 @@
 # ╚════════════════════════════════════════════════════════════╝
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import JSONResponse
-from supabase import create_client
 from utils.pdf_generator import generar_pdf_turno
 from utils.email_sender import enviar_email_con_pdf
 from dotenv import load_dotenv
 import os
+from utils.supabase_helper import supabase
 
 load_dotenv()
 router = APIRouter()
 
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 BUCKET_PDFS = "turnos-medicos"
 
 @router.post("/generar_pdf_turno")

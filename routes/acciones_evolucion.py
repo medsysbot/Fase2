@@ -3,7 +3,6 @@
 # ╚════════════════════════════════════════════════════════════╝
 from fastapi import APIRouter, Form, UploadFile, File, Request
 from fastapi.responses import JSONResponse
-from supabase import create_client
 from utils.pdf_generator import generar_pdf_evolucion
 from utils.email_sender import enviar_email_con_pdf
 from dotenv import load_dotenv
@@ -17,12 +16,11 @@ from utils.image_utils import (
     obtener_mime,
 )
 
+from utils.supabase_helper import supabase, SUPABASE_URL
+
 load_dotenv()
 router = APIRouter()
 
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 BUCKET_PDFS = "evolucion-diaria"
 BUCKET_FIRMAS = "firma-sello-usuarios"
 

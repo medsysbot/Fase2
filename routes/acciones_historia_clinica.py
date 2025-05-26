@@ -4,7 +4,6 @@
 from fastapi import APIRouter, Form, Request, UploadFile, File
 from fastapi.responses import JSONResponse
 import os
-from supabase import create_client
 from utils.pdf_generator import generar_pdf_historia_completa
 from utils.email_sender import enviar_email_con_pdf
 from utils.image_utils import (
@@ -15,15 +14,13 @@ from utils.image_utils import (
     validar_imagen,
     obtener_mime,
 )
+from utils.supabase_helper import supabase, SUPABASE_URL
 from dotenv import load_dotenv
 
 load_dotenv()
 router = APIRouter()
 
 # Configuración Supabase
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY_SERVICE = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY_SERVICE)
 BUCKET_PDFS = "historia-completa"
 BUCKET_FIRMAS = "firma-sello-usuarios"
 

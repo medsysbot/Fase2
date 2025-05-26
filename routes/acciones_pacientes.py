@@ -148,7 +148,7 @@ async def enviar_pdf_paciente(dni: str = Form(...)):
 
         enviar_email_con_pdf(
             email_destino=email,
-            asunto="Registro de Pacientes - MEDSYS",
+            asunto="registro de paciente PDF",
             cuerpo=(
                 f"Estimado/a {nombres} {apellido},\n\n"
                 "Adjuntamos su registro en PDF.\n\nSaludos,\nEquipo MEDSYS"

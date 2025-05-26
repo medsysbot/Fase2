@@ -3,7 +3,7 @@ import tempfile
 import imghdr
 from typing import Optional, Tuple
 
-ALLOWED_EXTENSIONS = {'.png'}
+ALLOWED_EXTENSIONS = {'.png', '.jpg', '.jpeg'}
 
 
 def _extension_from_bytes(contenido: bytes) -> Optional[str]:
@@ -21,6 +21,8 @@ def obtener_mime(contenido: bytes) -> Optional[str]:
     ext = _extension_from_bytes(contenido)
     if ext == ".png":
         return "image/png"
+    if ext in {".jpg", ".jpeg"}:
+        return "image/jpeg"
     return None
 
 
@@ -29,7 +31,10 @@ def validar_imagen(contenido: bytes, extension: str) -> bool:
     real_ext = _extension_from_bytes(contenido)
     if not real_ext or real_ext not in ALLOWED_EXTENSIONS:
         return False
-    return real_ext == extension.lower()
+    extension = extension.lower()
+    if extension == ".jpeg":
+        extension = ".jpg"
+    return real_ext == extension
 
 def guardar_imagen_temporal(contenido: bytes, nombre_archivo: str) -> str:
     """Guarda la imagen en un archivo temporal con la extension correcta."""

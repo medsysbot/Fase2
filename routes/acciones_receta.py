@@ -53,11 +53,14 @@ async def generar_receta(
         # ╚══════════════════════════════════════════════╝
         if firma:
             contenido_firma = await firma.read()
+            try:
+                supabase.storage.from_(BUCKET_FIRMAS).remove(nombre_firma)
+            except Exception:
+                pass
             supabase.storage.from_(BUCKET_FIRMAS).upload(
                 nombre_firma,
                 contenido_firma,
                 {"content-type": firma.content_type},
-                upsert=True,
             )
         elif usuario and institucion_id is not None:
             try:
@@ -72,11 +75,14 @@ async def generar_receta(
         # ╚══════════════════════════════════════════════╝
         if sello:
             contenido_sello = await sello.read()
+            try:
+                supabase.storage.from_(BUCKET_FIRMAS).remove(nombre_sello)
+            except Exception:
+                pass
             supabase.storage.from_(BUCKET_FIRMAS).upload(
                 nombre_sello,
                 contenido_sello,
                 {"content-type": sello.content_type},
-                upsert=True,
             )
         elif usuario and institucion_id is not None:
             try:
@@ -101,8 +107,14 @@ async def generar_receta(
         pdf_path = generar_pdf_receta(datos, firma_path, sello_path)
 
         nombre_archivo = f"{dni}_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.pdf"
+        # Verificar si ya existe una receta con el mismo nombre
+        existentes = supabase.storage.from_(BUCKET_PDFS).list()
+        if any(obj.get("name") == nombre_archivo for obj in existentes):
+            mensaje = "Ya existe una receta para este paciente con esos datos."
+            return JSONResponse(content={"exito": False, "mensaje": mensaje}, status_code=400)
+
         with open(pdf_path, "rb") as f:
-            supabase.storage.from_(BUCKET_PDFS).upload(nombre_archivo, f, upsert=True)
+            supabase.storage.from_(BUCKET_PDFS).upload(nombre_archivo, f)
 
         pdf_url = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_archivo)
 
@@ -194,11 +206,15 @@ async def subir_firma_sello(
 
     try:
         contenido = await archivo.read()
+        nombre_obj = f"{tipo}_{usuario}_{institucion_id}.png"
+        try:
+            supabase.storage.from_(BUCKET_FIRMAS).remove(nombre_obj)
+        except Exception:
+            pass
         supabase.storage.from_(BUCKET_FIRMAS).upload(
-            f"{tipo}_{usuario}_{institucion_id}.png",
+            nombre_obj,
             contenido,
             {"content-type": archivo.content_type},
-            upsert=True,
         )
         return {"exito": True}
     except Exception as e:

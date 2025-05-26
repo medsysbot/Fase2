@@ -121,7 +121,11 @@ async def generar_receta(
             return JSONResponse(content={"exito": False, "mensaje": mensaje}, status_code=400)
 
         with open(pdf_path, "rb") as f:
-            supabase.storage.from_(BUCKET_PDFS).upload(nombre_archivo, f)
+            supabase.storage.from_(BUCKET_PDFS).upload(
+                nombre_archivo,
+                f,
+                {"content-type": "application/pdf"},
+            )
 
         pdf_url = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_archivo)
 

@@ -116,8 +116,14 @@ async def generar_indicaciones(
 
 
 @router.post("/enviar_pdf_indicaciones")
-async def enviar_pdf_indicaciones(email: str = Form(...), nombre: str = Form(...), dni: str = Form(...)):
+async def enviar_pdf_indicaciones(nombre: str = Form(...), dni: str = Form(...)):
     try:
+        resultado = supabase.table("pacientes").select("email").eq("dni", dni).single().execute()
+        email = resultado.data.get("email") if resultado.data else None
+
+        if not email:
+            return JSONResponse({"exito": False, "mensaje": "No se encontró un e-mail para este DNI."}, status_code=404)
+
         registros = supabase.table("indicaciones").select("pdf_url").eq("dni", dni).order("id", desc=True).limit(1).execute()
         pdf_url = registros.data[0]["pdf_url"] if registros.data else None
         if not pdf_url:

@@ -8,12 +8,24 @@
   <title>Indicaciones Médicas</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/static/css/styles.css" />
+  <link rel="stylesheet" href="/static/styles.css" />
+
+  <!-- Preload de íconos de alerta -->
+  <link rel="preload" href="/static/icons/alerta/alerta-alerta.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-borrado.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-busqueda.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-error.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-guardado.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-suceso.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-paciente-cargado.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-pdf.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-email.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-carga-pdf.png" as="image">
 </head>
 <body>
   <header>
     <img src="/static/icons/icono-indicaciones.png" alt="Logo Indicaciones" class="logo-grande" />
-    <h2 style="text-align: center;">Indicaciones Médicas</h2>
+    <h2>Indicaciones Médicas</h2>
   </header>
 
   <!-- ╔════════════════════════════════════╗ -->
@@ -21,19 +33,19 @@
 <!-- ╚════════════════════════════════════╝ -->
 <form class="formulario" id="form-indicaciones">
     <label>Nombre del Paciente:</label>
-    <input type="text" name="nombre" required />
+    <input type="text" name="nombre" id="nombre" required />
 
     <label>DNI:</label>
-    <input type="text" name="dni" required />
+    <input type="text" name="dni" id="dni" required />
 
     <label>Fecha:</label>
-    <input type="date" name="fecha" required />
+    <input type="date" name="fecha" id="fecha" required />
 
     <label>Diagnóstico:</label>
-    <textarea name="diagnostico" rows="3" required></textarea>
+    <textarea name="diagnostico" id="diagnostico" rows="3" required></textarea>
 
     <label>Indicaciones:</label>
-    <textarea name="indicaciones" rows="6" required></textarea>
+    <textarea name="indicaciones" id="indicaciones" rows="6" required></textarea>
 
     <label>Firma del Profesional:</label>
     <input type="file" id="firma" name="firma" accept="image/*" onchange="mostrarVistaPrevia(this, 'firma-preview', 'firma-delete')" />
@@ -48,7 +60,7 @@
 
 
 <div class="botones-flotantes">
-  <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
+  <button type="button" ondblclick="iniciarReconocimiento()" title="Reconocimiento por voz">
     <img src="/static/icons/microfono.png" alt="Voz" />
   </button>
   <button type="button" onclick="guardarPDF()" title="Guardar">
@@ -62,23 +74,21 @@
   </button>
 </div>
 
-  <script>
-    function activarVoz() {
-      const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
-      recognition.lang = "es-ES";
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.onresult = function(event) {
-        const texto = event.results[0][0].transcript;
-        const campo = document.activeElement;
-        if (campo && (campo.tagName === "INPUT" || campo.tagName === "TEXTAREA")) {
-          campo.value += (campo.value ? " " : "") + texto;
-        }
-      };
-      recognition.start();
-    }
-  </script>
+<!-- ALERT MANAGER -->
+<div id="alert-manager" class="alert-container" style="display: none;">
+  <div class="alert-box">
+    <img id="alert-icon" src="" alt="icono-alerta" class="alert-icon" />
+    <span id="alert-text" class="alert-message">Texto de alerta</span>
+    <div id="alert-buttons" class="alert-buttons" style="display: none;">
+      <img src="/static/icons/alerta/alerta-boton-borrar.png" id="btn-borrar" class="alert-btn" />
+      <img src="/static/icons/alerta/alerta-boton-no.png" id="btn-no" class="alert-btn" />
+    </div>
+  </div>
+</div>
+
+  <script src="/static/js/alertas.js"></script>
   <script src="/static/js/firma_sello.js"></script>
   <script src="/static/js/guardar_indicaciones.js"></script>
+  <script src="/static/js/voz-a-formulario-indicaciones.js"></script>
 </body>
 </html>

@@ -87,7 +87,6 @@ async function enviarPorCorreo() {
     await new Promise((r) => setTimeout(r, 3200));
 
     const formData = new FormData();
-    formData.append('email', email);
     formData.append('nombre', nombre);
     formData.append('dni', dni);
 

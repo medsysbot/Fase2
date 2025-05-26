@@ -13,6 +13,8 @@ from utils.image_utils import (
     descargar_imagen,
     eliminar_imagen,
     ALLOWED_EXTENSIONS,
+    validar_imagen,
+    obtener_mime,
 )
 
 load_dotenv()
@@ -54,7 +56,7 @@ async def generar_evolucion(
         if firma:
             contenido_firma = await firma.read()
             ext_firma = os.path.splitext(firma.filename)[1].lower()
-            if ext_firma not in ALLOWED_EXTENSIONS:
+            if not validar_imagen(contenido_firma, ext_firma):
                 return JSONResponse(
                     {"exito": False, "mensaje": "Formato de imagen no soportado para firma o sello"},
                     status_code=400,
@@ -64,8 +66,7 @@ async def generar_evolucion(
             supabase.storage.from_(BUCKET_FIRMAS).upload(
                 nombre_firma,
                 contenido_firma,
-                {"content-type": firma.content_type},
-                upsert=True,
+                {"content-type": obtener_mime(contenido_firma)},
             )
         elif usuario and institucion_id is not None:
             contenido_firma, nombre_firma = descargar_imagen(
@@ -75,7 +76,7 @@ async def generar_evolucion(
         if sello:
             contenido_sello = await sello.read()
             ext_sello = os.path.splitext(sello.filename)[1].lower()
-            if ext_sello not in ALLOWED_EXTENSIONS:
+            if not validar_imagen(contenido_sello, ext_sello):
                 return JSONResponse(
                     {"exito": False, "mensaje": "Formato de imagen no soportado para firma o sello"},
                     status_code=400,
@@ -85,8 +86,7 @@ async def generar_evolucion(
             supabase.storage.from_(BUCKET_FIRMAS).upload(
                 nombre_sello,
                 contenido_sello,
-                {"content-type": sello.content_type},
-                upsert=True,
+                {"content-type": obtener_mime(contenido_sello)},
             )
         elif usuario and institucion_id is not None:
             contenido_sello, nombre_sello = descargar_imagen(
@@ -102,7 +102,10 @@ async def generar_evolucion(
         pdf_path = generar_pdf_evolucion(datos, firma_path, sello_path)
         nombre_pdf = os.path.basename(pdf_path)
         with open(pdf_path, "rb") as f:
-            supabase.storage.from_(BUCKET_PDFS).upload(nombre_pdf, f, upsert=True)
+            supabase.storage.from_(BUCKET_PDFS).upload(
+                nombre_pdf,
+                f,
+            )
 
         pdf_url = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_pdf)
 

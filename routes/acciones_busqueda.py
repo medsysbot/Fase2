@@ -31,7 +31,10 @@ async def buscar_paciente(dni: str = Form(...)):
         pdf_path = generar_pdf_busqueda(datos)
         nombre_pdf = os.path.basename(pdf_path)
         with open(pdf_path, "rb") as f:
-            supabase.storage.from_(BUCKET_PDFS).upload(nombre_pdf, f, upsert=True)
+            supabase.storage.from_(BUCKET_PDFS).upload(
+                nombre_pdf,
+                f,
+            )
         pdf_url = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_pdf)
         return {"exito": True, "datos": datos, "pdf_url": pdf_url}
     except Exception as e:

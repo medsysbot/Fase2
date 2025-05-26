@@ -65,15 +65,18 @@
 <!--────────────────────────────────────-->
 <!--         BOTONES DE ACCIÓN          -->
 <!--────────────────────────────────────-->
-<div class="botones-evolucion">
-  <button type="button" onclick="iniciarReconocimiento()" title="Reconocimiento por voz">
+<div class="botones-flotantes">
+  <button type="button" ondblclick="iniciarReconocimiento()" title="Reconocimiento por voz">
     <img src="/static/icons/microfono.png" alt="Voz" />
+  </button>
+  <button type="button" onclick="guardarPDF()" title="Guardar">
+    <img src="/static/icons/guardar.png" alt="Guardar" />
   </button>
   <button type="button" onclick="enviarPorCorreo()" title="Enviar">
     <img src="/static/icons/enviar.png" alt="Enviar" />
   </button>
-  <button type="button" onclick="window.location.href='/busqueda'" title="Buscar">
-    <img src="/static/icons/busquedas.png" alt="Buscar" />
+  <button type="button" onclick="abrirPDF()" title="Ver PDF">
+    <img src="/static/icons/icono-ver-pdf.png" alt="Ver PDF" />
   </button>
 </div>
 

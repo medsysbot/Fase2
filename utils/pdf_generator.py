@@ -5,15 +5,25 @@ import datetime
 # Ancho en milímetros para las imágenes de firma y sello
 FIRMA_SELLO_ANCHO = 25
 
+
+def _agregar_encabezado(pdf: FPDF, titulo: str) -> None:
+    """Agrega el logo y el título con formato estándar en el PDF."""
+    logo_path = "static/icons/logo-medsys-gris.png"
+    if os.path.exists(logo_path):
+        pdf.image(logo_path, x=10, y=4, w=60)
+    pdf.set_font("Arial", "B", 16)
+    pdf.set_title(titulo)
+    pdf.cell(0, 40, f"{titulo} - MEDSYS", ln=True, align="C")
+    pdf.set_draw_color(150, 150, 150)
+    pdf.set_line_width(1)
+    pdf.line(10, 50, 200, 50)
+    pdf.set_font("Arial", size=12)
+    pdf.ln(15)
+
 def generar_pdf_resumen(datos, firma_path=None, sello_path=None):
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_font("Arial", size=12)
-
-    pdf.set_title("Historia Clínica Resumida")
-
-    pdf.cell(200, 10, txt="Historia Clínica Resumida", ln=True, align="C")
-    pdf.ln(10)
+    _agregar_encabezado(pdf, "Historia Clínica Resumida")
 
     pdf.cell(200, 10, txt=f"Paciente: {datos['paciente']}", ln=True)
     pdf.cell(200, 10, txt=f"DNI: {datos['dni']}", ln=True)
@@ -45,16 +55,7 @@ def generar_pdf_resumen(datos, firma_path=None, sello_path=None):
 def generar_pdf_paciente(datos):
     pdf = FPDF()
     pdf.add_page()
-    logo_path = "static/icons/logo-medsys-gris.png"
-    if os.path.exists(logo_path):
-        pdf.image(logo_path, x=10, y=4, w=60)
-    pdf.set_font("Arial", "B", 16)
-    pdf.cell(0, 40, "Registro de Pacientes - MEDSYS", ln=True, align="C")
-    pdf.set_draw_color(150, 150, 150)
-    pdf.set_line_width(1)
-    pdf.line(10, 50, 200, 50)
-    pdf.set_font("Arial", size=12)
-    pdf.ln(15)
+    _agregar_encabezado(pdf, "Registro de Pacientes")
 
     campos = [
         ("Nombre y Apellido", f"{datos['nombres']} {datos['apellido']}") ,
@@ -197,11 +198,7 @@ def generar_pdf_receta(datos, firma=None, sello=None):
 def generar_pdf_indicaciones(datos, firma_path=None, sello_path=None):
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_font("Arial", size=12)
-
-    pdf.set_title("Indicaciones Médicas")
-    pdf.cell(0, 10, txt="Indicaciones Médicas", ln=True, align="C")
-    pdf.ln(10)
+    _agregar_encabezado(pdf, "Indicaciones Médicas")
 
     pdf.cell(0, 10, f"Paciente: {datos['nombre']}", ln=True)
     pdf.cell(0, 10, f"DNI: {datos['dni']}", ln=True)
@@ -232,11 +229,7 @@ def generar_pdf_indicaciones(datos, firma_path=None, sello_path=None):
 def generar_pdf_evolucion(datos, firma_path=None, sello_path=None):
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_font("Arial", size=12)
-
-    pdf.set_title("Evolución Diaria")
-    pdf.cell(0, 10, txt="Evolución Diaria", ln=True, align="C")
-    pdf.ln(10)
+    _agregar_encabezado(pdf, "Evolución Diaria")
 
     pdf.cell(0, 10, f"Paciente: {datos['paciente']}", ln=True)
     pdf.cell(0, 10, f"DNI: {datos['dni']}", ln=True)
@@ -268,11 +261,7 @@ def generar_pdf_evolucion(datos, firma_path=None, sello_path=None):
 def generar_pdf_turno(datos):
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_font("Arial", size=12)
-
-    pdf.set_title("Turno Médico")
-    pdf.cell(0, 10, txt="Turno Médico", ln=True, align="C")
-    pdf.ln(10)
+    _agregar_encabezado(pdf, "Turno Médico")
 
     fecha = datos.get('fecha')
     try:
@@ -302,11 +291,7 @@ def generar_pdf_turno(datos):
 def generar_pdf_busqueda(datos):
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_font("Arial", size=12)
-
-    pdf.set_title("Resultado de Búsqueda")
-    pdf.cell(0, 10, txt="Resultado de Búsqueda", ln=True, align="C")
-    pdf.ln(10)
+    _agregar_encabezado(pdf, "Resultado de Búsqueda")
 
     for key, value in datos.items():
         pdf.cell(0, 10, f"{key}: {value}", ln=True)

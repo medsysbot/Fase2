@@ -4,6 +4,11 @@
 async function mostrarVistaPrevia(input, imgId, btnId, tipo) {
   const file = input.files[0];
   if (!file) return;
+  if (!file.type.startsWith("image/")) {
+    showAlert("error", "Solo se permiten archivos PNG o JPG.", false, 3000);
+    input.value = "";
+    return;
+  }
   const reader = new FileReader();
   reader.onload = async (e) => {
     const img = document.getElementById(imgId);

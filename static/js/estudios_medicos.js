@@ -2,11 +2,12 @@
 // ║      estudios_medicos.js      ║
 // ╚════════════════════════════════════╝
 // Funciones para visualizar y enviar estudios médicos
+let estudioSeleccionado = null;
+
 async function buscarEstudio() {
   const dni = document.getElementById('paciente_id').value.trim();
   const tipo = document.getElementById('tipo_estudio').value;
-  const fechaSelect = document.getElementById('fecha_estudio');
-  const labelFecha = document.getElementById('label-fecha');
+  const listaFechas = document.getElementById('lista-fechas');
 
   if (!dni || !tipo) {
     showAlert('error', 'Debe ingresar DNI y tipo de estudio.', false, 3000);
@@ -16,44 +17,43 @@ async function buscarEstudio() {
   try {
     const resp = await fetch(`/consultar_estudios/${dni}`);
     const data = await resp.json();
-    const lista = (data.estudios || []).filter(e => e.tipo_estudio === tipo);
+  const lista = (data.estudios || []).filter(e => e.tipo_estudio === tipo);
 
-    fechaSelect.innerHTML = '';
-    fechaSelect.dataset.id = '';
+  listaFechas.innerHTML = '';
+  estudioSeleccionado = null;
 
     if (lista.length === 0) {
-      labelFecha.style.display = 'none';
-      fechaSelect.style.display = 'none';
       document.getElementById('visorPDF').src = '';
+      listaFechas.style.display = 'none';
       showAlert('error', 'No se encontraron estudios.', false, 3000);
       return;
     }
 
     if (lista.length === 1) {
-      labelFecha.style.display = 'none';
-      fechaSelect.style.display = 'none';
-      fechaSelect.dataset.id = lista[0].id;
+      listaFechas.style.display = 'none';
       mostrarPDF(lista[0].id);
     } else {
-      labelFecha.style.display = 'block';
-      fechaSelect.style.display = 'block';
-      const optBase = document.createElement('option');
-      optBase.value = '';
-      optBase.textContent = 'Seleccione fecha...';
-      fechaSelect.appendChild(optBase);
-      lista.forEach(e => {
-        const opt = document.createElement('option');
-        opt.value = e.id;
-        opt.textContent = e.fecha_estudio;
-        fechaSelect.appendChild(opt);
-      });
-      document.getElementById('visorPDF').src = '';
-      showAlert('busqueda', 'Seleccione la fecha deseada', false, 3000);
-    }
+    listaFechas.style.display = 'block';
+    lista.forEach(e => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = '#';
+      a.textContent = e.fecha_estudio;
+      a.onclick = (ev) => { ev.preventDefault(); cargarEstudio(e.id); };
+      li.appendChild(a);
+      listaFechas.appendChild(li);
+    });
+    document.getElementById('visorPDF').src = '';
+    showAlert('busqueda', 'Seleccione la fecha deseada', false, 3000);
+  }
   } catch (err) {
     console.error(err);
     showAlert('error', 'Error al buscar estudios.', false, 3000);
   }
+}
+
+function cargarEstudio(id) {
+  mostrarPDF(id);
 }
 
 async function mostrarPDF(id) {
@@ -65,6 +65,7 @@ async function mostrarPDF(id) {
       document.getElementById('visorPDF').src = data.url_pdf;
       sessionStorage.setItem('pdfURL', data.url_pdf);
       document.getElementById('pdf_url').value = data.url_pdf;
+      estudioSeleccionado = id;
     } else {
       showAlert('error', 'No se encontró el PDF.', false, 3000);
     }
@@ -76,7 +77,7 @@ async function mostrarPDF(id) {
 
 async function enviarPorCorreo() {
   const dni = document.getElementById('paciente_id').value.trim();
-  const idSeleccion = document.getElementById('fecha_estudio').value || document.getElementById('fecha_estudio').dataset.id;
+  const idSeleccion = estudioSeleccionado;
 
   if (!dni || !idSeleccion) {
     showAlert('error', 'Debe seleccionar un estudio.', false, 3000);
@@ -132,8 +133,3 @@ function abrirPDF() {
     showAlert('error', 'No hay PDF para mostrar', false, 3000);
   }
 }
-
-// Cuando el usuario selecciona una fecha se carga el PDF correspondiente
-document.getElementById('fecha_estudio').addEventListener('change', function (e) {
-  mostrarPDF(e.target.value);
-});

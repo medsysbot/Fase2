@@ -7,67 +7,26 @@
   <meta charset="UTF-8">
   <title>Ficha de Paciente</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background-color: #f4f4f4;
-    }
-    h2 {
-      color: #0a2a3d;
-    }
-    form {
-      margin-bottom: 20px;
-      background: #fff;
-      padding: 15px;
-      border-radius: 5px;
-      box-shadow: 0 0 5px #ccc;
-    }
-    input[type="text"] {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 10px;
-      font-size: 16px;
-    }
-    .botones button {
-      padding: 8px 15px;
-      font-size: 14px;
-      margin-right: 10px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .ver { background-color: #3498db; color: white; }
-    .exportar { background-color: #2ecc71; color: white; }
-    .eliminar { background-color: #e74c3c; color: white; }
-    .datos {
-      background: white;
-      padding: 15px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      margin-top: 20px;
-      display: none;
-    }
-    .datos p {
-      margin: 5px 0;
-    }
-  </style>
+  <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
 
-  <h2>Ficha del Paciente</h2>
+  <header>
+    <img src="/static/icons/busqueda.png" alt="Ficha del Paciente" class="logo-grande" />
+    <h2>Ficha del Paciente</h2>
+  </header>
 
   <!-- ╔════════════════════════════════════╗ -->
 <!-- ║        DATOS DEL PACIENTE        ║ -->
 <!-- ╚════════════════════════════════════╝ -->
-<form id="formulario" method="POST">
+<form id="formulario" method="POST" class="form-simple">
     <label>Ingrese DNI del paciente:</label>
     <input type="text" name="dni" id="dni" required>
 
     <div class="botones">
-      <button type="button" class="ver" onclick="verDatos()">Ver</button>
-      <button type="submit" class="exportar" formaction="/admin/ficha-paciente/exportar">Exportar</button>
-      <button type="submit" class="eliminar" formaction="/admin/ficha-paciente/eliminar" onclick="return confirm('¿Está seguro de que desea eliminar este paciente?')">Eliminar</button>
+      <button type="button" class="btn-ver" onclick="verDatos()">Ver</button>
+      <button type="submit" class="btn-exportar" formaction="/admin/ficha-paciente/exportar">Exportar</button>
+      <button type="submit" class="btn-eliminar" formaction="/admin/ficha-paciente/eliminar" onclick="return confirm('¿Está seguro de que desea eliminar este paciente?')">Eliminar</button>
     </div>
   </form>
 
@@ -104,6 +63,19 @@
       }
     }
   </script>
+<!-- ALERT MANAGER -->
+<div id="alert-manager" class="alert-container" style="display:none;">
+  <div class="alert-box">
+    <img id="alert-icon" src="" alt="icono-alerta" class="alert-icon" />
+    <span id="alert-text" class="alert-message">Texto de alerta</span>
+    <div id="alert-buttons" class="alert-buttons" style="display:none;">
+      <img src="/static/icons/alerta/alerta-boton-borrar.png" id="btn-borrar" class="alert-btn" />
+      <img src="/static/icons/alerta/alerta-boton-no.png" id="btn-no" class="alert-btn" />
+    </div>
+  </div>
+</div>
+
+<script src="/static/js/alertas.js"></script>
 
 </body>
 </html>

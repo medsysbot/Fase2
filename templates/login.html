@@ -8,6 +8,7 @@
   <title>Login - MEDSYS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
   <style>
     body {
       margin: 0;
@@ -89,11 +90,7 @@
 </head>
 <body>
   
-{% if error %}
-  <div class="alert alert-danger" style="color: red; margin: 10px auto; text-align: center;">
-    {{ error }}
-  </div>
-{% endif %}
+
 
   <img src="/static/icons/logo-medsys-gris.png" alt="Logo MedSys" class="logo-medsys">
 
@@ -119,6 +116,27 @@
   </div>
   <button type="submit" class="submit-button">Entrar</button>
 </form>
-    
+
+<!-- ALERT MANAGER -->
+<div id="alert-manager" class="alert-container" style="display: none;">
+  <div class="alert-box">
+    <img id="alert-icon" src="" alt="icono-alerta" class="alert-icon" />
+    <span id="alert-text" class="alert-message">Texto de alerta</span>
+    <div id="alert-buttons" class="alert-buttons" style="display: none;">
+      <img src="/static/icons/alerta/alerta-boton-borrar.png" id="btn-borrar" class="alert-btn" />
+      <img src="/static/icons/alerta/alerta-boton-no.png" id="btn-no" class="alert-btn" />
+    </div>
+  </div>
+</div>
+
+<script src="/static/js/alertas.js"></script>
+{% if error %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    showAlert('error', '{{ error }}', false, 3000);
+  });
+</script>
+{% endif %}
+
 </body>
 </html>

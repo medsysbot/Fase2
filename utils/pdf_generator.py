@@ -2,6 +2,9 @@ from fpdf import FPDF
 import os
 import datetime
 
+# Ancho en milímetros para las imágenes de firma y sello
+FIRMA_SELLO_ANCHO = 25
+
 def generar_pdf_resumen(datos, firma_path=None, sello_path=None):
     pdf = FPDF()
     pdf.add_page()
@@ -25,12 +28,12 @@ def generar_pdf_resumen(datos, firma_path=None, sello_path=None):
     if firma_path and os.path.exists(firma_path):
         pdf.ln(10)
         pdf.cell(200, 10, txt="Firma del Profesional:", ln=True)
-        pdf.image(firma_path, x=10, y=pdf.get_y(), w=40)
+        pdf.image(firma_path, x=10, y=pdf.get_y(), w=FIRMA_SELLO_ANCHO)
         pdf.ln(25)
 
     if sello_path and os.path.exists(sello_path):
         pdf.cell(200, 10, txt="Sello del Profesional:", ln=True)
-        pdf.image(sello_path, x=60, y=pdf.get_y(), w=40)
+        pdf.image(sello_path, x=60, y=pdf.get_y(), w=FIRMA_SELLO_ANCHO)
         pdf.ln(25)
 
     filename = f"{datos['dni']}_resumen.pdf"
@@ -118,12 +121,12 @@ def generar_pdf_historia_completa(datos, firma_path=None, sello_path=None):
     if firma_path and os.path.exists(firma_path):
         pdf.ln(10)
         pdf.cell(200, 10, txt="Firma del Profesional:", ln=True)
-        pdf.image(firma_path, x=10, y=pdf.get_y(), w=40)
+        pdf.image(firma_path, x=10, y=pdf.get_y(), w=FIRMA_SELLO_ANCHO)
         pdf.ln(25)
 
     if sello_path and os.path.exists(sello_path):
         pdf.cell(200, 10, txt="Sello del Profesional:", ln=True)
-        pdf.image(sello_path, x=60, y=pdf.get_y(), w=40)
+        pdf.image(sello_path, x=60, y=pdf.get_y(), w=FIRMA_SELLO_ANCHO)
         pdf.ln(25)
 
     safe_name = datos["nombre"].strip().replace(" ", "_")
@@ -168,12 +171,12 @@ def generar_pdf_receta(datos, firma=None, sello=None):
     if firma and (_es_url(firma) or os.path.exists(firma)):
         pdf.ln(10)
         pdf.cell(200, 10, txt="Firma del Profesional:", ln=True)
-        pdf.image(firma, x=10, y=pdf.get_y(), w=40, type=_img_type_from_name(firma))
+        pdf.image(firma, x=10, y=pdf.get_y(), w=FIRMA_SELLO_ANCHO, type=_img_type_from_name(firma))
         pdf.ln(25)
 
     if sello and (_es_url(sello) or os.path.exists(sello)):
         pdf.cell(200, 10, txt="Sello del Profesional:", ln=True)
-        pdf.image(sello, x=60, y=pdf.get_y(), w=40, type=_img_type_from_name(sello))
+        pdf.image(sello, x=60, y=pdf.get_y(), w=FIRMA_SELLO_ANCHO, type=_img_type_from_name(sello))
         pdf.ln(25)
 
     filename = f"{datos['dni']}_receta.pdf"
@@ -203,12 +206,12 @@ def generar_pdf_indicaciones(datos, firma_path=None, sello_path=None):
     if firma_path and os.path.exists(firma_path):
         pdf.ln(10)
         pdf.cell(200, 10, txt="Firma del Profesional:", ln=True)
-        pdf.image(firma_path, x=10, y=pdf.get_y(), w=40)
+        pdf.image(firma_path, x=10, y=pdf.get_y(), w=FIRMA_SELLO_ANCHO)
         pdf.ln(25)
 
     if sello_path and os.path.exists(sello_path):
         pdf.cell(200, 10, txt="Sello del Profesional:", ln=True)
-        pdf.image(sello_path, x=60, y=pdf.get_y(), w=40)
+        pdf.image(sello_path, x=60, y=pdf.get_y(), w=FIRMA_SELLO_ANCHO)
         pdf.ln(25)
 
     filename = f"{datos['dni']}_indicaciones.pdf"
@@ -239,12 +242,12 @@ def generar_pdf_evolucion(datos, firma_path=None, sello_path=None):
     if firma_path and os.path.exists(firma_path):
         pdf.ln(10)
         pdf.cell(200, 10, txt="Firma del Profesional:", ln=True)
-        pdf.image(firma_path, x=10, y=pdf.get_y(), w=40)
+        pdf.image(firma_path, x=10, y=pdf.get_y(), w=FIRMA_SELLO_ANCHO)
         pdf.ln(25)
 
     if sello_path and os.path.exists(sello_path):
         pdf.cell(200, 10, txt="Sello del Profesional:", ln=True)
-        pdf.image(sello_path, x=60, y=pdf.get_y(), w=40)
+        pdf.image(sello_path, x=60, y=pdf.get_y(), w=FIRMA_SELLO_ANCHO)
         pdf.ln(25)
 
     filename = f"{datos['dni']}_evolucion.pdf"

@@ -5,7 +5,7 @@
 async function buscarEstudio() {
   const dni = document.getElementById('paciente_id').value.trim();
   const tipo = document.getElementById('tipo_estudio').value;
-  const fechaSelect = document.getElementById('fecha');
+  const fechaSelect = document.getElementById('fecha_estudio');
   const labelFecha = document.getElementById('label-fecha');
 
   if (!dni || !tipo) {
@@ -76,7 +76,7 @@ async function mostrarPDF(id) {
 
 async function enviarPorCorreo() {
   const dni = document.getElementById('paciente_id').value.trim();
-  const idSeleccion = document.getElementById('fecha').value || document.getElementById('fecha').dataset.id;
+  const idSeleccion = document.getElementById('fecha_estudio').value || document.getElementById('fecha_estudio').dataset.id;
 
   if (!dni || !idSeleccion) {
     showAlert('error', 'Debe seleccionar un estudio.', false, 3000);
@@ -134,6 +134,6 @@ function abrirPDF() {
 }
 
 // Cuando el usuario selecciona una fecha se carga el PDF correspondiente
-document.getElementById('fecha').addEventListener('change', function (e) {
+document.getElementById('fecha_estudio').addEventListener('change', function (e) {
   mostrarPDF(e.target.value);
 });

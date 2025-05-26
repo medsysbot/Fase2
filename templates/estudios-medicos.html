@@ -7,7 +7,7 @@
   <meta charset="UTF-8">
   <title>Estudios Médicos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/static/styles.css" />
+  <link rel="stylesheet" href="/static/css/styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -45,11 +45,8 @@
       <option value="Otros">Otros…</option>
     </select>
 
-    <label id="label-fecha" style="display:none;">Seleccionar fecha del estudio</label>
-    <select id="fecha" name="fecha" style="display:none;"></select>
-
-    <label>Descripción:</label>
-    <textarea id="descripcion" name="descripcion" rows="3"></textarea>
+    <label id="label-fecha" for="fecha_estudio" style="display:none;">Seleccionar fecha del estudio</label>
+    <select id="fecha_estudio" name="fecha_estudio" style="display:none;"></select>
     <input type="hidden" id="pdf_url" name="pdf_url" />
   </form>
 
@@ -64,11 +61,11 @@
     <button type="button" ondblclick="marcarCamposVoz()" title="Reconocimiento por voz">
       <img src="/static/icons/microfono.png" alt="Voz" />
     </button>
-    <button type="button" onclick="buscarEstudio()" title="Buscar">
-      <img src="/static/icons/busqueda.png" alt="Buscar" />
-    </button>
     <button type="button" onclick="enviarPorCorreo()" title="Enviar por Email">
       <img src="/static/icons/enviar.png" alt="Enviar por Email" />
+    </button>
+    <button id="btnBuscar" type="button" onclick="buscarEstudio()" title="Buscar">
+      <img src="/static/icons/busquedas.png" alt="Buscar" width="24" />
     </button>
     <button type="button" id="btn-guardar" onclick="guardarEstudio()" title="Guardar" style="display:none;">
       <img src="/static/icons/guardar.png" alt="Guardar" />

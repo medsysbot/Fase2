@@ -44,9 +44,5 @@ function convertirFecha(texto) {
   }
 }
 
-document.addEventListener("keydown", (e) => {
-  if (e.code === "Space") {
-    e.preventDefault();
-    iniciarReconocimiento();
-  }
-});
+// Se retira la escucha global de teclado. El micrófono se utiliza
+// únicamente al presionar el botón dedicado.

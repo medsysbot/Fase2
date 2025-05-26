@@ -36,7 +36,13 @@ def enviar_email_con_pdf(email_destino, asunto, cuerpo, url_pdf):
         mensaje["Subject"] = asunto
         mensaje.set_content(cuerpo)
 
-        mensaje.add_attachment(pdf_data, maintype="application", subtype="pdf", filename="historia_clinica.pdf")
+        # Usar un nombre de archivo coherente con el asunto del correo
+        mensaje.add_attachment(
+            pdf_data,
+            maintype="application",
+            subtype="pdf",
+            filename="registro_paciente.pdf",
+        )
 
         contexto = ssl.create_default_context()
         print(f"Conectando a servidor SMTP {SMTP_SERVER}:{SMTP_PORT} (SSL)")

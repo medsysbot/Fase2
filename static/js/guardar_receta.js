@@ -30,7 +30,12 @@ async function guardarPDF() {
       showAlert("suceso", "Receta guardada", false, 3000);
       sessionStorage.setItem('pdfURL', resultado.pdf_url);
     } else {
-      showAlert("error", resultado.mensaje || "Error al guardar la receta", false, 4000);
+      const mensaje = resultado.mensaje || "Error al guardar la receta";
+      if (mensaje.includes('receta') && mensaje.includes('datos')) {
+        showAlert('error', 'Ya existe una receta para este paciente con esos datos.', false, 4000);
+      } else {
+        showAlert('error', mensaje, false, 4000);
+      }
     }
   } catch (error) {
     console.error('Error al guardar:', error);

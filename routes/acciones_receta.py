@@ -8,7 +8,6 @@ load_dotenv()
 from fastapi import APIRouter, Form, UploadFile, File, Request
 import base64
 from fastapi.responses import JSONResponse
-from supabase import create_client
 import os, datetime
 from utils.pdf_generator import generar_pdf_receta
 from utils.email_sender import enviar_email_con_pdf
@@ -20,11 +19,10 @@ from utils.image_utils import (
     imagen_existe,
 )
 
+from utils.supabase_helper import supabase, SUPABASE_URL
+
 router = APIRouter()
 
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 BUCKET_PDFS = "recetas-medicas"
 BUCKET_FIRMAS = "firma-sello-usuarios"
 

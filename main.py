@@ -6,10 +6,10 @@ from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 import os
 import tempfile
-from supabase import create_client, Client
 from dotenv import load_dotenv
 import asyncio
-load_dotenv() 
+from utils.supabase_helper import supabase, SUPABASE_URL
+load_dotenv()
 # ╔════════════════════════════════════╗
 # ║             APP BASE               ║
 # ╚════════════════════════════════════╝
@@ -33,10 +33,7 @@ app.add_middleware(SessionMiddleware, secret_key="clave-super-secreta")
 # ╔════════════════════════════════════╗
 # ║        CLIENTE SUPABASE           ║
 # ╚════════════════════════════════════╝
-
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+# El cliente de Supabase se obtiene desde utils.supabase_helper
 # ╔════════════════════════════════════╗
 # ║       ARCHIVOS ESTÁTICOS          ║
 # ╚════════════════════════════════════╝

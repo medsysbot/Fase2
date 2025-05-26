@@ -4,19 +4,16 @@
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import JSONResponse
 import os
-from supabase import create_client, Client
 from fpdf import FPDF
 from utils.pdf_generator import generar_pdf_paciente
 from utils.email_sender import enviar_email_con_pdf
+from utils.supabase_helper import supabase, SUPABASE_URL
 from dotenv import load_dotenv
 
 load_dotenv()
 router = APIRouter()
 
 # Configuración Supabase
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 BUCKET_PDFS = "registro-pacientes"
 BUCKET_BACKUPS = "backups"
 

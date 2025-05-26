@@ -1,17 +1,14 @@
 from fastapi import APIRouter, Form, UploadFile, File, Request
 from fastapi.responses import JSONResponse
-from supabase import create_client
 import os, asyncio, imaplib, email, re
 from email.header import decode_header
 from datetime import datetime
 from dotenv import load_dotenv
+from utils.supabase_helper import supabase
 
 load_dotenv()
 router = APIRouter()
 
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 BUCKET_PDFS = "estudios-medicos"
 
 EMAIL_IMAP_SERVER = os.getenv("EMAIL_IMAP_SERVER", "imap.gmail.com")

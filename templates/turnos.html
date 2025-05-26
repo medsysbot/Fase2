@@ -54,8 +54,20 @@
   </button>
 </div>
 
-  <script>
-    function activarVoz() {
+<!-- ALERT MANAGER -->
+<div id="alert-manager" class="alert-container" style="display: none;">
+  <div class="alert-box">
+    <img id="alert-icon" src="" alt="icono-alerta" class="alert-icon" />
+    <span id="alert-text" class="alert-message">Texto de alerta</span>
+    <div id="alert-buttons" class="alert-buttons" style="display: none;">
+      <img src="/static/icons/alerta/alerta-boton-borrar.png" id="btn-borrar" class="alert-btn" />
+      <img src="/static/icons/alerta/alerta-boton-no.png" id="btn-no" class="alert-btn" />
+    </div>
+  </div>
+</div>
+
+<script>
+  function activarVoz() {
       const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
       recognition.lang = "es-ES";
       recognition.continuous = false;
@@ -68,8 +80,9 @@
         }
       };
       recognition.start();
-    }
-  </script>
-  <script src="/static/js/guardar_turnos.js"></script>
+  }
+</script>
+<script src="/static/js/alertas.js"></script>
+<script src="/static/js/guardar_turnos.js"></script>
 </body>
 </html>

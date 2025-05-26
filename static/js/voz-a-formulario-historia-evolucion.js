@@ -35,9 +35,5 @@ function iniciarReconocimiento() {
   recognition.start();
 }
 
-document.addEventListener("keydown", (e) => {
-  if (e.code === "Space") {
-    e.preventDefault();
-    iniciarReconocimiento();
-  }
-});
+// El reconocimiento solo debe activarse desde el botón de micrófono,
+// por lo que se elimina la activación mediante la barra espaciadora.

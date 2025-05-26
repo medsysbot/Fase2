@@ -77,16 +77,18 @@ async def generar_pdf_historia_completa(
         }
         firma_url = ""
         sello_url = ""
-        firma_path = sello_path = None       
+        firma_path = sello_path = None
+        nombre_firma = f"firma_{usuario}_{institucion_id}.png"
+        nombre_sello = f"sello_{usuario}_{institucion_id}.png"
         if firma:
-            firma_nombre = f"firma-{usuario}--{institucion_id}.png"
             contenido_firma = await firma.read()
             supabase.storage.from_(BUCKET_FIRMAS).upload(
-                firma_nombre,
+                nombre_firma,
                 contenido_firma,
                 {"content-type": firma.content_type},
+                upsert=True,
             )
-            firma_url = f"{BUCKET_FIRMAS}/{firma_nombre}"
+            firma_url = f"{BUCKET_FIRMAS}/{nombre_firma}"
             tmp_firma = tempfile.NamedTemporaryFile(delete=False)
             tmp_firma.write(contenido_firma)
             tmp_firma.close()
@@ -94,7 +96,7 @@ async def generar_pdf_historia_completa(
         elif usuario:
             try:
                 contenido_firma = supabase.storage.from_(BUCKET_FIRMAS).download(
-                    f"firma-{usuario}--{institucion_id}.png"
+                    nombre_firma
                 )
                 if contenido_firma:
                     tmp_firma = tempfile.NamedTemporaryFile(delete=False)
@@ -105,14 +107,14 @@ async def generar_pdf_historia_completa(
                 pass
 
         if sello:
-            sello_nombre = f"sello-{usuario}--{institucion_id}.png"
             contenido_sello = await sello.read()
             supabase.storage.from_(BUCKET_FIRMAS).upload(
-                sello_nombre,
+                nombre_sello,
                 contenido_sello,
                 {"content-type": sello.content_type},
+                upsert=True,
             )
-            sello_url = f"{BUCKET_FIRMAS}/{sello_nombre}"
+            sello_url = f"{BUCKET_FIRMAS}/{nombre_sello}"
             tmp_sello = tempfile.NamedTemporaryFile(delete=False)
             tmp_sello.write(contenido_sello)
             tmp_sello.close()
@@ -120,7 +122,7 @@ async def generar_pdf_historia_completa(
         elif usuario:
             try:
                 contenido_sello = supabase.storage.from_(BUCKET_FIRMAS).download(
-                    f"sello-{usuario}--{institucion_id}.png"
+                    nombre_sello
                 )
                 if contenido_sello:
                     tmp_sello = tempfile.NamedTemporaryFile(delete=False)

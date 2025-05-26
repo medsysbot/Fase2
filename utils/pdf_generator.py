@@ -154,11 +154,17 @@ def generar_pdf_receta(datos, firma=None, sello=None):
     """Genera el PDF de la receta utilizando rutas locales o URLs de imagen."""
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_font("Arial", size=12)
-
+    logo_path = "static/icons/logo-medsys-gris.png"
+    if os.path.exists(logo_path):
+        pdf.image(logo_path, x=10, y=4, w=60)
+    pdf.set_font("Arial", "B", 16)
     pdf.set_title("Receta Médica")
-    pdf.cell(0, 10, txt="Receta Médica", ln=True, align="C")
-    pdf.ln(10)
+    pdf.cell(0, 40, txt="Receta Médica - MEDSYS", ln=True, align="C")
+    pdf.set_draw_color(150, 150, 150)
+    pdf.set_line_width(1)
+    pdf.line(10, 50, 200, 50)
+    pdf.set_font("Arial", size=12)
+    pdf.ln(15)
 
     pdf.cell(0, 10, f"Paciente: {datos['nombre']}", ln=True)
     pdf.cell(0, 10, f"DNI: {datos['dni']}", ln=True)
@@ -171,13 +177,15 @@ def generar_pdf_receta(datos, firma=None, sello=None):
     if firma and (_es_url(firma) or os.path.exists(firma)):
         pdf.ln(10)
         pdf.cell(200, 10, txt="Firma del Profesional:", ln=True)
-        pdf.image(firma, x=10, y=pdf.get_y(), w=FIRMA_SELLO_ANCHO, type=_img_type_from_name(firma))
-        pdf.ln(25)
+        y_firma = pdf.get_y()
+        pdf.image(firma, x=10, y=y_firma, w=FIRMA_SELLO_ANCHO, type=_img_type_from_name(firma))
+        pdf.ln(FIRMA_SELLO_ANCHO + 5)
 
     if sello and (_es_url(sello) or os.path.exists(sello)):
         pdf.cell(200, 10, txt="Sello del Profesional:", ln=True)
-        pdf.image(sello, x=60, y=pdf.get_y(), w=FIRMA_SELLO_ANCHO, type=_img_type_from_name(sello))
-        pdf.ln(25)
+        y_sello = pdf.get_y()
+        pdf.image(sello, x=10, y=y_sello, w=FIRMA_SELLO_ANCHO, type=_img_type_from_name(sello))
+        pdf.ln(FIRMA_SELLO_ANCHO + 5)
 
     filename = f"{datos['dni']}_receta.pdf"
     output_path = os.path.join("/tmp", filename)

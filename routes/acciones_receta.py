@@ -118,11 +118,6 @@ async def generar_receta(
         pdf_path = generar_pdf_receta(datos, firma_url, sello_url)
 
         nombre_archivo = f"{dni}_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.pdf"
-        # Verificar si ya existe una receta con el mismo nombre
-        existentes = supabase.storage.from_(BUCKET_PDFS).list()
-        if any(obj.get("name") == nombre_archivo for obj in existentes):
-            mensaje = "Ya existe una receta para este paciente con esos datos."
-            return JSONResponse(content={"exito": False, "mensaje": mensaje}, status_code=400)
 
         with open(pdf_path, "rb") as f:
             supabase.storage.from_(BUCKET_PDFS).upload(
@@ -131,8 +126,7 @@ async def generar_receta(
                 {"content-type": "application/pdf"},
             )
 
-        pdf_obj = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_archivo)
-        pdf_url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
+        pdf_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_PDFS}/{nombre_archivo}"
 
         supabase.table("recetas").insert({
             "nombre": nombre,

@@ -71,6 +71,7 @@ async function obtenerEmailPorDni(dni) {
 }
 
 async function enviarPorCorreo() {
+  await guardarPDF();
   const paciente = document.getElementById('paciente').value.trim();
   const dni = document.getElementById('dni').value.trim();
   const email = await obtenerEmailPorDni(dni);

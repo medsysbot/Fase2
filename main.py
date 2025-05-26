@@ -247,7 +247,6 @@ from routes import (
     turnos_router,
     busqueda_router,
     estudios_router,
-    invitaciones_router,
 )
 from routes.acciones_estudios import iniciar_monitor
 app.include_router(pacientes_router)
@@ -259,7 +258,6 @@ app.include_router(evolucion_router)
 app.include_router(turnos_router)
 app.include_router(busqueda_router)
 app.include_router(estudios_router)
-app.include_router(invitaciones_router)
 
 @app.on_event("startup")
 async def startup_event():

@@ -133,7 +133,22 @@ def generar_pdf_historia_completa(datos, firma_path=None, sello_path=None):
 
     return output_path
 
-def generar_pdf_receta(datos, firma_path=None, sello_path=None):
+def _img_type_from_name(name: str) -> str:
+    """Devuelve el tipo de imagen que espera FPDF a partir de su extensión."""
+    ext = os.path.splitext(name.split("?")[0])[1].lower()
+    if ext in (".jpg", ".jpeg"):
+        return "JPG"
+    if ext == ".png":
+        return "PNG"
+    return ""
+
+
+def _es_url(path: str) -> bool:
+    return path.startswith("http://") or path.startswith("https://")
+
+
+def generar_pdf_receta(datos, firma=None, sello=None):
+    """Genera el PDF de la receta utilizando rutas locales o URLs de imagen."""
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=12)
@@ -150,15 +165,15 @@ def generar_pdf_receta(datos, firma_path=None, sello_path=None):
     pdf.multi_cell(0, 10, f"Diagnóstico:\n{datos['diagnostico']}\n")
     pdf.multi_cell(0, 10, f"Medicamentos indicados:\n{datos['medicamentos']}\n")
 
-    if firma_path and os.path.exists(firma_path):
+    if firma and (_es_url(firma) or os.path.exists(firma)):
         pdf.ln(10)
         pdf.cell(200, 10, txt="Firma del Profesional:", ln=True)
-        pdf.image(firma_path, x=10, y=pdf.get_y(), w=40)
+        pdf.image(firma, x=10, y=pdf.get_y(), w=40, type=_img_type_from_name(firma))
         pdf.ln(25)
 
-    if sello_path and os.path.exists(sello_path):
+    if sello and (_es_url(sello) or os.path.exists(sello)):
         pdf.cell(200, 10, txt="Sello del Profesional:", ln=True)
-        pdf.image(sello_path, x=60, y=pdf.get_y(), w=40)
+        pdf.image(sello, x=60, y=pdf.get_y(), w=40, type=_img_type_from_name(sello))
         pdf.ln(25)
 
     filename = f"{datos['dni']}_receta.pdf"

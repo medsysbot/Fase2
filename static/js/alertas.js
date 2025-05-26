@@ -1,3 +1,6 @@
+// ╔════════════════════════════════════╗
+// ║      alertas.js      ║
+// ╚════════════════════════════════════╝
 let alertTimeout = null;
 
 function showAlert(type, message, withButtons = false, duration = 3000) {

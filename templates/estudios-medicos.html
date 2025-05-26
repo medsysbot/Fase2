@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<!-- ╔════════════════════════════════════╗ -->
+<!-- ║      CABECERA DEL FORMULARIO      ║ -->
+<!-- ╚════════════════════════════════════╝ -->
   <meta charset="UTF-8">
   <title>Estudios Médicos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +16,10 @@
     <h2>Estudios Médicos</h2>
   </header>
 
-  <form id="form-estudio">
+  <!-- ╔════════════════════════════════════╗ -->
+<!-- ║        DATOS DEL PACIENTE        ║ -->
+<!-- ╚════════════════════════════════════╝ -->
+<form id="form-estudio">
     <label>DNI del Paciente:</label>
     <input type="number" id="paciente_id" name="paciente_id" required />
 
@@ -48,7 +54,10 @@
   </form>
 
     <div id="visorContainer" style="width:100%; height:600px; overflow:auto;">
-      <iframe id="visorPDF" width="100%" height="100%" frameborder="0"></iframe>
+      <!-- ╔════════════════════════════════════╗ -->
+<!-- ║             VISOR DE PDF         ║ -->
+<!-- ╚════════════════════════════════════╝ -->
+<iframe id="visorPDF" width="100%" height="100%" frameborder="0"></iframe>
     </div>
 
   <div class="botones-flotantes">

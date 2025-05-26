@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<!-- ╔════════════════════════════════════╗ -->
+<!-- ║      CABECERA DEL FORMULARIO      ║ -->
+<!-- ╚════════════════════════════════════╝ -->
   <meta charset="UTF-8">
   <title>Panel de Control Total - MEDSYS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -92,7 +95,10 @@
 
   <!-- FORMULARIO PARA AGREGAR INSTITUCIÓN -->
   <h2 class="titulo-seccion">Agregar Nueva Institución</h2>
-  <form class="form-agregar" method="POST" action="/admin/institucion/agregar">
+  <!-- ╔════════════════════════════════════╗ -->
+<!-- ║        DATOS DEL PACIENTE        ║ -->
+<!-- ╚════════════════════════════════════╝ -->
+<form class="form-agregar" method="POST" action="/admin/institucion/agregar">
     <label>Nombre de la Institución:</label>
     <input type="text" name="nombre" required>
     <button type="submit">Agregar Institución</button>

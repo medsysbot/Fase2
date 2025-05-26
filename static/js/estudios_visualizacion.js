@@ -1,3 +1,6 @@
+// ╔════════════════════════════════════╗
+// ║      estudios_visualizacion.js      ║
+// ╚════════════════════════════════════╝
 async function buscarEstudios() {
   const dni = document.getElementById('dni').value.trim();
   if (!dni) return;

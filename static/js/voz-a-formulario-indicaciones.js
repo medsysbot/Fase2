@@ -1,3 +1,6 @@
+// ╔════════════════════════════════════╗
+// ║      voz-a-formulario-indicaciones.js      ║
+// ╚════════════════════════════════════╝
 function iniciarReconocimiento() {
   const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
   recognition.lang = 'es-AR';

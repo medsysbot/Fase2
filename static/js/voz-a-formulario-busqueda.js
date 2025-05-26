@@ -1,3 +1,6 @@
+// ╔════════════════════════════════════╗
+// ║      voz-a-formulario-busqueda.js      ║
+// ╚════════════════════════════════════╝
 function iniciarReconocimiento() {
   const campo = document.getElementById("busqueda");
   if (!campo) return;

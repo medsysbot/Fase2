@@ -1,3 +1,6 @@
+// ╔════════════════════════════════════╗
+// ║      estudios_medicos.js      ║
+// ╚════════════════════════════════════╝
 // Funciones para visualizar y enviar estudios médicos
 async function buscarEstudio() {
   const dni = document.getElementById('paciente_id').value.trim();

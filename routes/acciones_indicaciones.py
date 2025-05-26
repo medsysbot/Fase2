@@ -103,6 +103,7 @@ async def generar_indicaciones(
             supabase.storage.from_(BUCKET_PDFS).upload(
                 nombre_pdf,
                 f,
+                {"content-type": "application/pdf"},
             )
 
         pdf_url = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_pdf)

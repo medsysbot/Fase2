@@ -34,6 +34,7 @@ async def buscar_paciente(dni: str = Form(...)):
             supabase.storage.from_(BUCKET_PDFS).upload(
                 nombre_pdf,
                 f,
+                {"content-type": "application/pdf"},
             )
         pdf_url = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_pdf)
         return {"exito": True, "datos": datos, "pdf_url": pdf_url}

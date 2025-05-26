@@ -42,6 +42,7 @@ async def generar_turno(
             supabase.storage.from_(BUCKET_PDFS).upload(
                 nombre_pdf,
                 f,
+                {"content-type": "application/pdf"},
             )
         pdf_url = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_pdf)
         supabase.table("turnos").insert({**datos, "pdf_url": pdf_url}).execute()

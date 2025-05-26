@@ -28,6 +28,8 @@ Cómo Desplegar en Railway
 README - MedSys | Sistema Médico Modular
 4. Si no lo detecta, configurarlo manualmente
 5. Cargar las variables de entorno requeridas.
+   Una forma rápida es copiar el archivo `.env.example` a `.env` y
+   completar los valores correspondientes.
 Variables de Entorno
 - SUPABASE_URL (pública)
 - SUPABASE_SERVICE_ROLE_KEY (privada)

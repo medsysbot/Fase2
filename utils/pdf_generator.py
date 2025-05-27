@@ -240,13 +240,17 @@ def generar_pdf_evolucion(datos, firma_path=None, sello_path=None):
     pdf.multi_cell(0, 10, f"Evolución:\n{datos['evolucion']}\n")
     pdf.multi_cell(0, 10, f"Indicaciones:\n{datos['indicaciones']}\n")
 
-    if firma_path and os.path.exists(firma_path):
+    if datos.get("firma_url"):
+        pdf.image(datos["firma_url"], x=160, y=240, w=30)
+    elif firma_path and os.path.exists(firma_path):
         pdf.ln(10)
         pdf.cell(200, 10, txt="Firma del Profesional:", ln=True)
         pdf.image(firma_path, x=10, y=pdf.get_y(), w=FIRMA_SELLO_ANCHO)
         pdf.ln(25)
 
-    if sello_path and os.path.exists(sello_path):
+    if datos.get("sello_url"):
+        pdf.image(datos["sello_url"], x=20, y=240, w=30)
+    elif sello_path and os.path.exists(sello_path):
         pdf.cell(200, 10, txt="Sello del Profesional:", ln=True)
         pdf.image(sello_path, x=60, y=pdf.get_y(), w=FIRMA_SELLO_ANCHO)
         pdf.ln(25)

@@ -93,6 +93,9 @@ async def generar_evolucion(
         if contenido_sello:
             sello_path = guardar_imagen_temporal(contenido_sello, nombre_sello)
 
+        datos["firma_url"] = firma_url
+        datos["sello_url"] = sello_url
+
         pdf_path = generar_pdf_evolucion(datos, firma_path, sello_path)
         nombre_pdf = os.path.basename(pdf_path)
         with open(pdf_path, "rb") as f:

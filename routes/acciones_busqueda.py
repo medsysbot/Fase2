@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 from utils.pdf_generator import generar_pdf_busqueda
 from dotenv import load_dotenv
 import os
-from utils.supabase_helper import supabase
+from utils.supabase_helper import supabase, subir_pdf
 
 load_dotenv()
 router = APIRouter()
@@ -28,13 +28,7 @@ async def buscar_paciente(dni: str = Form(...)):
         pdf_path = generar_pdf_busqueda(datos)
         nombre_pdf = os.path.basename(pdf_path)
         with open(pdf_path, "rb") as f:
-            supabase.storage.from_(BUCKET_PDFS).upload(
-                nombre_pdf,
-                f,
-                {"content-type": "application/pdf"},
-            )
-        pdf_obj = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_pdf)
-        pdf_url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
+            pdf_url = subir_pdf(BUCKET_PDFS, nombre_pdf, f)
         return {"exito": True, "datos": datos, "pdf_url": pdf_url}
     except Exception as e:
         return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)

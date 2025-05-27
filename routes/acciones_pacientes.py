@@ -7,7 +7,7 @@ import os
 from fpdf import FPDF
 from utils.pdf_generator import generar_pdf_paciente
 from utils.email_sender import enviar_email_con_pdf
-from utils.supabase_helper import supabase, SUPABASE_URL
+from utils.supabase_helper import supabase, SUPABASE_URL, subir_pdf
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -66,11 +66,7 @@ async def guardar_paciente(
 
         # Subir a Supabase
         with open(pdf_path, "rb") as file_data:
-            supabase.storage.from_(BUCKET_PDFS).upload(
-                filename,
-                file_data,
-                {"content-type": "application/pdf"}
-            )
+            public_url = subir_pdf(BUCKET_PDFS, filename, file_data)
 
         # Guardar en base
         supabase.table("pacientes").insert({
@@ -87,7 +83,6 @@ async def guardar_paciente(
             "institucion_id": institucion_id
         }).execute()
 
-        public_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_PDFS}/{filename}"
         return JSONResponse({"exito": True, "pdf_url": public_url})
 
     except Exception as e:

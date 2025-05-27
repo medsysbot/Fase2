@@ -7,7 +7,7 @@ from utils.pdf_generator import generar_pdf_turno
 from utils.email_sender import enviar_email_con_pdf
 from dotenv import load_dotenv
 import os
-from utils.supabase_helper import supabase
+from utils.supabase_helper import supabase, subir_pdf
 
 load_dotenv()
 router = APIRouter()
@@ -36,13 +36,7 @@ async def generar_turno(
         pdf_path = generar_pdf_turno(datos)
         nombre_pdf = os.path.basename(pdf_path)
         with open(pdf_path, "rb") as f:
-            supabase.storage.from_(BUCKET_PDFS).upload(
-                nombre_pdf,
-                f,
-                {"content-type": "application/pdf"},
-            )
-        pdf_obj = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_pdf)
-        pdf_url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
+            pdf_url = subir_pdf(BUCKET_PDFS, nombre_pdf, f)
         supabase.table("turnos").insert({**datos, "pdf_url": pdf_url}).execute()
         return {"exito": True, "pdf_url": pdf_url}
     except Exception as e:

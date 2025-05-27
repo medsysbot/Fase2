@@ -18,7 +18,7 @@ from utils.image_utils import (
     obtener_mime,
 )
 
-from utils.supabase_helper import supabase
+from utils.supabase_helper import supabase, subir_pdf
 
 router = APIRouter()
 
@@ -113,13 +113,7 @@ async def generar_historia_resumen(
         # Subir a Supabase
         nombre_archivo = f"{dni}_resumen_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.pdf"
         with open(pdf_path, "rb") as f:
-            supabase.storage.from_(BUCKET).upload(
-                nombre_archivo,
-                f,
-            )
-
-        pdf_obj = supabase.storage.from_(BUCKET).get_public_url(nombre_archivo)
-        pdf_url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
+            pdf_url = subir_pdf(BUCKET, nombre_archivo, f)
 
         # Eliminar archivos temporales de firma y sello
         if firma_path and os.path.exists(firma_path):

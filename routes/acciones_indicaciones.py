@@ -16,7 +16,7 @@ from utils.image_utils import (
     obtener_mime,
 )
 
-from utils.supabase_helper import supabase, SUPABASE_URL
+from utils.supabase_helper import supabase, SUPABASE_URL, subir_pdf
 
 load_dotenv()
 router = APIRouter()
@@ -98,14 +98,7 @@ async def generar_indicaciones(
         pdf_path = generar_pdf_indicaciones(datos, firma_path, sello_path)
         nombre_pdf = os.path.basename(pdf_path)
         with open(pdf_path, "rb") as f:
-            supabase.storage.from_(BUCKET_PDFS).upload(
-                nombre_pdf,
-                f,
-                {"content-type": "application/pdf"},
-            )
-
-        pdf_obj = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_pdf)
-        pdf_url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
+            pdf_url = subir_pdf(BUCKET_PDFS, nombre_pdf, f)
 
         if firma_path and os.path.exists(firma_path):
             os.remove(firma_path)

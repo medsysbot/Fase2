@@ -19,7 +19,7 @@ from utils.image_utils import (
     imagen_existe,
 )
 
-from utils.supabase_helper import supabase, SUPABASE_URL
+from utils.supabase_helper import supabase, SUPABASE_URL, subir_pdf
 
 router = APIRouter()
 
@@ -118,13 +118,7 @@ async def generar_receta(
         nombre_archivo = f"{dni}_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.pdf"
 
         with open(pdf_path, "rb") as f:
-            supabase.storage.from_(BUCKET_PDFS).upload(
-                nombre_archivo,
-                f,
-                {"content-type": "application/pdf"},
-            )
-
-        pdf_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_PDFS}/{nombre_archivo}"
+            pdf_url = subir_pdf(BUCKET_PDFS, nombre_archivo, f)
 
         supabase.table("recetas").insert({
             "nombre": nombre,

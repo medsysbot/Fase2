@@ -39,3 +39,11 @@ def get_supabase_client() -> Client:
 
 # Cliente reutilizable en toda la aplicación
 supabase: Client = get_supabase_client()
+
+
+def subir_pdf(bucket: str, nombre: str, datos) -> str:
+    """Sube un PDF al bucket indicado y devuelve su URL pública."""
+    opciones = {"content-type": "application/pdf", "x-upsert": "true"}
+    supabase.storage.from_(bucket).upload(nombre, datos, opciones)
+    url_obj = supabase.storage.from_(bucket).get_public_url(nombre)
+    return url_obj.get("publicUrl") if isinstance(url_obj, dict) else url_obj

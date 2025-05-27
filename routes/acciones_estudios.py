@@ -4,7 +4,7 @@ import os, asyncio, imaplib, email, re
 from email.header import decode_header
 from datetime import datetime
 from dotenv import load_dotenv
-from utils.supabase_helper import supabase
+from utils.supabase_helper import supabase, subir_pdf
 
 load_dotenv()
 router = APIRouter()
@@ -48,9 +48,7 @@ async def procesar_correos():
                 if part.get_content_type() == "application/pdf":
                     pdf_data = part.get_payload(decode=True)
                     nombre_archivo = f"{dni or 'sin_dni'}_{tipo_estudio}_{fecha_email}.pdf"
-                    supabase.storage.from_(BUCKET_PDFS).upload(nombre_archivo, pdf_data, {"content-type": "application/pdf"})
-                    pdf_obj = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_archivo)
-                    url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
+                    url = subir_pdf(BUCKET_PDFS, nombre_archivo, pdf_data)
                     supabase.table("estudios").insert({
                         "dni": dni,
                         "tipo_estudio": tipo_estudio,
@@ -110,13 +108,7 @@ async def guardar_estudio(
         if archivo_pdf:
             nombre_archivo = f"{paciente_id}-{tipo_estudio}.pdf".replace(" ", "_")
             contenido = await archivo_pdf.read()
-            supabase.storage.from_(BUCKET_PDFS).upload(
-                nombre_archivo,
-                contenido,
-                {"content-type": archivo_pdf.content_type},
-            )
-            pdf_obj = supabase.storage.from_(BUCKET_PDFS).get_public_url(nombre_archivo)
-            pdf_url_final = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
+            pdf_url_final = subir_pdf(BUCKET_PDFS, nombre_archivo, contenido)
 
         supabase.table("estudios").insert({
             "paciente_id": paciente_id,

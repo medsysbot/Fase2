@@ -14,7 +14,7 @@ from utils.image_utils import (
     validar_imagen,
     obtener_mime,
 )
-from utils.supabase_helper import supabase, SUPABASE_URL
+from utils.supabase_helper import supabase, SUPABASE_URL, subir_pdf
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -136,7 +136,7 @@ async def generar_pdf_historia_completa(
 
         # Subir a Supabase
         with open(pdf_path, "rb") as file_data:
-            supabase.storage.from_(BUCKET_PDFS).upload(filename, file_data, {"content-type": "application/pdf"})
+            public_url = subir_pdf(BUCKET_PDFS, filename, file_data)
 
         if firma_path and os.path.exists(firma_path):
             os.remove(firma_path)
@@ -169,7 +169,6 @@ async def generar_pdf_historia_completa(
             "sello_url": sello_url
         }).execute()
 
-        public_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_PDFS}/{filename}"
         return JSONResponse({"exito": True, "pdf_url": public_url})
 
     except Exception as e:

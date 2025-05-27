@@ -96,7 +96,6 @@ async def ver_estudio(dni: str, tipo_estudio: str):
 async def guardar_estudio(
     request: Request,
     paciente_id: int = Form(...),
-    institucion_id: int = Form(...),
     tipo_estudio: str = Form(...),
     fecha: str = Form(...),
     descripcion: str = Form(""),
@@ -104,6 +103,10 @@ async def guardar_estudio(
     pdf_url: str = Form("")
 ):
     try:
+        usuario = request.session.get("usuario")
+        institucion_id = request.session.get("institucion_id")
+        if institucion_id is None or not usuario:
+            return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
         pdf_url_final = pdf_url
         if archivo_pdf:
             nombre_archivo = f"{paciente_id}-{tipo_estudio}.pdf".replace(" ", "_")
@@ -119,7 +122,7 @@ async def guardar_estudio(
             "pdf_url": pdf_url_final,
         }).execute()
 
-        return {"exito": True, "pdf_url": pdf_url_final}
+        return JSONResponse({"exito": True, "pdf_url": pdf_url_final})
     except Exception as e:
         return JSONResponse({"exito": False, "mensaje": str(e)}, status_code=500)
 

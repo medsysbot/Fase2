@@ -349,3 +349,9 @@ footer {
   margin-top: 20px;
   display: none;
 }
+
+.nota-carga {
+  font-size: 0.8em;
+  color: #666;
+  margin-bottom: -10px;
+}

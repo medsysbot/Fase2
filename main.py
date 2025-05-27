@@ -9,7 +9,9 @@ import tempfile
 from dotenv import load_dotenv
 import asyncio
 from utils.supabase_helper import supabase, SUPABASE_URL
+from utils.db_setup import prepare_consultas_table
 load_dotenv()
+prepare_consultas_table()
 # ╔════════════════════════════════════╗
 # ║             APP BASE               ║
 # ╚════════════════════════════════════╝

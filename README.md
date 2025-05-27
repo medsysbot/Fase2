@@ -50,6 +50,8 @@ Notas Importantes
 - La carpeta /static no debe eliminarse
 - Los PDFs se guardan automáticamente ahí
 - Esta versión es estable y lista para ampliaciones (firmas, QR, etc.)
+- Las imágenes de firma y sello deben estar en formato PNG. Otros formatos
+  generarán un error 400 al enviar los formularios.
 Contacto
 Desarrollado por Max & ChatGPT Codex
 README - MedSys | Sistema Médico Modular

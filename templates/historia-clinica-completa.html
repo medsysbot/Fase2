@@ -101,11 +101,13 @@
 <!--        FIRMAS PROFESIONALES       -->
 <!--────────────────────────────────────-->
   <label>Firma del Profesional:</label>
+  <p class="nota-carga">Solo archivos PNG</p>
   <input type="file" id="firma" name="firma" accept="image/png" onchange="mostrarVistaPrevia(this, 'firma-preview', 'firma-delete', 'firma')" />
   <img id="firma-preview" class="vista-previa" style="display:none;" />
   <button type="button" id="firma-delete" class="btn-eliminar-firma" onclick="eliminarImagen('firma', 'firma-preview', 'firma-delete')" style="display:none;">Eliminar</button>
 
   <label>Sello del Profesional:</label>
+  <p class="nota-carga">Solo archivos PNG</p>
   <input type="file" id="sello" name="sello" accept="image/png" onchange="mostrarVistaPrevia(this, 'sello-preview', 'sello-delete', 'sello')" />
   <img id="sello-preview" class="vista-previa" style="display:none;" />
   <button type="button" id="sello-delete" class="btn-eliminar-sello" onclick="eliminarImagen('sello', 'sello-preview', 'sello-delete')" style="display:none;">Eliminar</button>

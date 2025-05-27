@@ -3,61 +3,49 @@ import tempfile
 import imghdr
 from typing import Optional, Tuple
 
-ALLOWED_EXTENSIONS = {'.png'}
-
-
-def _extension_from_bytes(contenido: bytes) -> Optional[str]:
-    """Detecta la extensión real a partir del contenido."""
-    tipo = imghdr.what(None, contenido)
-    if tipo:
-        return f".{tipo}"
-    return None
-
 
 def obtener_mime(contenido: bytes) -> Optional[str]:
-    """Obtiene el mime type a partir del contenido."""
-    ext = _extension_from_bytes(contenido)
-    if ext == ".png":
-        return "image/png"
-    return None
+    """Obtiene el mime type a partir del contenido si es posible."""
+    tipo = imghdr.what(None, contenido)
+    return f"image/{tipo}" if tipo else None
 
-
-def validar_imagen(contenido: bytes, extension: str) -> bool:
-    """Valida que el contenido corresponda a una imagen soportada."""
-    real_ext = _extension_from_bytes(contenido)
-    if not real_ext or real_ext not in ALLOWED_EXTENSIONS:
-        return False
-    extension = extension.lower()
-    return real_ext == extension
 
 def guardar_imagen_temporal(contenido: bytes, nombre_archivo: str) -> str:
-    """Guarda la imagen en un archivo temporal con la extension correcta."""
+    """Guarda la imagen en un archivo temporal sin validar su extensión."""
     extension = os.path.splitext(nombre_archivo)[1].lower()
-    if extension not in ALLOWED_EXTENSIONS:
-        raise ValueError("Formato de imagen no soportado para firma o sello")
     tmp = tempfile.NamedTemporaryFile(delete=False, suffix=extension)
     tmp.write(contenido)
     tmp.close()
     return tmp.name
 
+
 def descargar_imagen(client, bucket: str, nombre_base: str) -> Tuple[Optional[bytes], Optional[str]]:
-    """Busca y descarga la imagen intentando con las extensiones permitidas."""
-    for ext in ALLOWED_EXTENSIONS:
-        nombre = f"{nombre_base}{ext}"
-        try:
-            contenido = client.storage.from_(bucket).download(nombre)
-            return contenido, nombre
-        except Exception:
-            continue
+    """Descarga la primera imagen cuyo nombre comience con el nombre base."""
+    try:
+        archivos = client.storage.from_(bucket).list()
+        for archivo in archivos:
+            nombre = archivo.get("name")
+            if nombre and nombre.startswith(nombre_base):
+                contenido = client.storage.from_(bucket).download(nombre)
+                return contenido, nombre
+    except Exception:
+        pass
     return None, None
 
+
 def eliminar_imagen(client, bucket: str, nombre_base: str) -> None:
-    """Elimina la imagen si existe para cualquiera de las extensiones permitidas."""
-    for ext in ALLOWED_EXTENSIONS:
-        try:
-            client.storage.from_(bucket).remove(f"{nombre_base}{ext}")
-        except Exception:
-            pass
+    """Elimina todas las imágenes que comiencen con el nombre base."""
+    try:
+        archivos = client.storage.from_(bucket).list()
+        for archivo in archivos:
+            nombre = archivo.get("name")
+            if nombre and nombre.startswith(nombre_base):
+                try:
+                    client.storage.from_(bucket).remove(nombre)
+                except Exception:
+                    pass
+    except Exception:
+        pass
 
 
 def imagen_existe(client, bucket: str, nombre_base: str) -> bool:

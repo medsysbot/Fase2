@@ -14,8 +14,6 @@ from utils.email_sender import enviar_email_con_pdf
 from utils.image_utils import (
     descargar_imagen,
     eliminar_imagen,
-    validar_imagen,
-    obtener_mime,
     imagen_existe,
 )
 
@@ -40,6 +38,8 @@ async def generar_receta(
     try:
         usuario = request.session.get("usuario")
         institucion_id = request.session.get("institucion_id")
+        if institucion_id is None or not usuario:
+            return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
         datos = {
             "nombre": nombre,
             "dni": dni,
@@ -59,17 +59,12 @@ async def generar_receta(
         if firma:
             contenido_firma = await firma.read()
             ext_firma = os.path.splitext(firma.filename)[1].lower()
-            if not validar_imagen(contenido_firma, ext_firma):
-                return JSONResponse(
-                    {"exito": False, "mensaje": "Formato de imagen no soportado para firma o sello"},
-                    status_code=400,
-                )
             nombre_firma = f"{base_firma}{ext_firma}"
             if not imagen_existe(supabase, BUCKET_FIRMAS, base_firma):
                 supabase.storage.from_(BUCKET_FIRMAS).upload(
                     nombre_firma,
                     contenido_firma,
-                    {"content-type": obtener_mime(contenido_firma)},
+                    {"x-upsert": "true"},
                 )
             pdf_obj = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(nombre_firma)
             firma_url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
@@ -89,17 +84,12 @@ async def generar_receta(
         if sello:
             contenido_sello = await sello.read()
             ext_sello = os.path.splitext(sello.filename)[1].lower()
-            if not validar_imagen(contenido_sello, ext_sello):
-                return JSONResponse(
-                    {"exito": False, "mensaje": "Formato de imagen no soportado para firma o sello"},
-                    status_code=400,
-                )
             nombre_sello = f"{base_sello}{ext_sello}"
             if not imagen_existe(supabase, BUCKET_FIRMAS, base_sello):
                 supabase.storage.from_(BUCKET_FIRMAS).upload(
                     nombre_sello,
                     contenido_sello,
-                    {"content-type": obtener_mime(contenido_sello)},
+                    {"x-upsert": "true"},
                 )
             pdf_obj = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(nombre_sello)
             sello_url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
@@ -131,7 +121,7 @@ async def generar_receta(
             "institucion_id": institucion_id,
         }).execute()
 
-        return {"exito": True, "pdf_url": pdf_url}
+        return JSONResponse({"exito": True, "pdf_url": pdf_url})
 
     except Exception as e:
         error_text = str(e)
@@ -145,8 +135,8 @@ async def generar_receta(
 async def obtener_firma_sello(request: Request):
     usuario = request.session.get("usuario")
     institucion_id = request.session.get("institucion_id")
-    if not usuario or institucion_id is None:
-        return JSONResponse({"exito": False, "mensaje": "Usuario no autenticado"}, status_code=403)
+    if institucion_id is None or not usuario:
+        return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
 
     try:
         firma_bytes, nombre_firma = descargar_imagen(
@@ -172,8 +162,8 @@ async def obtener_firma_sello(request: Request):
 async def eliminar_firma_sello(request: Request, tipo: str = Form(...)):
     usuario = request.session.get("usuario")
     institucion_id = request.session.get("institucion_id")
-    if not usuario or institucion_id is None:
-        return JSONResponse({"exito": False, "mensaje": "Usuario no autenticado"}, status_code=403)
+    if institucion_id is None or not usuario:
+        return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
 
     try:
         eliminar_imagen(supabase, BUCKET_FIRMAS, f"{tipo}_{usuario}_{institucion_id}")
@@ -189,24 +179,19 @@ async def subir_firma_sello(
 ):
     usuario = request.session.get("usuario")
     institucion_id = request.session.get("institucion_id")
-    if not usuario or institucion_id is None:
-        return JSONResponse({"exito": False, "mensaje": "Usuario no autenticado"}, status_code=403)
+    if institucion_id is None or not usuario:
+        return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
 
     try:
         contenido = await archivo.read()
         extension = os.path.splitext(archivo.filename)[1].lower()
-        if not validar_imagen(contenido, extension):
-            return JSONResponse(
-                {"exito": False, "mensaje": "Formato de imagen no soportado para firma o sello"},
-                status_code=400,
-            )
         base_name = f"{tipo}_{usuario}_{institucion_id}"
         nombre_obj = f"{base_name}{extension}"
         if not imagen_existe(supabase, BUCKET_FIRMAS, base_name):
             supabase.storage.from_(BUCKET_FIRMAS).upload(
                 nombre_obj,
                 contenido,
-                {"content-type": obtener_mime(contenido)},
+                {"x-upsert": "true"},
             )
         return {"exito": True}
     except Exception as e:

@@ -11,9 +11,6 @@ from utils.image_utils import (
     guardar_imagen_temporal,
     descargar_imagen,
     imagen_existe,
-    ALLOWED_EXTENSIONS,
-    validar_imagen,
-    obtener_mime,
 )
 
 from utils.supabase_helper import supabase, SUPABASE_URL, subir_pdf
@@ -39,6 +36,8 @@ async def generar_evolucion(
     try:
         usuario = request.session.get("usuario")
         institucion_id = request.session.get("institucion_id")
+        if institucion_id is None or not usuario:
+            return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
         datos = {
             "paciente": paciente,
             "dni": dni,
@@ -55,17 +54,12 @@ async def generar_evolucion(
         if firma:
             contenido_firma = await firma.read()
             ext_firma = os.path.splitext(firma.filename)[1].lower()
-            if not validar_imagen(contenido_firma, ext_firma):
-                return JSONResponse(
-                    {"exito": False, "mensaje": "Formato de imagen no soportado para firma o sello"},
-                    status_code=400,
-                )
             nombre_firma = f"{base_firma}{ext_firma}"
             if not imagen_existe(supabase, BUCKET_FIRMAS, base_firma):
                 supabase.storage.from_(BUCKET_FIRMAS).upload(
                     nombre_firma,
                     contenido_firma,
-                    {"content-type": obtener_mime(contenido_firma)},
+                    {"x-upsert": "true"},
                 )
             firma_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_FIRMAS}/{nombre_firma}"
         elif usuario and institucion_id is not None:
@@ -78,17 +72,12 @@ async def generar_evolucion(
         if sello:
             contenido_sello = await sello.read()
             ext_sello = os.path.splitext(sello.filename)[1].lower()
-            if not validar_imagen(contenido_sello, ext_sello):
-                return JSONResponse(
-                    {"exito": False, "mensaje": "Formato de imagen no soportado para firma o sello"},
-                    status_code=400,
-                )
             nombre_sello = f"{base_sello}{ext_sello}"
             if not imagen_existe(supabase, BUCKET_FIRMAS, base_sello):
                 supabase.storage.from_(BUCKET_FIRMAS).upload(
                     nombre_sello,
                     contenido_sello,
-                    {"content-type": obtener_mime(contenido_sello)},
+                    {"x-upsert": "true"},
                 )
             sello_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_FIRMAS}/{nombre_sello}"
         elif usuario and institucion_id is not None:
@@ -128,7 +117,7 @@ async def generar_evolucion(
             "pdf_url": pdf_url,
         }).execute()
 
-        return {"exito": True, "pdf_url": pdf_url}
+        return JSONResponse({"exito": True, "pdf_url": pdf_url})
     except Exception as e:
         return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)
 

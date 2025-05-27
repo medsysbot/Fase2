@@ -25,6 +25,10 @@ async def generar_turno(
     profesional: str = Form(""),
 ):
     try:
+        usuario = request.session.get("usuario")
+        institucion_id = request.session.get("institucion_id")
+        if institucion_id is None or not usuario:
+            return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
         datos = {
             "nombre": nombre,
             "dni": dni,
@@ -37,8 +41,8 @@ async def generar_turno(
         nombre_pdf = os.path.basename(pdf_path)
         with open(pdf_path, "rb") as f:
             pdf_url = subir_pdf(BUCKET_PDFS, nombre_pdf, f)
-        supabase.table("turnos").insert({**datos, "pdf_url": pdf_url}).execute()
-        return {"exito": True, "pdf_url": pdf_url}
+        supabase.table("turnos").insert({**datos, "institucion_id": institucion_id, "pdf_url": pdf_url}).execute()
+        return JSONResponse({"exito": True, "pdf_url": pdf_url})
     except Exception as e:
         return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)
 

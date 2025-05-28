@@ -46,6 +46,10 @@ function convertirFecha(texto) {
 
 document.addEventListener("keydown", (e) => {
   if (e.code === "Space") {
+    const tag = (e.target && e.target.tagName) || "";
+    if (tag === "INPUT" || tag === "TEXTAREA") {
+      return; // Permitir usar la barra espaciadora en campos de texto
+    }
     e.preventDefault();
     iniciarReconocimiento();
   }

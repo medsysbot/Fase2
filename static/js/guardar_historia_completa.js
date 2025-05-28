@@ -8,6 +8,11 @@ function closeAlert() {
   document.getElementById("alert-manager").style.display = "none";
 }
 
+// Permite cerrar la alerta desde el botón "No"
+document.getElementById("btn-no").onclick = closeAlert;
+// En este formulario no hay acción de borrado, se usa para cerrar
+document.getElementById("btn-borrar").onclick = closeAlert;
+
 /*──────────────────────────────────────────────*/
 /*    GUARDAR HISTORIA CLÍNICA COMPLETA         */
 /*──────────────────────────────────────────────*/
@@ -15,6 +20,11 @@ function closeAlert() {
 async function guardarPDF() {
   const form = document.getElementById("form-historia");
   const formData = new FormData(form);
+
+  // Unificar nombre y apellido como un solo campo
+  const nombre = form.querySelector('#nombre').value.trim();
+  const apellido = form.querySelector('#apellido').value.trim();
+  formData.set('nombre', `${nombre} ${apellido}`.trim());
 
 
   try {
@@ -50,7 +60,7 @@ async function guardarPDF() {
 async function enviarPorCorreo() {
   const form = document.getElementById("form-historia");
 
-  const nombre = form.querySelector('[name="nombre"]')?.value.trim() || "";
+  const nombre = `${form.querySelector('#nombre')?.value.trim() || ''} ${form.querySelector('#apellido')?.value.trim() || ''}`.trim();
   const dni = form.querySelector('[name="dni"]')?.value.trim() || "";
   const email = await obtenerEmailPorDni(dni);
 

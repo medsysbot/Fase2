@@ -8,7 +8,7 @@
 </head>
 <body>
   <header>
-    <img src="/static/icons/save.png" alt="Firma" class="logo-grande" />
+    <img src="/static/icons/icon-subida-sello-firma.png" alt="Firma" class="logo-grande" />
     <h2>Subida de Firma y Sello</h2>
   </header>
   <form id="form-firma-sello" enctype="multipart/form-data">
@@ -21,7 +21,10 @@
     <img id="sello-preview" class="vista-previa" style="display:none;" />
 
     <button type="button" onclick="subirArchivo('firma')">Subir Firma</button>
+    <button type="button" onclick="eliminarArchivo('firma')">Borrar Firma</button>
+
     <button type="button" onclick="subirArchivo('sello')">Subir Sello</button>
+    <button type="button" onclick="eliminarArchivo('sello')">Borrar Sello</button>
   </form>
 
   <script src="/static/js/firma_sello.js"></script>

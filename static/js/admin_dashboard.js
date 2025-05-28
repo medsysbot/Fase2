@@ -2,25 +2,25 @@
 // ║      admin_dashboard.js            ║
 // ╚════════════════════════════════════╝
 
-async function obtenerInstituciones() {
-  const res = await fetch('/api/instituciones/listar');
-  if (!res.ok) return [];
-  const data = await res.json();
-  return data.instituciones || [];
-}
-
 async function obtenerUsuarios() {
-  const res = await fetch('/api/usuarios/listar');
+  const res = await fetch('/api/usuarios/institucion');
   if (!res.ok) return [];
   const data = await res.json();
   return data.usuarios || [];
 }
 
+async function obtenerPacientes() {
+  const res = await fetch('/api/pacientes/institucion');
+  if (!res.ok) return [];
+  const data = await res.json();
+  return data.pacientes || [];
+}
+
 async function actualizarTablas() {
-  const insts = await obtenerInstituciones();
   const usuarios = await obtenerUsuarios();
-  mostrarInstituciones(insts);
+  const pacientes = await obtenerPacientes();
   mostrarUsuarios(usuarios);
+  mostrarPacientes(pacientes);
 }
 
 function crearBoton(texto, clase, onclick) {
@@ -29,26 +29,6 @@ function crearBoton(texto, clase, onclick) {
   btn.className = `btn ${clase}`;
   btn.addEventListener('click', onclick);
   return btn;
-}
-
-function mostrarInstituciones(lista) {
-  const tbody = document.querySelector('#tabla-instituciones tbody');
-  tbody.innerHTML = '';
-  lista.forEach(inst => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${inst.id}</td><td>${inst.nombre}</td><td>${inst.estado}</td><td>${inst.total_pacientes}</td><td>${inst.total_usuarios}</td>`;
-    const acciones = document.createElement('td');
-    const accion = inst.estado === 'activa' ? 'pausar' : 'activar';
-    acciones.appendChild(crearBoton(accion.charAt(0).toUpperCase()+accion.slice(1), accion, () => cambiarEstadoInst(inst.id, accion)));
-    acciones.appendChild(crearBoton('Eliminar', 'eliminar', () => eliminarInstitucion(inst.id)));
-    const exportLink = document.createElement('a');
-    exportLink.href = `/exportar-pacientes/${inst.id}`;
-    exportLink.className = 'btn exportar';
-    exportLink.textContent = 'Exportar';
-    acciones.appendChild(exportLink);
-    tr.appendChild(acciones);
-    tbody.appendChild(tr);
-  });
 }
 
 function mostrarUsuarios(lista) {
@@ -64,16 +44,44 @@ function mostrarUsuarios(lista) {
   });
 }
 
-async function cambiarEstadoInst(id, accion) {
-  showAlert('alerta', accion === 'pausar' ? 'Pausando…' : 'Activando…', false, 2000);
-  await fetch(`/api/instituciones/${accion}`, {method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id})});
-  await actualizarTablas();
+function mostrarPacientes(lista) {
+  const tbody = document.querySelector('#tabla-pacientes tbody');
+  tbody.innerHTML = '';
+  lista.forEach(p => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${p.dni}</td><td>${p.nombres}</td><td>${p.apellido}</td>`;
+    const acciones = document.createElement('td');
+    acciones.appendChild(crearBoton('Descargar', 'exportar', () => descargarPaciente(p.dni)));
+    acciones.appendChild(crearBoton('Eliminar', 'eliminar', () => eliminarPaciente(p.dni)));
+    tr.appendChild(acciones);
+    tbody.appendChild(tr);
+  });
 }
 
-async function eliminarInstitucion(id) {
-  if (!confirm('¿Eliminar institución?')) return;
+async function descargarPaciente(dni) {
+  showAlert('cargaPDF', 'Preparando descarga…', false, 2000);
+  const res = await fetch(`/api/pacientes/descargar/${dni}`);
+  if (res.ok) {
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `paciente_${dni}.zip`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  } else {
+    showAlert('error', 'No se pudo descargar', false, 3000);
+  }
+}
+
+async function eliminarPaciente(dni) {
+  if (!confirm('¿Eliminar paciente?')) return;
   showAlert('borrado', 'Eliminando…', false, 2000);
-  await fetch('/api/instituciones/eliminar', {method:'DELETE', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id})});
+  await fetch('/eliminar_paciente', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({dni})
+  });
   await actualizarTablas();
 }
 

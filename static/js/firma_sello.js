@@ -25,3 +25,24 @@ async function cargarFirmas() {
 }
 
 window.addEventListener('load', cargarFirmas);
+
+async function eliminarArchivo(tipo) {
+  if (!confirm('¿Borrar ' + tipo + '?')) return;
+  const formData = new FormData();
+  formData.append('tipo', tipo);
+  try {
+    const res = await fetch('/eliminar_firma_sello', {
+      method: 'POST',
+      body: formData
+    });
+    if (res.ok) {
+      alert('Imagen eliminada');
+      window.location.reload();
+    } else {
+      const data = await res.json();
+      alert(data.mensaje || 'Error al eliminar');
+    }
+  } catch (e) {
+    alert('Error de red');
+  }
+}

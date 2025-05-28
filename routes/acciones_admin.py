@@ -13,73 +13,102 @@ def validar_director(request: Request):
     return True
 
 
-@router.get("/instituciones/listar")
-async def listar_instituciones(request: Request):
+@router.get("/usuarios/institucion")
+async def usuarios_institucion(request: Request):
     if not validar_director(request):
         return JSONResponse({"error": "No autorizado"}, status_code=403)
-    res = supabase.table("instituciones").select("id,nombre,estado").execute()
-    instituciones = []
-    for inst in res.data or []:
-        pid = inst.get("id")
-        total_pacientes = supabase.table("pacientes").select("id", count="exact").eq("institucion_id", pid).execute()
-        total_usuarios = supabase.table("usuarios").select("id", count="exact").eq("institucion_id", pid).execute()
-        instituciones.append({
-            "id": pid,
-            "nombre": inst.get("nombre"),
-            "estado": inst.get("estado", ""),
-            "total_pacientes": total_pacientes.count or 0,
-            "total_usuarios": total_usuarios.count or 0,
-        })
-    return {"instituciones": instituciones}
-
-
-@router.get("/usuarios/listar")
-async def listar_usuarios(request: Request):
-    if not validar_director(request):
-        return JSONResponse({"error": "No autorizado"}, status_code=403)
-    res = supabase.table("usuarios").select("usuario,nombres,apellido,rol,institucion_id,activo").execute()
+    inst_id = request.session.get("institucion_id")
+    res = (
+        supabase.table("usuarios")
+        .select("usuario,nombres,apellido,rol,institucion_id,activo")
+        .eq("institucion_id", inst_id)
+        .execute()
+    )
     usuarios = []
     for u in res.data or []:
-        inst = supabase.table("instituciones").select("nombre").eq("id", u.get("institucion_id")).single().execute()
-        usuarios.append({
-            "usuario": u.get("usuario"),
-            "nombres": u.get("nombres"),
-            "apellido": u.get("apellido"),
-            "rol": u.get("rol"),
-            "institucion": inst.data.get("nombre") if inst.data else "",
-            "activo": u.get("activo", False),
-        })
+        inst = (
+            supabase.table("instituciones")
+            .select("nombre")
+            .eq("id", u.get("institucion_id"))
+            .single()
+            .execute()
+        )
+        usuarios.append(
+            {
+                "usuario": u.get("usuario"),
+                "nombres": u.get("nombres"),
+                "apellido": u.get("apellido"),
+                "rol": u.get("rol"),
+                "institucion": inst.data.get("nombre") if inst.data else "",
+                "activo": u.get("activo", False),
+            }
+        )
     return {"usuarios": usuarios}
 
 
-@router.post("/instituciones/activar")
-async def activar_institucion(request: Request):
+@router.get("/pacientes/institucion")
+async def pacientes_institucion(request: Request):
     if not validar_director(request):
         return JSONResponse({"error": "No autorizado"}, status_code=403)
-    datos = await request.json()
-    id_inst = datos.get("id")
-    supabase.table("instituciones").update({"estado": "activa"}).eq("id", id_inst).execute()
-    return {"exito": True}
+    inst_id = request.session.get("institucion_id")
+    res = (
+        supabase.table("pacientes")
+        .select("dni,nombres,apellido")
+        .eq("institucion_id", inst_id)
+        .execute()
+    )
+    return {"pacientes": res.data or []}
 
 
-@router.post("/instituciones/pausar")
-async def pausar_institucion(request: Request):
+@router.get("/pacientes/descargar/{dni}")
+async def descargar_paciente(request: Request, dni: str):
     if not validar_director(request):
         return JSONResponse({"error": "No autorizado"}, status_code=403)
-    datos = await request.json()
-    id_inst = datos.get("id")
-    supabase.table("instituciones").update({"estado": "pausada"}).eq("id", id_inst).execute()
-    return {"exito": True}
+
+    inst_id = request.session.get("institucion_id")
+    pac = (
+        supabase.table("pacientes")
+        .select("*")
+        .eq("dni", dni)
+        .eq("institucion_id", inst_id)
+        .single()
+        .execute()
+    )
+    if not pac.data:
+        return JSONResponse({"error": "Paciente no encontrado"}, status_code=404)
+
+    import tempfile, zipfile
+
+    buckets = [
+        "registro-pacientes",
+        "historia-completa",
+        "historia-clinica-resumida",
+        "recetas-medicas",
+        "indicaciones-medicas",
+        "evolucion-diaria",
+        "estudios-medicos",
+    ]
+
+    tmp_zip = tempfile.NamedTemporaryFile(delete=False, suffix=".zip")
+    with zipfile.ZipFile(tmp_zip.name, "w") as zipf:
+        # agregar datos del paciente
+        info_txt = "\n".join(f"{k}: {v}" for k, v in pac.data.items())
+        zipf.writestr("datos_paciente.txt", info_txt)
+
+        for bucket in buckets:
+            try:
+                archivos = supabase.storage.from_(bucket).list()
+                for a in archivos:
+                    nombre = a.get("name")
+                    if nombre and nombre.startswith(str(dni)):
+                        contenido = supabase.storage.from_(bucket).download(nombre)
+                        zipf.writestr(f"{bucket}/{nombre}", contenido)
+            except Exception:
+                pass
+
+    return FileResponse(tmp_zip.name, filename=f"paciente_{dni}.zip")
 
 
-@router.delete("/instituciones/eliminar")
-async def eliminar_institucion(request: Request):
-    if not validar_director(request):
-        return JSONResponse({"error": "No autorizado"}, status_code=403)
-    datos = await request.json()
-    id_inst = datos.get("id")
-    supabase.table("instituciones").delete().eq("id", id_inst).execute()
-    return {"exito": True}
 
 
 @router.delete("/usuarios/eliminar")

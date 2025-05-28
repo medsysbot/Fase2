@@ -31,9 +31,7 @@ async def generar_receta(
     dni: str = Form(...),
     fecha: str = Form(...),
     diagnostico: str = Form(...),
-    medicamentos: str = Form(...),
-    firma: UploadFile = File(None),
-    sello: UploadFile = File(None)
+    medicamentos: str = Form(...)
 ):
     try:
         usuario = request.session.get("usuario")
@@ -49,59 +47,28 @@ async def generar_receta(
         }
 
         firma_url = sello_url = None
-        contenido_firma = contenido_sello = None
         base_firma = f"firma_{usuario}_{institucion_id}"
         base_sello = f"sello_{usuario}_{institucion_id}"
 
         # ╔══════════════════════════════════════════════╗
         # ║                    FIRMA                     ║
         # ╚══════════════════════════════════════════════╝
-        if firma:
-            contenido_firma = await firma.read()
-            ext_firma = os.path.splitext(firma.filename)[1].lower()
-            nombre_firma = f"{base_firma}{ext_firma}"
-            if not imagen_existe(supabase, BUCKET_FIRMAS, base_firma):
-                supabase.storage.from_(BUCKET_FIRMAS).upload(
-                    nombre_firma,
-                    contenido_firma,
-                    {"x-upsert": "true"},
-                )
+        contenido_firma, nombre_firma = descargar_imagen(
+            supabase, BUCKET_FIRMAS, base_firma
+        )
+        if nombre_firma:
             pdf_obj = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(nombre_firma)
             firma_url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
-            print("URL firma:", firma_url)
-        elif usuario and institucion_id is not None:
-            contenido_firma, nombre_firma = descargar_imagen(
-                supabase, BUCKET_FIRMAS, base_firma
-            )
-            if nombre_firma:
-                pdf_obj = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(nombre_firma)
-                firma_url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
-                print("URL firma:", firma_url)
 
         # ╔══════════════════════════════════════════════╗
         # ║                    SELLO                     ║
         # ╚══════════════════════════════════════════════╝
-        if sello:
-            contenido_sello = await sello.read()
-            ext_sello = os.path.splitext(sello.filename)[1].lower()
-            nombre_sello = f"{base_sello}{ext_sello}"
-            if not imagen_existe(supabase, BUCKET_FIRMAS, base_sello):
-                supabase.storage.from_(BUCKET_FIRMAS).upload(
-                    nombre_sello,
-                    contenido_sello,
-                    {"x-upsert": "true"},
-                )
+        contenido_sello, nombre_sello = descargar_imagen(
+            supabase, BUCKET_FIRMAS, base_sello
+        )
+        if nombre_sello:
             pdf_obj = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(nombre_sello)
             sello_url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
-            print("URL sello:", sello_url)
-        elif usuario and institucion_id is not None:
-            contenido_sello, nombre_sello = descargar_imagen(
-                supabase, BUCKET_FIRMAS, base_sello
-            )
-            if nombre_sello:
-                pdf_obj = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(nombre_sello)
-                sello_url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
-                print("URL sello:", sello_url)
 
         pdf_path = generar_pdf_receta(datos, firma_url, sello_url)
 

@@ -1,7 +1,7 @@
 # ╔════════════════════════════════════════════════════════════╗
 # ║            ACCIONES BACKEND - INDICACIONES MÉDICAS         ║
 # ╚════════════════════════════════════════════════════════════╝
-from fastapi import APIRouter, Form, UploadFile, File, Request
+from fastapi import APIRouter, Form, Request
 from fastapi.responses import JSONResponse
 from utils.pdf_generator import generar_pdf_indicaciones
 from utils.email_sender import enviar_email_con_pdf
@@ -29,8 +29,6 @@ async def generar_indicaciones(
     fecha: str = Form(...),
     diagnostico: str = Form(...),
     indicaciones: str = Form(...),
-    firma: UploadFile = File(None),
-    sello: UploadFile = File(None),
 ):
     try:
         usuario = request.session.get("usuario")
@@ -48,35 +46,12 @@ async def generar_indicaciones(
         firma_path = sello_path = None
         base_firma = f"firma_{usuario}_{institucion_id}"
         base_sello = f"sello_{usuario}_{institucion_id}"
-        if firma:
-            contenido_firma = await firma.read()
-            ext_firma = os.path.splitext(firma.filename)[1].lower()
-            nombre_firma = f"{base_firma}{ext_firma}"
-            if not imagen_existe(supabase, BUCKET_FIRMAS, base_firma):
-                supabase.storage.from_(BUCKET_FIRMAS).upload(
-                    nombre_firma,
-                    contenido_firma,
-                    {"x-upsert": "true"},
-                )
-        elif usuario and institucion_id is not None:
-            contenido_firma, nombre_firma = descargar_imagen(
-                supabase, BUCKET_FIRMAS, base_firma
-            )
-
-        if sello:
-            contenido_sello = await sello.read()
-            ext_sello = os.path.splitext(sello.filename)[1].lower()
-            nombre_sello = f"{base_sello}{ext_sello}"
-            if not imagen_existe(supabase, BUCKET_FIRMAS, base_sello):
-                supabase.storage.from_(BUCKET_FIRMAS).upload(
-                    nombre_sello,
-                    contenido_sello,
-                    {"x-upsert": "true"},
-                )
-        elif usuario and institucion_id is not None:
-            contenido_sello, nombre_sello = descargar_imagen(
-                supabase, BUCKET_FIRMAS, base_sello
-            )
+        contenido_firma, nombre_firma = descargar_imagen(
+            supabase, BUCKET_FIRMAS, base_firma
+        )
+        contenido_sello, nombre_sello = descargar_imagen(
+            supabase, BUCKET_FIRMAS, base_sello
+        )
 
         if contenido_firma:
             firma_path = guardar_imagen_temporal(contenido_firma, nombre_firma)

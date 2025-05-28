@@ -38,6 +38,11 @@ function mostrarUsuarios(lista) {
     const tr = document.createElement('tr');
     tr.innerHTML = `<td>${u.usuario}</td><td>${u.nombres}</td><td>${u.apellido}</td><td>${u.rol}</td><td>${u.institucion}</td><td>${u.activo ? 'Activo' : 'Inactivo'}</td>`;
     const acciones = document.createElement('td');
+    if (u.activo) {
+      acciones.appendChild(crearBoton('Suspender', 'eliminar', () => cambiarEstadoUsuario(u.usuario, false)));
+    } else {
+      acciones.appendChild(crearBoton('Reactivar', 'exportar', () => cambiarEstadoUsuario(u.usuario, true)));
+    }
     acciones.appendChild(crearBoton('Eliminar', 'eliminar', () => eliminarUsuario(u.usuario)));
     tr.appendChild(acciones);
     tbody.appendChild(tr);
@@ -92,4 +97,25 @@ async function eliminarUsuario(usuario) {
   await actualizarTablas();
 }
 
+async function cambiarEstadoUsuario(usuario, activo) {
+  await fetch('/api/usuarios/estado', {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({usuario, activo})});
+  await actualizarTablas();
+}
+
+async function agregarUsuario() {
+  const form = document.getElementById('form-nuevo-usuario');
+  const datos = {
+    usuario: form.querySelector('#usuario').value.trim(),
+    contrasena: form.querySelector('#contrasena').value.trim(),
+    nombres: form.querySelector('#nombres').value.trim(),
+    apellido: form.querySelector('#apellido').value.trim(),
+    rol: form.querySelector('#rol').value,
+    institucion: parseInt(form.querySelector('#institucion').value, 10)
+  };
+  await fetch('/api/usuarios/agregar', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(datos)});
+  form.reset();
+  await actualizarTablas();
+}
+
 document.addEventListener('DOMContentLoaded', actualizarTablas);
+document.getElementById('btn-agregar-usuario').addEventListener('click', agregarUsuario);

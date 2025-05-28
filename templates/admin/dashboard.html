@@ -9,6 +9,21 @@
 <body>
   <h1 class="titulo">Panel Administrativo</h1>
 
+  <h2>Nuevo Usuario</h2>
+  <form id="form-nuevo-usuario" class="formulario">
+    <input type="text" id="usuario" placeholder="Usuario" required />
+    <input type="password" id="contrasena" placeholder="Contraseña" required />
+    <input type="text" id="nombres" placeholder="Nombre/s" required />
+    <input type="text" id="apellido" placeholder="Apellido" required />
+    <select id="rol">
+      <option value="director">Director</option>
+      <option value="secretaria">Secretaria</option>
+      <option value="medico">Médico</option>
+    </select>
+    <input type="number" id="institucion" placeholder="ID de institución" required />
+    <button type="button" id="btn-agregar-usuario">Agregar Usuario</button>
+  </form>
+
   <h2>Usuarios</h2>
   <table id="tabla-usuarios" class="tabla">
     <thead>

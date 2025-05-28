@@ -5,6 +5,9 @@
 async function guardarPDF() {
   const form = document.getElementById('form-evolucion');
   const formData = new FormData(form);
+  const nombre = form.querySelector('#nombre').value.trim();
+  const apellido = form.querySelector('#apellido').value.trim();
+  formData.append('paciente', `${nombre} ${apellido}`.trim());
 
 
   try {
@@ -63,7 +66,9 @@ async function obtenerEmailPorDni(dni) {
 }
 
 async function enviarPDF() {
-  const paciente = document.getElementById('paciente').value.trim();
+  const nombre = document.getElementById('nombre').value.trim();
+  const apellido = document.getElementById('apellido').value.trim();
+  const paciente = `${nombre} ${apellido}`.trim();
   const dni = document.getElementById('dni').value.trim();
   const email = await obtenerEmailPorDni(dni);
 

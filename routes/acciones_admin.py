@@ -119,3 +119,32 @@ async def eliminar_usuario(request: Request):
     usuario = datos.get("usuario")
     supabase.table("usuarios").delete().eq("usuario", usuario).execute()
     return {"exito": True}
+
+
+@router.post("/usuarios/agregar")
+async def agregar_usuario(request: Request):
+    if not validar_director(request):
+        return JSONResponse({"error": "No autorizado"}, status_code=403)
+    datos = await request.json()
+    nuevo = {
+        "usuario": datos.get("usuario"),
+        "contrasena": datos.get("contrasena"),
+        "nombres": datos.get("nombres"),
+        "apellido": datos.get("apellido"),
+        "rol": datos.get("rol"),
+        "institucion_id": datos.get("institucion"),
+        "activo": True,
+    }
+    supabase.table("usuarios").insert(nuevo).execute()
+    return {"exito": True}
+
+
+@router.put("/usuarios/estado")
+async def cambiar_estado_usuario(request: Request):
+    if not validar_director(request):
+        return JSONResponse({"error": "No autorizado"}, status_code=403)
+    datos = await request.json()
+    usuario = datos.get("usuario")
+    activo = datos.get("activo", True)
+    supabase.table("usuarios").update({"activo": activo}).eq("usuario", usuario).execute()
+    return {"exito": True}

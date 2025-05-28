@@ -205,7 +205,7 @@ footer {
   width: 100vw;
   height: 100vh;
   background: rgba(0, 0, 0, 0.5);
-  display: flex;
+  display: none;
   justify-content: center;
   align-items: center;
   z-index: 9999;
@@ -355,3 +355,37 @@ footer {
   color: #666;
   margin-bottom: -10px;
 }
+
+/* ╔══════════════════════════════╗ */
+/* ║        COMPONENTES ADMIN     ║ */
+/* ╚══════════════════════════════╝ */
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+}
+.tabla th, .tabla td {
+  padding: 8px;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+.tabla th {
+  background-color: #0a2a3d;
+  color: #fff;
+}
+.tabla tr:nth-child(even) {
+  background-color: #eaf3f9;
+}
+
+.btn {
+  padding: 6px 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 4px;
+}
+.btn.eliminar { background-color: #e74c3c; color: #fff; }
+.btn.pausar   { background-color: #f39c12; color: #fff; }
+.btn.activar  { background-color: #2ecc71; color: #fff; }
+.btn.exportar { background-color: #3498db; color: #fff; }

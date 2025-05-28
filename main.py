@@ -188,6 +188,14 @@ async def registro(request: Request):
 async def turnos(request: Request):
     return templates.TemplateResponse("turnos.html", {"request": request})
 
+@app.get("/admin/dashboard", response_class=HTMLResponse)
+async def admin_dashboard(request: Request):
+    usuario = request.session.get("usuario")
+    rol = request.session.get("rol")
+    if not usuario or rol != "director":
+        return RedirectResponse(url="/login", status_code=303)
+    return templates.TemplateResponse("admin/dashboard.html", {"request": request})
+
 # ╔════════════════════════════════════╗
 # ║       ARCHIVOS MÉDICOS            ║
 # ╚════════════════════════════════════╝
@@ -249,6 +257,7 @@ from routes import (
     turnos_router,
     busqueda_router,
     estudios_router,
+    admin_router,
 )
 from routes.acciones_estudios import iniciar_monitor
 app.include_router(pacientes_router)
@@ -260,6 +269,7 @@ app.include_router(evolucion_router)
 app.include_router(turnos_router)
 app.include_router(busqueda_router)
 app.include_router(estudios_router)
+app.include_router(admin_router)
 
 @app.on_event("startup")
 async def startup_event():

@@ -12,6 +12,14 @@ def _session_activa(request: Request) -> bool:
     return request.session.get("usuario") is not None
 
 
+@router.get("/index", response_class=HTMLResponse)
+async def ver_index(request: Request):
+    rol = request.session.get("rol")
+    if not rol:
+        return RedirectResponse(url="/login", status_code=302)
+    return templates.TemplateResponse("index.html", {"request": request, "rol": rol})
+
+
 @router.get("/registro", response_class=HTMLResponse)
 async def ver_registro(request: Request):
     if not _session_activa(request):

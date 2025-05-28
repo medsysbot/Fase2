@@ -45,9 +45,7 @@ async def ver_receta(request: Request):
 async def ver_historia(request: Request):
     if not _session_activa(request):
         return RedirectResponse(url="/login", status_code=303)
-    return templates.TemplateResponse(
-        "historia-clinica-completa.html", {"request": request}
-    )
+    return templates.TemplateResponse("historia.html", {"request": request})
 
 
 @router.get("/indicaciones", response_class=HTMLResponse)
@@ -62,6 +60,13 @@ async def ver_turnos(request: Request):
     if not _session_activa(request):
         return RedirectResponse(url="/login", status_code=303)
     return templates.TemplateResponse("turnos.html", {"request": request})
+
+
+@router.get("/enfermeria", response_class=HTMLResponse)
+async def ver_enfermeria(request: Request):
+    if not _session_activa(request):
+        return RedirectResponse(url="/login", status_code=303)
+    return templates.TemplateResponse("enfermeria.html", {"request": request})
 
 
 @router.get("/busqueda", response_class=HTMLResponse)
@@ -82,6 +87,13 @@ async def ver_estudios_alias(request: Request):
     if not _session_activa(request):
         return RedirectResponse(url="/login", status_code=303)
     return templates.TemplateResponse("estudios-medicos.html", {"request": request})
+
+
+@router.get("/firma-sello", response_class=HTMLResponse)
+async def ver_firma_sello(request: Request):
+    if not _session_activa(request):
+        return RedirectResponse(url="/login", status_code=303)
+    return templates.TemplateResponse("firma_sello.html", {"request": request})
 
 
 @router.get("/historia-resumen", response_class=HTMLResponse)

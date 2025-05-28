@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Subida de Firma y Sello</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header>
+    <img src="/static/icons/save.png" alt="Firma" class="logo-grande" />
+    <h2>Subida de Firma y Sello</h2>
+  </header>
+  <form id="form-firma-sello" enctype="multipart/form-data">
+    <label>Firma del Profesional:</label>
+    <input type="file" id="firma" accept="image/*" />
+    <img id="firma-preview" class="vista-previa" style="display:none;" />
+
+    <label>Sello del Profesional:</label>
+    <input type="file" id="sello" accept="image/*" />
+    <img id="sello-preview" class="vista-previa" style="display:none;" />
+
+    <button type="button" onclick="subirArchivo('firma')">Subir Firma</button>
+    <button type="button" onclick="subirArchivo('sello')">Subir Sello</button>
+  </form>
+
+  <script src="/static/js/firma_sello.js"></script>
+  <script src="/static/js/subir_firma_sello.js"></script>
+</body>
+</html>

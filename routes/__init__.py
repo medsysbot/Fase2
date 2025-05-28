@@ -8,6 +8,7 @@ from .acciones_turnos import router as turnos_router
 from .acciones_busqueda import router as busqueda_router
 from .acciones_estudios import router as estudios_router
 from .acciones_admin import router as admin_router
+from .paginas import router as paginas_router
 
 __all__ = [
     "pacientes_router",
@@ -20,5 +21,6 @@ __all__ = [
     "busqueda_router",
     "estudios_router",
     "admin_router",
+    "paginas_router",
 ]
 

@@ -5,7 +5,6 @@ async function guardarPDF() {
   const form = document.getElementById("form-receta");
   const formData = new FormData(form);
 
-  // Los campos de tipo file ya forman parte del FormData generado
 
   try {
     showAlert("guardado", "Guardando receta…", false, 3000);

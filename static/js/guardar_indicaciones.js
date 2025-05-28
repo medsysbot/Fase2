@@ -5,14 +5,6 @@ async function guardarPDF() {
   const form = document.getElementById('form-indicaciones');
   const formData = new FormData(form);
 
-  const firma = document.getElementById('firma');
-  const sello = document.getElementById('sello');
-  if (firma && firma.files.length > 0) {
-    formData.append('firma', firma.files[0]);
-  }
-  if (sello && sello.files.length > 0) {
-    formData.append('sello', sello.files[0]);
-  }
 
   try {
     showAlert('guardado', 'Guardando indicaciones…', false, 3000);

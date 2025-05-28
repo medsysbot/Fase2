@@ -135,58 +135,6 @@ async def splash_final(request: Request):
         "titulo": titulo
     })
 
-# ╔════════════════════════════════════╗
-# ║             RUTAS HTML            ║
-# ╚════════════════════════════════════╝
-@app.get("/busqueda", response_class=HTMLResponse)
-async def busqueda(request: Request):
-    return templates.TemplateResponse("busqueda.html", {"request": request})
-
-@app.get("/estudios", response_class=HTMLResponse)
-async def estudios(request: Request):
-    return templates.TemplateResponse(
-        "estudios.html",
-        {"request": request, "supabase_url": SUPABASE_URL}
-    )
-
-@app.get("/estudios-medicos", response_class=HTMLResponse)
-async def estudios_medicos(request: Request):
-    return templates.TemplateResponse("estudios-medicos.html", {"request": request})
-@app.get("/evolucion", response_class=HTMLResponse)
-async def evolucion(request: Request):
-    return templates.TemplateResponse("evolucion.html", {"request": request})
-
-@app.get("/historia", response_class=HTMLResponse)
-async def historia(request: Request):
-    return templates.TemplateResponse("historia.html", {"request": request})
-
-@app.get("/historia-clinica-completa", response_class=HTMLResponse)
-async def historia_clinica_completa(request: Request):
-    return templates.TemplateResponse("historia-clinica-completa.html", {"request": request})
-
-@app.get("/historia-resumen", response_class=HTMLResponse)
-async def historia_resumen(request: Request):
-    return templates.TemplateResponse("historia-resumen.html", {"request": request})
-
-@app.get("/indicaciones", response_class=HTMLResponse)
-async def indicaciones(request: Request):
-    return templates.TemplateResponse("indicaciones.html", {"request": request})
-
-@app.get("/index", response_class=HTMLResponse)
-async def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
-
-@app.get("/receta", response_class=HTMLResponse)
-async def receta(request: Request):
-    return templates.TemplateResponse("receta.html", {"request": request})
-
-@app.get("/registro", response_class=HTMLResponse)
-async def registro(request: Request):
-    return templates.TemplateResponse("registro.html", {"request": request})
-
-@app.get("/turnos", response_class=HTMLResponse)
-async def turnos(request: Request):
-    return templates.TemplateResponse("turnos.html", {"request": request})
 
 @app.get("/admin/dashboard", response_class=HTMLResponse)
 async def admin_dashboard(request: Request):
@@ -258,6 +206,7 @@ from routes import (
     busqueda_router,
     estudios_router,
     admin_router,
+    paginas_router,
 )
 from routes.acciones_estudios import iniciar_monitor
 app.include_router(pacientes_router)
@@ -270,6 +219,7 @@ app.include_router(turnos_router)
 app.include_router(busqueda_router)
 app.include_router(estudios_router)
 app.include_router(admin_router)
+app.include_router(paginas_router)
 
 @app.on_event("startup")
 async def startup_event():

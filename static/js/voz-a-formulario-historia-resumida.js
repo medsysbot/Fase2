@@ -52,6 +52,10 @@ function iniciarReconocimiento() {
 
 document.addEventListener("keydown", (e) => {
   if (e.code === "Space") {
+    const tag = (e.target && e.target.tagName) || "";
+    if (tag === "INPUT" || tag === "TEXTAREA") {
+      return; // Permitir espacios normales en campos de texto
+    }
     e.preventDefault();
     iniciarReconocimiento();
   }

@@ -82,88 +82,46 @@ h1 {
   <h1>Menú Principal</h1>
 
 <div class="menu-grid">
+  <a href="/registro" class="menu-button">
+    <img src="/static/icons/icono-registro.png" alt="Registro">
+    Registro de Paciente
+  </a>
+  <a href="/receta" class="menu-button">
+    <img src="/static/icons/icono-receta.png" alt="Recetas">
+    Recetas Médicas
+  </a>
+  <a href="/busqueda" class="menu-button">
+    <img src="/static/icons/busqueda.png" alt="Búsqueda">
+    Búsqueda de Pacientes
+  </a>
+  <a href="/estudios" class="menu-button">
+    <img src="/static/icons/estudios.png" alt="Estudios">
+    Estudios Médicos
+  </a>
+  <a href="/indicaciones" class="menu-button">
+    <img src="/static/icons/icono-indicaciones.png" alt="Indicaciones">
+    Indicaciones Médicas
+  </a>
+  <a href="/enfermeria" class="menu-button">
+    <img src="/static/icons/icono-enfermeria.png" alt="Enfermería">
+    Enfermería
+  </a>
+  <a href="/turnos" class="menu-button">
+    <img src="/static/icons/icono-turnos.png" alt="Turnos">
+    Turnos Médicos
+  </a>
+  <a href="/historia" class="menu-button">
+    <img src="/static/icons/icono-historia.png" alt="Historia">
+    Historia Clínica
+  </a>
   {% if rol == "director" %}
-  <a href="/registro" class="menu-button">
-    <img src="/static/icons/icono-registro.png" alt="Registro">
-    Registro de Pacientes
+  <a href="/firma-sello" class="menu-button">
+    <img src="/static/icons/save.png" alt="Firma">
+    Subida de Firma y Sello
   </a>
-  <a href="/evolucion" class="menu-button">
-    <img src="/static/icons/icono-historia.png" alt="Evolución">
-    Evolución Clínica
-  </a>
-  <a href="/receta" class="menu-button">
-    <img src="/static/icons/icono-receta.png" alt="Receta">
-    Recetas Médicas
-  </a>
-  <a href="/indicaciones" class="menu-button">
-    <img src="/static/icons/icono-indicaciones.png" alt="Indicaciones">
-    Indicaciones Médicas
-  </a>
-  <a href="/busqueda" class="menu-button">
-    <img src="/static/icons/busqueda.png" alt="Buscar">
-    Búsqueda de Pacientes
-  </a>
-  <a href="/historia" class="menu-button">
-    <img src="/static/icons/icono-historia-clinica-completa.png" alt="Historia">
-    Historia Clínica
-  </a>
-  <a href="/estudios" class="menu-button">
-    <img src="/static/icons/estudios.png" alt="Estudios">
-    Estudios Médicos
-  </a>
-  <a href="/turnos" class="menu-button">
-    <img src="/static/icons/icono-turnos.png" alt="Turnos">
-    Turnos Médicos
-  </a>
-  {% elif rol == "medico" %}
-  <a href="/evolucion" class="menu-button">
-    <img src="/static/icons/icono-historia.png" alt="Evolución">
-    Evolución Clínica
-  </a>
-  <a href="/receta" class="menu-button">
-    <img src="/static/icons/icono-receta.png" alt="Receta">
-    Recetas Médicas
-  </a>
-  <a href="/indicaciones" class="menu-button">
-    <img src="/static/icons/icono-indicaciones.png" alt="Indicaciones">
-    Indicaciones Médicas
-  </a>
-  <a href="/busqueda" class="menu-button">
-    <img src="/static/icons/busqueda.png" alt="Buscar">
-    Búsqueda de Pacientes
-  </a>
-  <a href="/historia" class="menu-button">
-    <img src="/static/icons/icono-historia-clinica-completa.png" alt="Historia">
-    Historia Clínica
-  </a>
-  <a href="/estudios" class="menu-button">
-    <img src="/static/icons/estudios.png" alt="Estudios">
-    Estudios Médicos
-  </a>
-  <a href="/turnos" class="menu-button">
-    <img src="/static/icons/icono-turnos.png" alt="Turnos">
-    Turnos Médicos
-  </a>
-  {% elif rol == "secretaria" %}
-  <a href="/registro" class="menu-button">
-    <img src="/static/icons/icono-registro.png" alt="Registro">
-    Registro de Pacientes
-  </a>
-  <a href="/busqueda" class="menu-button">
-    <img src="/static/icons/busqueda.png" alt="Buscar">
-    Búsqueda de Pacientes
-  </a>
-  <a href="/historia" class="menu-button">
-    <img src="/static/icons/icono-historia-clinica-completa.png" alt="Historia">
-    Historia Clínica
-  </a>
-  <a href="/estudios" class="menu-button">
-    <img src="/static/icons/estudios.png" alt="Estudios">
-    Estudios Médicos
-  </a>
-  <a href="/turnos" class="menu-button">
-    <img src="/static/icons/icono-turnos.png" alt="Turnos">
-    Turnos Médicos
+  <a href="/admin/dashboard" class="menu-button">
+    <img src="/static/icons/icono-historia-clinica-completa.png" alt="Admin">
+    Administración de Supabase
   </a>
   {% endif %}
 </div>

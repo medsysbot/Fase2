@@ -207,7 +207,6 @@ from routes import (
     estudios_router,
     admin_router,
     paginas_router,
-    tester_router,
 )
 from routes.acciones_estudios import iniciar_monitor
 app.include_router(pacientes_router)
@@ -221,7 +220,6 @@ app.include_router(busqueda_router)
 app.include_router(estudios_router)
 app.include_router(admin_router)
 app.include_router(paginas_router)
-app.include_router(tester_router)
 
 @app.on_event("startup")
 async def startup_event():

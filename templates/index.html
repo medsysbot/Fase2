@@ -82,38 +82,34 @@ h1 {
   <h1>Menú Principal</h1>
 
   <div class="menu-grid">
+    {% if rol == "director" %}
     <a href="/registro" class="menu-button">
       <img src="/static/icons/icono-registro.png" alt="Registro">
       Registro de Pacientes
-    </a>
-    <a href="/historia" class="menu-button">
-      <img src="/static/icons/icono-historia.png" alt="Historia">
-      Historia Clínica
-    </a>
-    <a href="/receta" class="menu-button">
-      <img src="/static/icons/icono-receta.png" alt="Receta">
-      Receta Médica
-    </a>
-    <a href="/indicaciones" class="menu-button">
-      <img src="/static/icons/icono-indicaciones.png" alt="Indicaciones">
-      Indicaciones Médicas
     </a>
     <a href="/turnos" class="menu-button">
       <img src="/static/icons/icono-turnos.png" alt="Turnos">
       Turnos Médicos
     </a>
-    <a href="/estudios-medicos" class="menu-button">
-      <img src="/static/icons/estudios.png" alt="Estudios Médicos">
-      Estudios Médicos
+    {% elif rol == "medico" %}
+    <a href="/evolucion" class="menu-button">
+      <img src="/static/icons/icono-historia.png" alt="Evolución">
+      Evolución Clínica
     </a>
+    <a href="/receta" class="menu-button">
+      <img src="/static/icons/icono-receta.png" alt="Receta">
+      Recetas Médicas
+    </a>
+    {% elif rol == "secretaria" %}
     <a href="/busqueda" class="menu-button">
       <img src="/static/icons/busqueda.png" alt="Buscar">
       Búsqueda de Pacientes
     </a>
-    <a href="#" class="menu-button" onclick="alert('Próximamente disponible')">
-      <img src="/static/icons/icono-enfermeria.png" alt="Enfermería">
-      Enfermería
+    <a href="/turnos" class="menu-button">
+      <img src="/static/icons/icono-turnos.png" alt="Turnos">
+      Turnos Médicos
     </a>
+    {% endif %}
   </div>
 </body>
 </html>

@@ -17,7 +17,7 @@ async function guardarPDF() {
 
     if (resultado.exito && resultado.pdf_url) {
       showAlert('suceso', 'Turno guardado', false, 3000);
-      sessionStorage.setItem('pdfURL', resultado.pdf_url);
+      sessionStorage.setItem('pdfURL_turnos', resultado.pdf_url);
     } else {
       showAlert('error', resultado.mensaje || 'Error al guardar', false, 4000);
     }
@@ -28,7 +28,7 @@ async function guardarPDF() {
 }
 
 function abrirPDF() {
-  const url = sessionStorage.getItem('pdfURL');
+  const url = sessionStorage.getItem('pdfURL_turnos');
   if (url) {
     showAlert('cargaPDF', 'Cargando PDF…', false, 3000);
     const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);

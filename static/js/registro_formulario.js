@@ -50,7 +50,7 @@ async function guardarPDF() {
 
     if (resultado.exito && resultado.pdf_url) {
       showAlert("suceso", "Paciente Guardado Con Éxito", false, 3000);
-      sessionStorage.setItem('pdfURL', resultado.pdf_url);
+      sessionStorage.setItem('pdfURL_registro', resultado.pdf_url);
     } else if (resultado.mensaje) {
       showAlert("pacienteCargado", "Ya existe un paciente con ese DNI", false, 3000);
     } else if (resultado.error) {
@@ -127,7 +127,7 @@ async function obtenerEmailPorDni(dni) {
 /*────────────────────────────────────────*/
 
 function abrirPDF() {
-  const url = sessionStorage.getItem('pdfURL');
+  const url = sessionStorage.getItem('pdfURL_registro');
   if (url) {
     showAlert("cargaPDF", "Cargando PDF…", false, 3000);
 
@@ -188,7 +188,7 @@ async function confirmarBorradoPaciente() {
       showAlert("suceso", "Paciente Borrado", false, 3000);
       document.getElementById('form-registro').reset();
       document.getElementById('confirmacion-borrado').style.display = 'none';
-      sessionStorage.removeItem('pdfURL');
+      sessionStorage.removeItem('pdfURL_registro');
     } else {
       showAlert("error", "Error Al Borrar El Paciente", false, 3000);
     }

@@ -101,7 +101,7 @@
 <!-- ╚════════════════════════════════════╝ -->
 <form class="form-agregar" method="POST" action="/admin/institucion/agregar">
     <label>Nombre de la Institución:</label>
-    <input type="text" name="nombre" required>
+    <input type="text" name="nombre" id="nombre" required>
     <button type="submit">Agregar Institución</button>
   </form>
 
@@ -109,26 +109,26 @@
   <h2 class="titulo-seccion">Agregar Nuevo Usuario</h2>
   <form class="form-agregar" method="POST" action="/admin/usuario/agregar">
     <label>Usuario:</label>
-    <input type="text" name="usuario" required>
+    <input type="text" name="usuario" id="usuario" required>
 
     <label>Contrasena:</label>
-    <input type="password" name="contrasena" required>
+    <input type="password" name="contrasena" id="contrasena" required>
 
     <label>Nombres:</label>
-    <input type="text" name="nombres" required>
+    <input type="text" name="nombres" id="nombres" required>
 
     <label>Apellido:</label>
-    <input type="text" name="apellido" required>
+    <input type="text" name="apellido" id="apellido" required>
 
     <label>Rol:</label>
-    <select name="rol" required>
+    <select name="rol" id="rol" required>
       <option value="director">Director</option>
       <option value="secretaria">Secretaria</option>
       <option value="medico">Médico</option>
     </select>
 
     <label>ID de Institución:</label>
-    <input type="number" name="institucion" required>
+    <input type="number" name="institucion" id="institucion" required>
 
     <button type="submit">Agregar Usuario</button>
   </form>
@@ -156,20 +156,20 @@
         <td>{{ inst.total_usuarios }}</td>
         <td class="acciones">
           <form method="POST" action="/admin/institucion/pausar-activar">
-            <input type="hidden" name="id" value="{{ inst.id }}">
+            <input type="hidden" name="id" id="id" value="{{ inst.id }}">
             <button type="submit" class="{{ 'pausar' if inst.estado == 'activa' else 'activar' }}">
               {{ 'Pausar' if inst.estado == 'activa' else 'Activar' }}
             </button>
           </form>
           <form method="POST" action="/admin/institucion/eliminar" onsubmit="return confirm('¿Eliminar esta institución?');">
-            <input type="hidden" name="id" value="{{ inst.id }}">
+            <input type="hidden" name="id" id="id" value="{{ inst.id }}">
             <button type="submit" class="eliminar">Eliminar</button>
           </form>
           <form method="GET" action="/exportar-pacientes/{{ inst.id }}">
             <button type="submit" class="exportar">Exportar pacientes</button>
           </form>
           <form method="POST" action="/admin/eliminar-pacientes" onsubmit="return confirm('¿Eliminar todos los pacientes?');">
-            <input type="hidden" name="institucion_id" value="{{ inst.id }}">
+            <input type="hidden" name="institucion_id" id="institucion_id" value="{{ inst.id }}">
             <button type="submit" class="eliminar">Eliminar pacientes</button>
           </form>
         </td>
@@ -203,13 +203,13 @@
         <td>{{ "Activo" if u.activo else "Inactivo" }}</td>
         <td class="acciones">
           <form method="POST" action="/admin/usuario/pausar-activar">
-            <input type="hidden" name="usuario" value="{{ u.usuario }}">
+            <input type="hidden" name="usuario" id="usuario" value="{{ u.usuario }}">
             <button type="submit" class="{{ 'pausar' if u.activo else 'activar' }}">
               {{ 'Desactivar' if u.activo else 'Activar' }}
             </button>
           </form>
           <form method="POST" action="/admin/usuario/eliminar" onsubmit="return confirm('¿Eliminar este usuario?');">
-            <input type="hidden" name="usuario" value="{{ u.usuario }}">
+            <input type="hidden" name="usuario" id="usuario" value="{{ u.usuario }}">
             <button type="submit" class="eliminar">Eliminar</button>
           </form>
         </td>

@@ -100,15 +100,15 @@
 <form class="formulario" action="/login" method="POST">
   <div class="campo">
     <img src="/static/icons/icono-usuario.png" alt="icono usuario">
-    <input type="text" name="usuario" placeholder="Usuario" required />
+    <input type="text" name="usuario" id="usuario" placeholder="Usuario" required />
   </div>
   <div class="campo">
     <img src="/static/icons/icono-password.png" alt="icono contraseña">
-    <input type="password" name="contrasena" placeholder="Contraseña" required />
+    <input type="password" name="contrasena" id="contrasena" placeholder="Contraseña" required />
   </div>
   <div class="campo">
     <img src="/static/icons/icono-rol.png" alt="icono rol">
-    <select name="rol" required>
+    <select name="rol" id="rol" required>
       <option value="medico">Médico</option>
       <option value="admin">Admin</option>
       <option value="director">Director</option>

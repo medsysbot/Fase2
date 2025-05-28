@@ -43,7 +43,30 @@ document.addEventListener("DOMContentLoaded", function () {
 function abrirPDF() {
   const url = sessionStorage.getItem('pdfURL_busqueda');
   if (url) {
-    window.open(url, '_blank');
+    showAlert('cargaPDF', 'Cargando PDF…', false, 3000);
+
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    setTimeout(() => {
+      if (isIOS) {
+        window.location.href = url;
+      } else {
+        window.open(url, '_blank');
+      }
+    }, 1000);
+  } else {
+    showAlert('pdf', 'Error al cargar el PDF', false, 3000);
+  }
+}
+
+function imprimirPDF() {
+  const url = sessionStorage.getItem('pdfURL_busqueda');
+  if (url) {
+    const nuevaVentana = window.open(url, '_blank');
+    if (nuevaVentana) {
+      nuevaVentana.addEventListener('load', () => {
+        nuevaVentana.print();
+      });
+    }
   } else {
     showAlert('pdf', 'Error al cargar el PDF', false, 3000);
   }

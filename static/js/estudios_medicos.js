@@ -128,7 +128,15 @@ async function guardarEstudio() {
 function abrirPDF() {
   const url = sessionStorage.getItem('pdfURL_estudios');
   if (url) {
-    window.open(url, '_blank');
+    showAlert('cargaPDF', 'Cargando PDF…', false, 3000);
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    setTimeout(() => {
+      if (isIOS) {
+        window.location.href = url;
+      } else {
+        window.open(url, '_blank');
+      }
+    }, 1000);
   } else {
     showAlert('error', 'No hay PDF para mostrar', false, 3000);
   }

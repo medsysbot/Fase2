@@ -15,6 +15,9 @@ function closeAlert() {
 async function guardarPDF() {
   const form = document.getElementById("form-resumen");
   const formData = new FormData(form);
+  const nombre = form.querySelector('#nombre').value.trim();
+  const apellido = form.querySelector('#apellido').value.trim();
+  formData.append('paciente', `${nombre} ${apellido}`.trim());
 
 
   try {
@@ -49,8 +52,9 @@ async function guardarPDF() {
 
 async function enviarPorCorreo() {
   const form = document.getElementById("form-resumen");
-
-  const paciente = form.querySelector('[name="paciente"]')?.value.trim() || "";
+  const nombre = form.querySelector('#nombre')?.value.trim() || "";
+  const apellido = form.querySelector('#apellido')?.value.trim() || "";
+  const paciente = `${nombre} ${apellido}`.trim();
   const dni = form.querySelector('[name="dni"]')?.value.trim() || "";
   const email = await obtenerEmailPorDni(dni);
 

@@ -56,3 +56,11 @@ Contacto
 Desarrollado por Max & ChatGPT Codex
 README - MedSys | Sistema Médico Modular
 Contacto oficial: medisys.bot@gmail.com
+
+## Scripts SQL para Supabase
+
+En la carpeta `sql` se incluyen archivos `.sql` para crear las tablas necesarias en Supabase.
+Cada archivo corresponde a un formulario HTML y define las columnas con los mismos identificadores
+usados en los formularios. Además, todas las tablas incluyen la columna `institucion_id`.
+
+Para utilizarlos, basta con ejecutar cada script en tu proyecto de Supabase.

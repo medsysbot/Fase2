@@ -9,11 +9,11 @@ function closeAlert() {
 }
 
 /*──────────────────────────────────────────────*/
-/*    GUARDAR HISTORIA CLÍNICA RESUMIDA         */
+/*    GUARDAR HISTORIA CLÍNICA COMPLETA         */
 /*──────────────────────────────────────────────*/
 
 async function guardarPDF() {
-  const form = document.getElementById("form-resumen");
+  const form = document.getElementById("form-historia");
   const formData = new FormData(form);
 
   const firma = document.getElementById("firma");
@@ -40,7 +40,7 @@ async function guardarPDF() {
 
     if (resultado.exito && resultado.pdf_url) {
       showAlert("suceso", "Historia Clínica Guardada", false, 3000);
-      sessionStorage.setItem('pdfURL', resultado.pdf_url);
+      sessionStorage.setItem('pdfURL_historia_completa', resultado.pdf_url);
     } else if (resultado.mensaje && resultado.mensaje.toLowerCase().includes("registrada")) {
       showAlert("pacienteCargado", "La Historia Clínica Ya Está Registrada", false, 3000);
     } else {
@@ -58,9 +58,9 @@ async function guardarPDF() {
 /*──────────────────────────────────────────────*/
 
 async function enviarPorCorreo() {
-  const form = document.getElementById("form-resumen");
+  const form = document.getElementById("form-historia");
 
-  const paciente = form.querySelector('[name="paciente"]')?.value.trim() || "";
+  const nombre = form.querySelector('[name="nombre"]')?.value.trim() || "";
   const dni = form.querySelector('[name="dni"]')?.value.trim() || "";
   const email = await obtenerEmailPorDni(dni);
 
@@ -75,10 +75,10 @@ async function enviarPorCorreo() {
 
     const formData = new FormData();
     formData.append("email", email);
-    formData.append("paciente", paciente);
+    formData.append("nombre", nombre);
     formData.append("dni", dni);
 
-    const response = await fetch('/enviar_pdf_historia_resumen', {
+    const response = await fetch('/enviar_pdf_historia_completa', {
       method: 'POST',
       body: formData
     });
@@ -101,7 +101,7 @@ async function enviarPorCorreo() {
 /*──────────────────────────────────────────────*/
 
 function abrirPDF() {
-  const url = sessionStorage.getItem('pdfURL');
+  const url = sessionStorage.getItem('pdfURL_historia_completa');
   if (url) {
     showAlert("cargaPDF", "Cargando PDF…", false, 3000);
 

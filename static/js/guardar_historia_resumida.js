@@ -40,7 +40,7 @@ async function guardarPDF() {
 
     if (resultado.exito && resultado.pdf_url) {
       showAlert("suceso", "Historia Clínica Guardada", false, 3000);
-      sessionStorage.setItem('pdfURL', resultado.pdf_url);
+      sessionStorage.setItem('pdfURL_historia_resumen', resultado.pdf_url);
     } else if (resultado.mensaje && resultado.mensaje.toLowerCase().includes("registrada")) {
       showAlert("pacienteCargado", "La Historia Clínica Ya Está Registrada", false, 3000);
     } else {
@@ -101,7 +101,7 @@ async function enviarPorCorreo() {
 /*──────────────────────────────────────────────*/
 
 function abrirPDF() {
-  const url = sessionStorage.getItem('pdfURL');
+  const url = sessionStorage.getItem('pdfURL_historia_resumen');
   if (url) {
     showAlert("cargaPDF", "Cargando PDF…", false, 3000);
 

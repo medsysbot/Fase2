@@ -63,7 +63,7 @@ async function mostrarPDF(id) {
     const data = await resp.json();
     if (data.url_pdf) {
       document.getElementById('visorPDF').src = data.url_pdf;
-      sessionStorage.setItem('pdfURL', data.url_pdf);
+      sessionStorage.setItem('pdfURL_estudios', data.url_pdf);
       document.getElementById('pdf_url').value = data.url_pdf;
       estudioSeleccionado = id;
     } else {
@@ -114,7 +114,7 @@ async function guardarEstudio() {
     if (data.exito && data.pdf_url) {
       showAlert('suceso', 'Estudio guardado', false, 3000);
       document.getElementById('visorPDF').src = data.pdf_url;
-      sessionStorage.setItem('pdfURL', data.pdf_url);
+      sessionStorage.setItem('pdfURL_estudios', data.pdf_url);
       document.getElementById('pdf_url').value = data.pdf_url;
     } else {
       showAlert('error', data.mensaje || 'Error al guardar', false, 4000);
@@ -126,7 +126,7 @@ async function guardarEstudio() {
 }
 
 function abrirPDF() {
-  const url = sessionStorage.getItem('pdfURL');
+  const url = sessionStorage.getItem('pdfURL_estudios');
   if (url) {
     window.open(url, '_blank');
   } else {

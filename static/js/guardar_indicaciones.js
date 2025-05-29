@@ -65,6 +65,12 @@ async function enviarPorCorreo() {
   const nombre = document.querySelector('[name="nombre"]').value.trim();
   const dni = document.querySelector('[name="dni"]').value.trim();
   const email = await obtenerEmailPorDni(dni);
+  const pdfURL = sessionStorage.getItem('pdfURL_indicaciones');
+
+  if (!pdfURL) {
+    showAlert('pdf', 'Genera y guarda las indicaciones antes de enviarlas.', false, 3000);
+    return;
+  }
 
   if (!email) {
     showAlert('error', 'No se encontró un e-mail para este DNI.', false, 3000);
@@ -78,6 +84,7 @@ async function enviarPorCorreo() {
     const formData = new FormData();
     formData.append('nombre', nombre);
     formData.append('dni', dni);
+    formData.append('pdf_url', pdfURL);
 
     const response = await fetch('/enviar_pdf_indicaciones', {
       method: 'POST',

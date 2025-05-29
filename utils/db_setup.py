@@ -5,8 +5,10 @@ from .supabase_helper import get_db_connection
 
 
 def prepare_consultas_table():
-    """Asegura que la tabla 'consultas' tenga las columnas necesarias
-    y que el campo dni no posea restricciones de unicidad."""
+    """Asegura que exista la tabla ``consultas`` y que contenga las
+    columnas necesarias. También elimina cualquier restricción de
+    unicidad sobre ``dni`` que pueda impedir registrar múltiples
+    evoluciones para un mismo paciente."""
     load_dotenv()
 
     try:
@@ -18,7 +20,27 @@ def prepare_consultas_table():
     cur = conn.cursor()
 
     try:
-        # Agregar columnas si no existen y clave primaria id
+        # Crear la tabla si no existe con las columnas básicas
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS consultas (
+                id SERIAL PRIMARY KEY,
+                paciente TEXT,
+                dni TEXT,
+                fecha TEXT,
+                diagnostico TEXT,
+                evolucion TEXT,
+                indicaciones TEXT,
+                usuario_id TEXT,
+                institucion_id TEXT,
+                firma_url TEXT,
+                sello_url TEXT,
+                pdf_url TEXT
+            );
+            """
+        )
+
+        # Agregar columnas que puedan faltar (id, firma_url, sello_url)
         cur.execute(
             """
             ALTER TABLE IF EXISTS consultas

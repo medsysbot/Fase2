@@ -44,12 +44,30 @@ supabase: Client = get_supabase_client()
 
 def get_db_connection():
     """Devuelve una conexión psycopg2 usando variables de entorno."""
+    user = os.getenv("user")
+    password = os.getenv("password")
+    host = os.getenv("host")
+    port = os.getenv("port")
+    dbname = os.getenv("dbname")
+
+    if not all([user, password, host, port, dbname]):
+        db_url = os.getenv("DATABASE_URL", "")
+        if db_url:
+            from urllib.parse import urlparse
+
+            parsed = urlparse(db_url)
+            user = user or parsed.username
+            password = password or parsed.password
+            host = host or parsed.hostname
+            port = port or str(parsed.port or "")
+            dbname = dbname or parsed.path.lstrip("/")
+
     return psycopg2.connect(
-        user=os.getenv("user"),
-        password=os.getenv("password"),
-        host=os.getenv("host"),
-        port=os.getenv("port"),
-        dbname=os.getenv("dbname"),
+        user=user,
+        password=password,
+        host=host,
+        port=port,
+        dbname=dbname,
     )
 
 

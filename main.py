@@ -28,6 +28,12 @@ def generar_env_automatico():
     extras = [
         "SUPABASE_ANON_KEY",
         "SUPABASE_SERVICE_ROLE_KEY",
+        "DATABASE_URL",
+        "user",
+        "password",
+        "host",
+        "port",
+        "dbname",
     ]
     for var in extras:
         if var not in posibles_vars:
@@ -36,6 +42,20 @@ def generar_env_automatico():
     with open(env_path, "w") as f:
         for var in posibles_vars:
             valor = os.getenv(var, "")
+            if not valor and var in {"user", "password", "host", "port", "dbname"}:
+                db_url = os.getenv("DATABASE_URL", "")
+                if db_url:
+                    from urllib.parse import urlparse
+
+                    parsed = urlparse(db_url)
+                    mapping = {
+                        "user": parsed.username,
+                        "password": parsed.password,
+                        "host": parsed.hostname,
+                        "port": str(parsed.port or ""),
+                        "dbname": parsed.path.lstrip("/"),
+                    }
+                    valor = mapping.get(var, "")
             f.write(f"{var}={valor}\n")
 
 

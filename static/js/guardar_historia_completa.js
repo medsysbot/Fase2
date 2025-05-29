@@ -20,13 +20,6 @@ document.getElementById("btn-borrar").onclick = closeAlert;
 async function guardarPDF() {
   const form = document.getElementById("form-historia");
   const formData = new FormData(form);
-
-  // Unificar nombre y apellido como un solo campo
-  const nombre = form.querySelector('#nombre').value.trim();
-  const apellido = form.querySelector('#apellido').value.trim();
-  formData.set('nombre', `${nombre} ${apellido}`.trim());
-
-
   try {
     showAlert("guardado", "Guardando Historia Clínica…", false, 3000);
     await new Promise(resolve => setTimeout(resolve, 3200));

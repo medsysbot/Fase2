@@ -93,9 +93,9 @@ def generar_pdf_historia_completa(datos, firma_path=None, sello_path=None):
     pdf.line(10, 50, 200, 50)
     pdf.set_font("Arial", size=12)
     pdf.ln(15)
+    pdf.cell(0, 10, f"Paciente: {datos['nombre_completo']}", ln=True)
 
     campos = [
-        ("Nombre del Paciente", datos["nombre"]),
         ("DNI", datos["dni"]),
         ("Fecha de Nacimiento", datos["fecha_nacimiento"]),
         ("Edad", datos["edad"]),
@@ -130,7 +130,7 @@ def generar_pdf_historia_completa(datos, firma_path=None, sello_path=None):
         pdf.image(sello_path, x=60, y=pdf.get_y(), w=FIRMA_SELLO_ANCHO)
         pdf.ln(25)
 
-    safe_name = datos["nombre"].strip().replace(" ", "_")
+    safe_name = datos["nombre_completo"].strip().replace(" ", "_")
     filename = f"historia_completa_{safe_name}_{datos['dni']}.pdf"
     output_path = os.path.join("/tmp", filename)
     pdf.output(output_path)

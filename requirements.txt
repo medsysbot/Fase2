@@ -10,3 +10,6 @@ supabase==1.0.3
 python-dotenv
 requests
 psycopg2-binary
+
+asyncpg
+httpx

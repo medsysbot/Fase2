@@ -4,7 +4,7 @@ services:
   backend:
     environment:
       - DEBUG=true
-      - DATABASE_URL=postgresql://user:pass@localhost:5432/fake
+      - DATABASE_URL=postgresql://postgres:YF5SV7qX5Fa6OIw1@db.wolcdduoroiobtadbcup.supabase.co:5432/postgres
     volumes:
       - ./templates:/app/templates
       - ./static:/app/static

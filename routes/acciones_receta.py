@@ -29,10 +29,11 @@ BUCKET_FIRMAS = "firma-sello-usuarios"
 async def generar_receta(
     request: Request,
     nombre: str = Form(...),
+    apellido: str = Form(...),
     dni: str = Form(...),
     fecha: str = Form(...),
     diagnostico: str = Form(...),
-    medicamentos: str = Form(...)
+    medicamentos: str = Form(...),
 ):
     try:
         usuario = request.session.get("usuario")
@@ -40,7 +41,7 @@ async def generar_receta(
         if institucion_id is None or not usuario:
             return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
         datos = {
-            "nombre": nombre,
+            "nombre_completo": f"{nombre} {apellido}",
             "dni": dni,
             "fecha": fecha,
             "diagnostico": diagnostico,
@@ -85,6 +86,7 @@ async def generar_receta(
 
         supabase.table("recetas").insert({
             "nombre": nombre,
+            "apellido": apellido,
             "dni": dni,
             "fecha": fecha,
             "diagnostico": diagnostico,
@@ -99,7 +101,7 @@ async def generar_receta(
         if sello_path and os.path.exists(sello_path):
             os.remove(sello_path)
 
-        return JSONResponse({"exito": True, "pdf_url": pdf_url})
+        return JSONResponse({"resultado": "ok", "pdf_url": pdf_url})
 
     except Exception as e:
         error_text = str(e)

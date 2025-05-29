@@ -17,8 +17,8 @@ async function guardarPDF() {
 
     const resultado = await response.json();
 
-    if (resultado.exito && resultado.pdf_url) {
-      showAlert("suceso", "Receta guardada", false, 3000);
+    if (resultado.resultado === 'ok' && resultado.pdf_url) {
+      showAlert("suceso", "Receta generada y guardada correctamente", false, 3000);
       sessionStorage.setItem('pdfURL_receta', resultado.pdf_url);
     } else {
       const mensaje = resultado.mensaje || "Error al guardar la receta";
@@ -75,7 +75,7 @@ async function enviarPorCorreo() {
 
   const pdfURL = sessionStorage.getItem('pdfURL_receta');
   if (!pdfURL) {
-    showAlert('pdf', 'Genera y guarda la receta antes de enviarla.', false, 3000);
+    showAlert('pdf', 'La receta no ha sido generada todavía', false, 3000);
     return;
   }
 

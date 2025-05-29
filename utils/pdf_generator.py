@@ -167,7 +167,7 @@ def generar_pdf_receta(datos, firma=None, sello=None):
     pdf.set_font("Arial", size=12)
     pdf.ln(15)
 
-    pdf.cell(0, 10, f"Paciente: {datos['nombre']}", ln=True)
+    pdf.cell(0, 10, f"Paciente: {datos['nombre_completo']}", ln=True)
     pdf.cell(0, 10, f"DNI: {datos['dni']}", ln=True)
     pdf.cell(0, 10, f"Fecha: {datos['fecha']}", ln=True)
     pdf.ln(5)

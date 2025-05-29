@@ -12,7 +12,7 @@ services:
     command: uvicorn main:app --host 0.0.0.0 --port 8000
     environment:
       - PYTHONUNBUFFERED=1
-      - DATABASE_URL=postgresql://user:pass@localhost:5432/fake
+      - DATABASE_URL=postgresql://postgres:YF5SV7qX5Fa6OIw1@db.wolcdduoroiobtadbcup.supabase.co:5432/postgres
 
 volumes:
   static_data:

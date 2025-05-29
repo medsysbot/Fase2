@@ -38,6 +38,14 @@ Variables de Entorno principales
 - EMAIL_PASSWORD (privada)
 - SMTP_SERVER (pública)
 - SMTP_PORT (pública)
+
+Ejemplo rápido de configuración:
+
+```bash
+SUPABASE_URL=https://wolcdduoroiobtadbcup.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=YF5SV7qX5Fa6OIw1
+DATABASE_URL=postgresql://postgres:YF5SV7qX5Fa6OIw1@db.wolcdduoroiobtadbcup.supabase.co:5432/postgres
+```
 Test de Funcionamiento
 GET / ? Debe responder {"status": "OK"}
 POST /generate ? Enviar JSON con datos del paciente:

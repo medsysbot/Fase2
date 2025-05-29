@@ -1,16 +1,114 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <!-- ╔════════════════════════════════════╗ -->
+  <!-- ║      CABECERA DEL FORMULARIO      ║ -->
+  <!-- ╚════════════════════════════════════╝ -->
   <meta charset="UTF-8" />
   <title>Enfermería</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/static/styles.css" />
+
+  <!-- Preload de íconos de alerta -->
+  <link rel="preload" href="/static/icons/alerta/alerta-alerta.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-borrado.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-busqueda.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-error.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-guardado.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-suceso.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-paciente-cargado.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-pdf.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-email.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-carga-pdf.png" as="image">
 </head>
 <body>
   <header>
     <img src="/static/icons/icono-enfermeria.png" alt="Enfermería" class="logo-grande" />
     <h2>Enfermería</h2>
   </header>
-  <p style="text-align:center;">Sección en construcción.</p>
+
+  <!-- ╔════════════════════════════════════╗ -->
+  <!-- ║          DATOS ENFERMERÍA         ║ -->
+  <!-- ╚════════════════════════════════════╝ -->
+  <form id="form-enfermeria" enctype="multipart/form-data">
+    <label>Profesional:</label>
+    <input type="text" name="profesional" id="profesional" readonly />
+
+    <label>Motivo de consulta:</label>
+    <textarea name="motivo_consulta" id="motivo_consulta" rows="3"></textarea>
+
+    <label>Hora:</label>
+    <input type="time" name="hora" id="hora" />
+
+    <label>Temperatura:</label>
+    <input type="number" name="temperatura" id="temperatura" step="0.1" />
+
+    <label>Saturación O₂:</label>
+    <input type="number" name="saturacion" id="saturacion" />
+
+    <label>TA (sistólica):</label>
+    <input type="number" name="ta" id="ta" />
+
+    <label>TA Diastólica:</label>
+    <input type="number" name="tad" id="tad" />
+
+    <label>Frecuencia cardíaca:</label>
+    <input type="number" name="frecuencia_cardiaca" id="frecuencia_cardiaca" />
+
+    <label>Escala de Glasgow:</label>
+    <input type="number" name="glasgow" id="glasgow" />
+
+    <label>Dolor (1-10):</label>
+    <input type="number" name="dolor" id="dolor" />
+
+    <label>Glucemia:</label>
+    <input type="number" name="glucemia" id="glucemia" />
+
+    <label>Triaje:</label>
+    <select name="triaje" id="triaje">
+      <option value="">Seleccionar…</option>
+      <option value="Negro">Negro</option>
+      <option value="Rojo">Rojo</option>
+      <option value="Naranja">Naranja</option>
+      <option value="Amarillo">Amarillo</option>
+      <option value="Verde">Verde</option>
+    </select>
+  </form>
+
+  <!--────────────────────────────────────-->
+  <!--         BOTONES DE ACCIÓN          -->
+  <!--────────────────────────────────────-->
+  <div class="botones-flotantes">
+    <button type="button" ondblclick="iniciarReconocimiento()" title="Reconocimiento por voz">
+      <img src="/static/icons/microfono.png" alt="Voz" />
+    </button>
+    <button type="button" onclick="guardarEnfermeria()" title="Guardar">
+      <img src="/static/icons/guardar.png" alt="Guardar" />
+    </button>
+    <button type="button" onclick="enviarAlMedico()" title="Enviar al médico">
+      <img src="/static/icons/enviar.png" alt="Enviar" />
+    </button>
+    <button type="button" onclick="abrirPDF()" title="Ver PDF">
+      <img src="/static/icons/icono-ver-pdf.png" alt="Ver PDF" />
+    </button>
+  </div>
+
+  <!-- ALERT MANAGER -->
+  <div id="alert-manager" class="alert-container" style="display: none;">
+    <div class="alert-box">
+      <img id="alert-icon" src="" alt="icono-alerta" class="alert-icon" />
+      <span id="alert-text" class="alert-message">Texto de alerta</span>
+      <div id="alert-buttons" class="alert-buttons" style="display: none;">
+        <img src="/static/icons/alerta/alerta-boton-borrar.png" id="btn-borrar" class="alert-btn" />
+        <img src="/static/icons/alerta/alerta-boton-no.png" id="btn-no" class="alert-btn" />
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="/static/js/alertas.js"></script>
+  <script src="/static/js/guardar_enfermeria.js"></script>
+  <script src="/static/js/voz-a-formulario-enfermeria.js"></script>
 </body>
 </html>

@@ -73,6 +73,12 @@ async function enviarPorCorreo() {
   const dni = document.getElementById('dni').value.trim();
   const email = await obtenerEmailPorDni(dni);
 
+  const pdfURL = sessionStorage.getItem('pdfURL_receta');
+  if (!pdfURL) {
+    showAlert('pdf', 'Genera y guarda la receta antes de enviarla.', false, 3000);
+    return;
+  }
+
   if (!email) {
     showAlert('error', 'No se encontró un e-mail para este DNI.', false, 3000);
     return;
@@ -85,6 +91,7 @@ async function enviarPorCorreo() {
     const formData = new FormData();
     formData.append('nombre', nombre);
     formData.append('dni', dni);
+    formData.append('pdf_url', pdfURL);
 
     const response = await fetch('/enviar_pdf_receta', {
       method: 'POST',

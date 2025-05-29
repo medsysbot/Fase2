@@ -73,3 +73,15 @@ Cada archivo corresponde a un formulario HTML y define las columnas con los mism
 usados en los formularios. Además, todas las tablas incluyen la columna `institucion_id`.
 
 Para utilizarlos, basta con ejecutar cada script en tu proyecto de Supabase.
+
+## Verificación de dependencias y conexión
+
+Ejecuta el script `utils/diagnostics.py` para comprobar que todas las
+librerías están instaladas y que la conexión a Supabase funciona:
+
+```bash
+python utils/diagnostics.py
+```
+
+El resultado indicará si faltan paquetes o si las variables de entorno de
+Supabase están configuradas correctamente.

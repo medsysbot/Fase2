@@ -15,6 +15,7 @@ from utils.image_utils import (
     descargar_imagen,
     eliminar_imagen,
     imagen_existe,
+    guardar_imagen_temporal,
 )
 
 from utils.supabase_helper import supabase, SUPABASE_URL, subir_pdf
@@ -47,6 +48,7 @@ async def generar_receta(
         }
 
         firma_url = sello_url = None
+        firma_path = sello_path = None
         base_firma = f"firma_{usuario}_{institucion_id}"
         base_sello = f"sello_{usuario}_{institucion_id}"
 
@@ -59,6 +61,8 @@ async def generar_receta(
         if nombre_firma:
             pdf_obj = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(nombre_firma)
             firma_url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
+        if contenido_firma:
+            firma_path = guardar_imagen_temporal(contenido_firma, nombre_firma)
 
         # ╔══════════════════════════════════════════════╗
         # ║                    SELLO                     ║
@@ -69,8 +73,10 @@ async def generar_receta(
         if nombre_sello:
             pdf_obj = supabase.storage.from_(BUCKET_FIRMAS).get_public_url(nombre_sello)
             sello_url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
+        if contenido_sello:
+            sello_path = guardar_imagen_temporal(contenido_sello, nombre_sello)
 
-        pdf_path = generar_pdf_receta(datos, firma_url, sello_url)
+        pdf_path = generar_pdf_receta(datos, firma_path, sello_path)
 
         nombre_archivo = f"{dni}_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.pdf"
 
@@ -87,6 +93,11 @@ async def generar_receta(
             "usuario_id": usuario,
             "institucion_id": institucion_id,
         }).execute()
+
+        if firma_path and os.path.exists(firma_path):
+            os.remove(firma_path)
+        if sello_path and os.path.exists(sello_path):
+            os.remove(sello_path)
 
         return JSONResponse({"exito": True, "pdf_url": pdf_url})
 
@@ -166,16 +177,17 @@ async def subir_firma_sello(
 
 
 @router.post("/enviar_pdf_receta")
-async def enviar_pdf_receta(nombre: str = Form(...), dni: str = Form(...)):
+async def enviar_pdf_receta(
+    nombre: str = Form(...),
+    dni: str = Form(...),
+    pdf_url: str = Form(...),
+):
     try:
         resultado = supabase.table("pacientes").select("email").eq("dni", dni).single().execute()
         email = resultado.data.get("email") if resultado.data else None
 
         if not email:
             return JSONResponse({"exito": False, "mensaje": "No se encontró un e-mail para este DNI."}, status_code=404)
-
-        registros = supabase.table("recetas").select("pdf_url").eq("dni", dni).order("id", desc=True).limit(1).execute()
-        pdf_url = registros.data[0]['pdf_url'] if registros.data else None
 
         if not pdf_url:
             return JSONResponse(content={"exito": False, "mensaje": "No se encontró el PDF."}, status_code=404)

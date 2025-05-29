@@ -33,7 +33,7 @@ async function guardarPDF() {
 
     if (resultado.exito && resultado.pdf_url) {
       showAlert("suceso", "Historia Clínica Guardada", false, 3000);
-      sessionStorage.setItem('pdfURL_historia_resumen', resultado.pdf_url);
+      sessionStorage.setItem('pdfURL_resumen', resultado.pdf_url);
     } else if (resultado.mensaje && resultado.mensaje.toLowerCase().includes("registrada")) {
       showAlert("pacienteCargado", "La Historia Clínica Ya Está Registrada", false, 3000);
     } else {
@@ -57,6 +57,12 @@ async function enviarPorCorreo() {
   const paciente = `${nombre} ${apellido}`.trim();
   const dni = form.querySelector('[name="dni"]')?.value.trim() || "";
   const email = await obtenerEmailPorDni(dni);
+  const pdfURL = sessionStorage.getItem('pdfURL_resumen');
+
+  if (!pdfURL) {
+    showAlert("pdf", "Genera y guarda la historia clínica antes de enviarla.", false, 3000);
+    return;
+  }
 
   if (!email) {
     showAlert("error", "No se encontró un e-mail para este DNI.", false, 3000);
@@ -70,7 +76,7 @@ async function enviarPorCorreo() {
     const formData = new FormData();
     formData.append("email", email);
     formData.append("paciente", paciente);
-    formData.append("dni", dni);
+    formData.append("pdf_url", pdfURL);
 
     const response = await fetch('/enviar_pdf_historia_resumen', {
       method: 'POST',
@@ -95,7 +101,7 @@ async function enviarPorCorreo() {
 /*──────────────────────────────────────────────*/
 
 function abrirPDF() {
-  const url = sessionStorage.getItem('pdfURL_historia_resumen');
+  const url = sessionStorage.getItem('pdfURL_resumen');
   if (url) {
     showAlert("cargaPDF", "Cargando PDF…", false, 3000);
 

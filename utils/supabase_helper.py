@@ -2,6 +2,7 @@ import os
 import logging
 from dotenv import load_dotenv
 from supabase import create_client, Client
+import psycopg2
 
 # Cargar variables de entorno una sola vez
 load_dotenv()
@@ -39,6 +40,17 @@ def get_supabase_client() -> Client:
 
 # Cliente reutilizable en toda la aplicación
 supabase: Client = get_supabase_client()
+
+
+def get_db_connection():
+    """Devuelve una conexión psycopg2 usando variables de entorno."""
+    return psycopg2.connect(
+        user=os.getenv("user"),
+        password=os.getenv("password"),
+        host=os.getenv("host"),
+        port=os.getenv("port"),
+        dbname=os.getenv("dbname"),
+    )
 
 
 def check_supabase_connection() -> bool:

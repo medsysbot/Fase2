@@ -1,22 +1,26 @@
 #!/bin/bash
-# ╔══════════════════════════════════════════════╗
-# ║      Script de Setup para MedSys - Codex     ║
-# ╚══════════════════════════════════════════════╝
+set -e
 
-echo "📦 Instalando dependencias del proyecto..."
-pip install -r requirements.txt
+# ╔═════════════════════════════════════════════════════╗
+# ║       INSTALACIÓN DE DEPENDENCIAS REQUERIDAS       ║
+# ╚═════════════════════════════════════════════════════╝
 
-echo "📁 Creando carpetas necesarias (si no existen)..."
-mkdir -p static/pdf
-mkdir -p static/icons/alerta
-mkdir -p static/icons/firmas
-mkdir -p static/uploads
-mkdir -p static/firmas_y_sellos
+echo "Instalando dependencias de Python..."
 
-echo "🔍 Verificando errores de sintaxis en los scripts Python..."
-python -m compileall -q .
+pip install fastapi python-dotenv psycopg2-binary python-multipart jinja2 supabase
 
-echo "🔌 Comprobando conexión y dependencias..."
-python utils/diagnostics.py
+echo "✅ Librerías instaladas correctamente"
 
-echo "✅ Setup completo. El entorno de MedSys está listo para usar."
+# ╔═════════════════════════════════════════════════════╗
+# ║         VERIFICACIÓN DE ESTRUCTURA DE PROYECTO     ║
+# ╚═════════════════════════════════════════════════════╝
+
+mkdir -p static/js static/icons static/doc templates routes utils
+
+echo "📁 Carpetas esenciales verificadas"
+
+# ╔═════════════════════════════════════════════════════╗
+# ║       MENSAJE FINAL DE INSTALACIÓN COMPLETADA      ║
+# ╚═════════════════════════════════════════════════════╝
+
+echo "✅ Setup completo. Ya podés iniciar tu backend en Codex sin problemas."

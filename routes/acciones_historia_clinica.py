@@ -74,8 +74,6 @@ async def generar_pdf_historia_completa(
             "historial_tratamientos": historial_tratamientos,
             "historial_consultas": historial_consultas,
         }
-        firma_url = ""
-        sello_url = ""
         firma_path = sello_path = None
         base_firma = f"firma_{usuario}_{institucion_id}"
         base_sello = f"sello_{usuario}_{institucion_id}"
@@ -85,10 +83,6 @@ async def generar_pdf_historia_completa(
         contenido_sello, nombre_sello = descargar_imagen(
             supabase, BUCKET_FIRMAS, base_sello
         )
-        if nombre_firma:
-            firma_url = f"{BUCKET_FIRMAS}/{nombre_firma}"
-        if nombre_sello:
-            sello_url = f"{BUCKET_FIRMAS}/{nombre_sello}"
 
         if contenido_firma:
             firma_path = guardar_imagen_temporal(contenido_firma, nombre_firma)
@@ -102,6 +96,9 @@ async def generar_pdf_historia_completa(
         # Subir a Supabase
         with open(pdf_path, "rb") as file_data:
             public_url = subir_pdf(BUCKET_PDFS, filename, file_data)
+
+        if os.path.exists(pdf_path):
+            os.remove(pdf_path)
 
         if firma_path and os.path.exists(firma_path):
             os.remove(firma_path)
@@ -129,9 +126,7 @@ async def generar_pdf_historia_completa(
             "estudios": estudios,
             "historial_tratamientos": historial_tratamientos,
             "historial_consultas": historial_consultas,
-            "institucion_id": institucion_id,
-            "firma_url": firma_url,
-            "sello_url": sello_url
+            "institucion_id": institucion_id
         }).execute()
 
         return JSONResponse({"exito": True, "pdf_url": public_url})
@@ -143,18 +138,17 @@ async def generar_pdf_historia_completa(
 # ║             ENVIAR PDF POR EMAIL             ║
 # ╚══════════════════════════════════════════════╝
 @router.post("/enviar_pdf_historia_completa")
-async def enviar_pdf_historia_completa(email: str = Form(...), nombre: str = Form(...), dni: str = Form(...)):
+async def enviar_pdf_historia_completa(
+    email: str = Form(...), nombre: str = Form(...), pdf_url: str = Form(...)
+):
     try:
-        safe_name = nombre.strip().replace(" ", "_")
-        filename = f"historia_completa_{safe_name}_{dni}.pdf"
-        pdf_obj = supabase.storage.from_(BUCKET_PDFS).get_public_url(filename)
-        pdf_url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
-
         enviar_email_con_pdf(
             email_destino=email,
             asunto="Historia Clínica Completa - MEDSYS",
-            cuerpo=f"Estimado/a {nombre},\n\nAdjuntamos su historia clínica en formato PDF.\n\nSaludos,\nEquipo MEDSYS",
-            url_pdf=pdf_url
+            cuerpo=(
+                f"Estimado/a {nombre},\n\nAdjuntamos su historia clínica en formato PDF.\n\nSaludos,\nEquipo MEDSYS"
+            ),
+            url_pdf=pdf_url,
         )
         return JSONResponse({"exito": True})
     except Exception as e:

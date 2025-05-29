@@ -16,4 +16,7 @@ mkdir -p static/firmas_y_sellos
 echo "🔍 Verificando errores de sintaxis en los scripts Python..."
 python -m compileall -q .
 
+echo "🔌 Comprobando conexión y dependencias..."
+python utils/diagnostics.py
+
 echo "✅ Setup completo. El entorno de MedSys está listo para usar."

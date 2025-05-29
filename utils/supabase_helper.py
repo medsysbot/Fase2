@@ -41,6 +41,16 @@ def get_supabase_client() -> Client:
 supabase: Client = get_supabase_client()
 
 
+def check_supabase_connection() -> bool:
+    """Comprueba si la conexión a Supabase funciona."""
+    try:
+        supabase.table("usuarios").select("id").limit(1).execute()
+        return True
+    except Exception as e:
+        logging.error(f"Conexión a Supabase falló: {e}")
+        return False
+
+
 def subir_pdf(bucket: str, nombre: str, datos) -> str:
     """Sube un PDF al bucket indicado y devuelve su URL pública."""
     opciones = {"content-type": "application/pdf", "x-upsert": "true"}

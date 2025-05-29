@@ -1,19 +1,16 @@
-import os
-import psycopg2
 import logging
+from dotenv import load_dotenv
+import psycopg2
+from .supabase_helper import get_db_connection
 
 
 def prepare_consultas_table():
     """Asegura que la tabla 'consultas' tenga las columnas necesarias
     y que el campo dni no posea restricciones de unicidad."""
-    db_url = os.getenv("DATABASE_URL")
-    if not db_url:
-        # Sin cadena de conexión no podemos aplicar cambios
-        logging.warning("DATABASE_URL no está definido. Se omite la preparación de la tabla consultas")
-        return
+    load_dotenv()
 
     try:
-        conn = psycopg2.connect(db_url)
+        conn = get_db_connection()
     except psycopg2.OperationalError as e:
         logging.error(f"No se pudo conectar a la base de datos: {e}")
         return

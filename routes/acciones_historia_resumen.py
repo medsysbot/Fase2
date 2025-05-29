@@ -12,7 +12,6 @@ from utils.email_sender import enviar_email_con_pdf
 from utils.image_utils import (
     guardar_imagen_temporal,
     descargar_imagen,
-    imagen_existe,
 )
 
 from utils.supabase_helper import supabase, subir_pdf
@@ -80,6 +79,10 @@ async def generar_historia_resumen(
         with open(pdf_path, "rb") as f:
             pdf_url = subir_pdf(BUCKET, nombre_archivo, f)
 
+        # Eliminar PDF local
+        if os.path.exists(pdf_path):
+            os.remove(pdf_path)
+
         # Eliminar archivos temporales de firma y sello
         if firma_path and os.path.exists(firma_path):
             os.remove(firma_path)
@@ -112,20 +115,20 @@ async def generar_historia_resumen(
 async def enviar_historia_resumen(
     email: str = Form(...),
     paciente: str = Form(...),
-    dni: str = Form(...)
+    pdf_url: str = Form(...),
 ):
     try:
-        registros = supabase.table("historia_clinica_resumida").select("pdf_url").eq("dni", dni).order("id", desc=True).limit(1).execute()
-        pdf_url = registros.data[0]['pdf_url'] if registros.data else None
-
         if not pdf_url:
-            return JSONResponse(content={"exito": False, "mensaje": "No se encontró el PDF."}, status_code=404)
+            return JSONResponse(
+                content={"exito": False, "mensaje": "No se encontró el PDF."},
+                status_code=404,
+            )
 
         enviar_email_con_pdf(
             email_destino=email,
             asunto="Historia Clínica Resumida",
             cuerpo=f"Estimado/a {paciente}, adjuntamos su historia clínica.",
-            url_pdf=pdf_url
+            url_pdf=pdf_url,
         )
 
         return {"exito": True}

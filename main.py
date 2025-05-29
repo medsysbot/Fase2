@@ -7,6 +7,39 @@ from starlette.middleware.sessions import SessionMiddleware
 import os
 import tempfile
 from dotenv import load_dotenv
+
+
+def generar_env_automatico():
+    """Crea un archivo .env con las variables del entorno si no existe."""
+    env_path = ".env"
+    if os.path.exists(env_path):
+        return
+
+    posibles_vars = []
+    ejemplo = ".env.example"
+    if os.path.exists(ejemplo):
+        with open(ejemplo) as f:
+            for linea in f:
+                linea = linea.strip()
+                if not linea or linea.startswith("#") or "=" not in linea:
+                    continue
+                posibles_vars.append(linea.split("=", 1)[0])
+
+    extras = [
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+    ]
+    for var in extras:
+        if var not in posibles_vars:
+            posibles_vars.append(var)
+
+    with open(env_path, "w") as f:
+        for var in posibles_vars:
+            valor = os.getenv(var, "")
+            f.write(f"{var}={valor}\n")
+
+
+generar_env_automatico()
 import asyncio
 from utils.supabase_helper import supabase, SUPABASE_URL
 from utils.db_setup import prepare_consultas_table

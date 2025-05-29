@@ -20,6 +20,21 @@ mkdir -p static/js static/icons static/doc templates routes utils
 echo "📁 Carpetas esenciales verificadas"
 
 # ╔═════════════════════════════════════════════════════╗
+# ║        LIMPIEZA DE ARCHIVOS Y CACHÉS VIEJOS        ║
+# ╚═════════════════════════════════════════════════════╝
+
+echo "🧹 Limpiando archivos temporales y caché..."
+
+find . -type d -name "__pycache__" -exec rm -rf {} +
+find . -type f -name "*.pyc" -delete
+find . -type f -name "*.pyo" -delete
+find . -type f -name "*~" -delete
+find . -type f -name "*.bak" -delete
+rm -rf tmp 2>/dev/null || true
+
+echo "🧼 Limpieza completada"
+
+# ╔═════════════════════════════════════════════════════╗
 # ║       MENSAJE FINAL DE INSTALACIÓN COMPLETADA      ║
 # ╚═════════════════════════════════════════════════════╝
 

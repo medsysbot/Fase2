@@ -28,6 +28,7 @@ BUCKET_FIRMAS = "firma-sello-usuarios"
 async def generar_pdf_historia_completa(
     request: Request,
     nombre: str = Form(...),
+    apellido: str = Form(...),
     fecha_nacimiento: str = Form(...),
     edad: str = Form(...),
     sexo: str = Form(...),
@@ -55,6 +56,8 @@ async def generar_pdf_historia_completa(
 
         datos = {
             "nombre": nombre,
+            "apellido": apellido,
+            "nombre_completo": f"{nombre} {apellido}",
             "dni": dni,
             "fecha_nacimiento": fecha_nacimiento,
             "edad": edad,
@@ -108,6 +111,7 @@ async def generar_pdf_historia_completa(
         supabase.table("historia_clinica_completa").insert({
             "paciente_id": dni,
             "nombre": nombre,
+            "apellido": apellido,
             "dni": dni,
             "fecha_nacimiento": fecha_nacimiento,
             "edad": edad,

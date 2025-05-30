@@ -111,6 +111,9 @@ async def generar_receta(
         return JSONResponse(content={"exito": False, "mensaje": error_text}, status_code=500)
 
 
+# Endpoints centralizados para la carga y gestión de firma y sello.
+# Esta es la única vía para que el profesional suba o reemplace las imágenes
+# mediante la pantalla `firma_sello.html`.
 @router.get("/obtener_firma_sello")
 async def obtener_firma_sello(request: Request):
     usuario = request.session.get("usuario")

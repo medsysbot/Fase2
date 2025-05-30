@@ -1,89 +1,75 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bienvenido a MEDSYS</title>
+  <meta charset="UTF-8">
+  <title>MEDSYS - Bienvenido</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
   <style>
-    html, body {
-      height: 100%;
+    body {
       margin: 0;
       padding: 0;
-    }
-    body {
-      min-height: 100vh;
-      min-width: 100vw;
-      width: 100vw;
       height: 100vh;
       font-family: 'Poppins', sans-serif;
-      background: url('/static/splash-sacar-turno.png') no-repeat center center fixed;
+      background: url('/static/splash-sacar-turno.png') no-repeat center center;
       background-size: cover;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       color: #595959;
       overflow: hidden;
       text-align: center;
+      animation: fadeout 1s ease-in-out forwards;
+      animation-delay: 6.5s; /* Duración total + fade */
     }
-    #splash-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(255,255,255,0.54);
-      animation: fadeout 1.1s ease-in-out forwards;
-      animation-delay: 4.5s; /* Duración: 4.5 segundos, ajustá aquí si querés más o menos */
-      z-index: 10;
+    .logo {
+      width: 440px;
+      max-width: 85vw;
+      opacity: 0;
+      animation: aparecer 1.5s forwards;
+      animation-delay: 0.5s;
     }
-    @keyframes fadeout { to { opacity: 0; pointer-events: none; } }
-    .frase-splash {
+    .eslogan {
+      margin-top: 5px;
       font-size: 22px;
       font-weight: 600;
       color: #595959;
-      margin-top: 16px;
-      letter-spacing: 0.5px;
-      text-shadow: 1px 1px 4px #fff5;
-      word-break: break-word;
-      max-width: 96vw;
+      opacity: 0;
+      animation: aparecer 1.5s forwards;
+      animation-delay: 1.5s;
     }
-    .logo-medsys {
-      max-width: 38vw;
-      min-width: 100px;
-      width: 170px;
-      height: auto;
-      margin-bottom: 12px;
-      filter: drop-shadow(0 3px 14px #0001);
+    @keyframes aparecer {
+      from {
+        opacity: 0;
+        transform: translateY(0);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @keyframes fadeout {
+      to { opacity: 0; }
     }
     @media (max-width: 600px) {
-      .frase-splash {
+      .logo {
+        width: 72vw;
+        min-width: 110px;
+      }
+      .eslogan {
         font-size: 17px;
-        margin-top: 12px;
-      }
-      .logo-medsys {
-        max-width: 65vw;
-        min-width: 80px;
-        margin-bottom: 10px;
-      }
-      #splash-content {
-        padding: 20px 6vw;
       }
     }
   </style>
   <script>
-    window.onload = function() {
-      setTimeout(function() {
-        window.location.href = "/turnos-publico"; // Cambia por tu ruta real de formulario público
-      }, 4500); // 4.5 segundos, ajusta aquí si necesitás más tiempo
-    };
+    setTimeout(() => {
+      window.location.href = "/turnos-publico"; // Cambia aquí si la ruta es otra
+    }, 6500); // 6.5 segundos (5s de splash + 1.5s fade)
   </script>
 </head>
 <body>
-  <div id="splash-content">
-    <img src="/static/icons/logo-medsys-gris.png" alt="Logo MEDSYS" class="logo-medsys">
-    <div class="frase-splash">Salud Inteligente para un Mundo Real</div>
-  </div>
+  <img src="/static/icons/logo-medsys-gris.png" alt="Logo Medsys" class="logo">
+  <div class="eslogan">Salud Inteligente para un Mundo Real</div>
 </body>
 </html>

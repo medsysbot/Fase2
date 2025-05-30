@@ -260,8 +260,9 @@ from routes import (
     estudios_router,
     admin_router,
     paginas_router,
-    app_publico,
+    solicitar_turno_publico_router
 )
+
 from routes.acciones_estudios import iniciar_monitor
 app.include_router(pacientes_router)
 app.include_router(historia_clinica_router)
@@ -274,7 +275,7 @@ app.include_router(busqueda_router)
 app.include_router(estudios_router)
 app.include_router(admin_router)
 app.include_router(paginas_router)
-app.include_router(app_publico.router)
+app.include_router(solicitar_turno_publico.router, prefix="/turnos-publico")
 
 @app.on_event("startup")
 async def startup_event():

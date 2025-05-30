@@ -11,21 +11,24 @@
     <img src="/static/icons/icon-subida-sello-firma.png" alt="Firma" class="logo-grande" />
     <h2>Subida de Firma y Sello</h2>
   </header>
-  <form id="form-firma-sello" enctype="multipart/form-data">
-    <label>Firma del Profesional:</label>
-    <input type="file" id="firma" accept="image/*" />
-    <img id="firma-preview" class="vista-previa" style="display:none;" />
-
-    <label>Sello del Profesional:</label>
-    <input type="file" id="sello" accept="image/*" />
-    <img id="sello-preview" class="vista-previa" style="display:none;" />
-
-    <button type="button" onclick="subirArchivo('firma')">Subir Firma</button>
-    <button type="button" onclick="eliminarArchivo('firma')">Borrar Firma</button>
-
-    <button type="button" onclick="subirArchivo('sello')">Subir Sello</button>
-    <button type="button" onclick="eliminarArchivo('sello')">Borrar Sello</button>
-  </form>
+  <div class="contenedor-firma-sello">
+    <form id="form-firma-sello" enctype="multipart/form-data">
+      <div class="grupo-carga">
+        <label for="firma" class="btn-celeste">📄 Elegir Firma</label>
+        <input type="file" id="firma" name="firma" accept="image/*" style="display:none;" />
+        <button type="button" class="btn-verde" onclick="subirArchivo('firma')">Subir Firma</button>
+        <button type="button" class="btn-rojo" onclick="eliminarArchivo('firma')">Borrar Firma</button>
+        <img id="firma-preview" class="vista-previa" style="display:none;" />
+      </div>
+      <div class="grupo-carga">
+        <label for="sello" class="btn-celeste">📄 Elegir Sello</label>
+        <input type="file" id="sello" name="sello" accept="image/*" style="display:none;" />
+        <button type="button" class="btn-verde" onclick="subirArchivo('sello')">Subir Sello</button>
+        <button type="button" class="btn-rojo" onclick="eliminarArchivo('sello')">Borrar Sello</button>
+        <img id="sello-preview" class="vista-previa" style="display:none;" />
+      </div>
+    </form>
+  </div>
 
   <script src="/static/js/firma_sello.js"></script>
   <script src="/static/js/subir_firma_sello.js"></script>

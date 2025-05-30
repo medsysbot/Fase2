@@ -389,3 +389,55 @@ footer {
 .btn.pausar   { background-color: #f39c12; color: #fff; }
 .btn.activar  { background-color: #2ecc71; color: #fff; }
 .btn.exportar { background-color: #3498db; color: #fff; }
+
+/* ╔══════════════════════════════╗ */
+/* ║   FIRMA Y SELLO - BOTONES    ║ */
+/* ╚══════════════════════════════╝ */
+.contenedor-firma-sello {
+  margin: 20px auto;
+  max-width: 400px;
+}
+
+.grupo-carga {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.btn-verde {
+  background-color: #38b000;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 16px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-rojo {
+  background-color: #e63946;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 16px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-celeste {
+  background-color: #48cae4;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 16px;
+  cursor: pointer;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.btn-verde:hover,
+.btn-rojo:hover,
+.btn-celeste:hover {
+  opacity: 0.85;
+}

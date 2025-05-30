@@ -138,44 +138,6 @@ async def obtener_firma_sello(request: Request):
         return JSONResponse({"exito": False, "mensaje": str(e)}, status_code=500)
 
 
-@router.post("/eliminar_firma_sello")
-async def eliminar_firma_sello(request: Request, tipo: str = Form(...)):
-    usuario = request.session.get("usuario")
-    institucion_id = request.session.get("institucion_id")
-    if institucion_id is None or not usuario:
-        return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
-
-    try:
-        eliminar_imagen(supabase, BUCKET_FIRMAS, f"{tipo}_{usuario}_{institucion_id}")
-        return {"exito": True}
-    except Exception as e:
-        return JSONResponse({"exito": False, "mensaje": str(e)}, status_code=500)
-
-@router.post("/subir_firma_sello")
-async def subir_firma_sello(
-    request: Request,
-    tipo: str = Form(...),
-    archivo: UploadFile = File(...),
-):
-    usuario = request.session.get("usuario")
-    institucion_id = request.session.get("institucion_id")
-    if institucion_id is None or not usuario:
-        return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
-
-    try:
-        contenido = await archivo.read()
-        extension = os.path.splitext(archivo.filename)[1].lower()
-        base_name = f"{tipo}_{usuario}_{institucion_id}"
-        nombre_obj = f"{base_name}{extension}"
-        if not imagen_existe(supabase, BUCKET_FIRMAS, base_name):
-            supabase.storage.from_(BUCKET_FIRMAS).upload(
-                nombre_obj,
-                contenido,
-                {"x-upsert": "true"},
-            )
-        return {"exito": True}
-    except Exception as e:
-        return JSONResponse({"exito": False, "mensaje": str(e)}, status_code=500)
 
 
 @router.post("/enviar_pdf_receta")

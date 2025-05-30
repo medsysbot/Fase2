@@ -1,64 +1,43 @@
-<!-- Archivo: templates/app_publico/formulario_turnos.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Solicitud de Turno</title>
+  <title>Bienvenido a MEDSYS</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
   <style>
-    body { background: #f4f4f4; font-family: 'Poppins', sans-serif; color: #595959; }
-    .turnos-container {
-      max-width: 380px; margin: 60px auto; padding: 28px;
-      background: #fff; border-radius: 14px; box-shadow: 0 2px 12px #0002;
+    body {
+      margin: 0; padding: 0; height: 100vh;
+      background: url('/static/splash-sacar-turno.png') no-repeat center center;
+      background-size: cover;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      font-family: 'Poppins', sans-serif; color: #595959; overflow: hidden; text-align: center;
     }
-    h2 { color: #16a085; text-align: center; }
-    form { display: flex; flex-direction: column; gap: 12px; }
-    input, select {
-      font-family: inherit; font-size: 16px; padding: 8px 10px; border: 1px solid #bbb; border-radius: 7px; outline: none;
+    #splash-content {
+      width: 100vw; height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.52);
+      animation: fadeout 1s ease-in-out forwards;
+      animation-delay: 2.2s;
     }
-    button {
-      font-weight: 600; font-size: 16px; padding: 10px 0;
-      border: none; border-radius: 7px; cursor: pointer; transition: 0.2s;
+    @keyframes fadeout { to { opacity: 0; pointer-events: none; } }
+    .frase-splash {
+      font-size: 22px; font-weight: 600; color: #595959;
+      margin-top: 16px; letter-spacing: 0.5px; text-shadow: 1px 1px 4px #fff5;
     }
-    #enviar-btn { background: #16a085; color: #fff; margin-right: 4px; }
-    #limpiar-btn { background: #e67e22; color: #fff; }
-    .botones { display: flex; gap: 10px; margin-top: 8px; }
-    #alerta-turno { margin-top: 15px; text-align: center; color: #e74c3c; display: none; }
   </style>
   <script>
-    // Opcional: Podés agregar aquí el fetch para cargar especialidades y profesionales
-    function limpiarAlerta() {
-      document.getElementById('alerta-turno').style.display = 'none';
-    }
-    window.onload = limpiarAlerta;
+    window.onload = function() {
+      setTimeout(function() {
+        window.location.href = "/turnos-publico"; // Cambia por tu ruta real de formulario público
+      }, 2200); // 2.2 segundos
+    };
   </script>
 </head>
 <body>
-  <div class="turnos-container">
-    <h2>Solicitá tu Turno</h2>
-    <form id="form-turno" action="/solicitar_turno" method="post" autocomplete="off">
-      <input type="text" name="nombre" placeholder="Nombre" required>
-      <input type="text" name="apellido" placeholder="Apellido" required>
-      <input type="text" name="dni" placeholder="DNI" required>
-      <select name="especialidad" id="especialidad" required>
-        <option value="">Especialidad</option>
-        <!-- Opciones cargadas dinámicamente -->
-      </select>
-      <select name="profesional" id="profesional" required>
-        <option value="">Profesional</option>
-      </select>
-      <input type="date" name="fecha" id="fecha" required>
-      <select name="horario" id="horario" required>
-        <option value="">Horario</option>
-      </select>
-      <div class="botones">
-        <button type="submit" id="enviar-btn">Enviar</button>
-        <button type="reset" id="limpiar-btn">Limpiar</button>
-      </div>
-    </form>
-    <div id="alerta-turno"></div>
+  <div id="splash-content">
+    <img src="/static/icons/logo-medsys-gris.png" alt="Logo MEDSYS" style="max-width:160px;margin-bottom:10px;">
+    <div class="frase-splash">Salud Inteligente para un Mundo Real</div>
   </div>
-  <script src="/static/js/turnos_publicos.js"></script>
 </body>
 </html>

@@ -113,4 +113,7 @@ async def ver_historia_completa(request: Request):
 @router.get("/solicitar-turno", response_class=HTMLResponse)
 async def ver_turno_publico(request: Request):
     """Portal público para solicitar turnos."""
-    return templates.TemplateResponse("turno_publico.html", {"request": request})
+    return templates.TemplateResponse(
+        "app_publico/splash_turno_publico.html",
+        {"request": request},
+    )

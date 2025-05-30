@@ -2,19 +2,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('form-buscar-estudios');
   const listaFechas = document.getElementById('lista-fechas');
   const mensaje = document.getElementById('mensaje');
-  const visorPDFBox = document.getElementById('visor-pdf-box');
-  const visorPDF = document.getElementById('visorPDF');
-  const abrirPestaniaBtn = document.getElementById('abrir-nueva-pestania');
-
-  let estudios = [];
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     listaFechas.innerHTML = '';
     mensaje.textContent = '';
-    visorPDFBox.style.display = "none";
-    visorPDF.src = '';
-    abrirPestaniaBtn.style.display = "none";
 
     const paciente_id = form.paciente_id.value.trim();
     const tipo_estudio = form.tipo_estudio.value;
@@ -30,12 +22,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     mensaje.textContent = "Buscando estudios...";
     try {
-      // Modificá el endpoint según tu backend
+      // Cambia el endpoint según tu backend si es necesario
       const resp = await fetch(`/consultar_estudios/${paciente_id}`);
       const data = await resp.json();
-      estudios = data.estudios || [];
+      const estudios = data.estudios || [];
 
-      // Filtra por tipo de estudio
+      // Filtrar por tipo de estudio
       const filtrados = estudios.filter(est => est.tipo_estudio === tipo_estudio);
 
       if (filtrados.length === 0) {
@@ -47,28 +39,22 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      mensaje.textContent = "Seleccione la fecha del estudio que desea visualizar:";
-      filtrados.forEach((est, i) => {
+      mensaje.textContent = "Hacé clic en la fecha para ver el estudio:";
+      filtrados.forEach((est) => {
         const li = document.createElement('li');
-        const btn = document.createElement('button');
-        btn.className = 'fecha-link';
-        btn.type = 'button';
-        btn.innerHTML = `<span>${est.fecha || 'Sin fecha'} — ${est.descripcion || est.tipo_estudio}</span>`;
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('.fecha-link').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          visorPDF.src = est.pdf_url;
-          visorPDFBox.style.display = 'flex';
-          abrirPestaniaBtn.style.display = 'inline-block';
-          abrirPestaniaBtn.textContent = "Ver PDF";
-          abrirPestaniaBtn.onclick = () => window.open(est.pdf_url, '_blank');
-          showAlert({
-            mensaje: "Mostrando estudio seleccionado.",
-            tipo: "success"
-          });
-        });
-        li.appendChild(btn);
+        const a = document.createElement('a');
+        a.className = 'fecha-link';
+        a.href = est.pdf_url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.textContent = `${est.fecha || 'Sin fecha'} — ${est.descripcion || est.tipo_estudio}`;
+        li.appendChild(a);
         listaFechas.appendChild(li);
+      });
+
+      showAlert({
+        mensaje: "Resultados listos. Abrí el estudio que quieras en nueva pestaña.",
+        tipo: "success"
       });
 
     } catch (err) {
@@ -80,4 +66,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Limpia visor si cambia búsqueda
+  // Limpia resultados si resetean el form
+  form.addEventListener('reset', () => {
+    listaFechas.innerHTML = '';
+    mensaje.textContent = "Complete el DNI y seleccione tipo de estudio para ver los resultados disponibles.";
+  });
+});

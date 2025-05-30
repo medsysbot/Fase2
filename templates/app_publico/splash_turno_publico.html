@@ -6,37 +6,83 @@
   <title>Bienvenido a MEDSYS</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
   <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
     body {
-      margin: 0; padding: 0; height: 100vh;
-      background: url('/static/splash-sacar-turno.png') no-repeat center center;
+      min-height: 100vh;
+      min-width: 100vw;
+      width: 100vw;
+      height: 100vh;
+      font-family: 'Poppins', sans-serif;
+      background: url('/static/splash-sacar-turno.png') no-repeat center center fixed;
       background-size: cover;
-      display: flex; flex-direction: column; justify-content: center; align-items: center;
-      font-family: 'Poppins', sans-serif; color: #595959; overflow: hidden; text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #595959;
+      overflow: hidden;
+      text-align: center;
     }
     #splash-content {
-      width: 100vw; height: 100vh;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      background: rgba(255,255,255,0.52);
-      animation: fadeout 1s ease-in-out forwards;
-      animation-delay: 2.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(255,255,255,0.54);
+      animation: fadeout 1.1s ease-in-out forwards;
+      animation-delay: 4.5s; /* Duración: 4.5 segundos, ajustá aquí si querés más o menos */
+      z-index: 10;
     }
     @keyframes fadeout { to { opacity: 0; pointer-events: none; } }
     .frase-splash {
-      font-size: 22px; font-weight: 600; color: #595959;
-      margin-top: 16px; letter-spacing: 0.5px; text-shadow: 1px 1px 4px #fff5;
+      font-size: 22px;
+      font-weight: 600;
+      color: #595959;
+      margin-top: 16px;
+      letter-spacing: 0.5px;
+      text-shadow: 1px 1px 4px #fff5;
+      word-break: break-word;
+      max-width: 96vw;
+    }
+    .logo-medsys {
+      max-width: 38vw;
+      min-width: 100px;
+      width: 170px;
+      height: auto;
+      margin-bottom: 12px;
+      filter: drop-shadow(0 3px 14px #0001);
+    }
+    @media (max-width: 600px) {
+      .frase-splash {
+        font-size: 17px;
+        margin-top: 12px;
+      }
+      .logo-medsys {
+        max-width: 65vw;
+        min-width: 80px;
+        margin-bottom: 10px;
+      }
+      #splash-content {
+        padding: 20px 6vw;
+      }
     }
   </style>
   <script>
     window.onload = function() {
       setTimeout(function() {
         window.location.href = "/turnos-publico"; // Cambia por tu ruta real de formulario público
-      }, 2200); // 2.2 segundos
+      }, 4500); // 4.5 segundos, ajusta aquí si necesitás más tiempo
     };
   </script>
 </head>
 <body>
   <div id="splash-content">
-    <img src="/static/icons/logo-medsys-gris.png" alt="Logo MEDSYS" style="max-width:160px;margin-bottom:10px;">
+    <img src="/static/icons/logo-medsys-gris.png" alt="Logo MEDSYS" class="logo-medsys">
     <div class="frase-splash">Salud Inteligente para un Mundo Real</div>
   </div>
 </body>

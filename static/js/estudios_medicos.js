@@ -60,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
           visorPDF.src = est.pdf_url;
           visorPDFBox.style.display = 'flex';
           abrirPestaniaBtn.style.display = 'inline-block';
+          abrirPestaniaBtn.textContent = "Ver PDF";
           abrirPestaniaBtn.onclick = () => window.open(est.pdf_url, '_blank');
           showAlert({
             mensaje: "Mostrando estudio seleccionado.",
@@ -80,10 +81,3 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Limpia visor si cambia búsqueda
-  form.addEventListener('reset', () => {
-    listaFechas.innerHTML = '';
-    visorPDFBox.style.display = "none";
-    visorPDF.src = '';
-    mensaje.textContent = "Complete el DNI y seleccione tipo de estudio para ver los resultados disponibles.";
-  });
-});

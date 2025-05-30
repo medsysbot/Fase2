@@ -8,75 +8,96 @@
   <link rel="stylesheet" href="/static/styles.css" />
   <style>
     .publico-banner {
-      background: #16a085;
+      background: #595959;
       color: #fff;
-      font-size: 15px;
+      font-size: 17px;
       font-weight: 600;
       padding: 8px 0 5px 0;
-      margin-bottom: 10px;
+      margin-bottom: 18px;
       letter-spacing: 1px;
       border-radius: 0 0 7px 7px;
       text-align: center;
+      box-shadow: 0 3px 10px #0002;
+      text-transform: uppercase;
     }
-    .turnos-container {
-      max-width: 400px; margin: 40px auto; padding: 30px 24px;
-      background: #fff; border-radius: 14px; box-shadow: 0 2px 12px #0002;
-    }
-    h2 { color: #16a085; text-align: center; margin-bottom: 8px; }
-    form { display: flex; flex-direction: column; gap: 13px; }
-    label { font-weight: 600; margin-bottom: 3px; }
-    input, select {
-      font-family: inherit; font-size: 16px; padding: 8px 10px; border: 1px solid #bbb; border-radius: 7px; outline: none;
-    }
-    .botones-flotantes {
-      display: flex; gap: 10px; margin-top: 12px;
-    }
-    #enviar-btn { background: #16a085; color: #fff; font-weight: 600; }
-    #limpiar-btn { background: #e67e22; color: #fff; font-weight: 600; }
-    #alerta-turno { margin-top: 14px; text-align: center; color: #e74c3c; display: none; }
+    /* Si preferís gris clarito para letras, cambia #fff por #d6d6d6 o el valor que prefieras */
   </style>
 </head>
 <body>
   <header>
     <img src="/static/icons/icono-turnos.png" alt="Logo Turnos" class="logo-grande" />
-    <h2>Turnos Médicos</h2>
-    <div class="publico-banner">PORTAL PÚBLICO DE TURNOS</div>
+    <h2 style="text-align: center; color: #595959;">Turnos Médicos</h2>
+    <div class="publico-banner">Portal Público de Turnos</div>
   </header>
 
-  <div class="turnos-container">
-    <form class="formulario" id="form-turnos" action="/solicitar_turno_publico" method="post" autocomplete="off">
-      <label for="nombre">Nombre:</label>
-      <input type="text" name="nombre" id="nombre" required />
+  <!-- ╔════════════════════════════════════╗ -->
+  <!-- ║        DATOS DEL PACIENTE        ║ -->
+  <!-- ╚════════════════════════════════════╝ -->
+  <form class="formulario" id="form-turnos">
+    <label for="nombre">Nombre:</label>
+    <input type="text" name="nombre" id="nombre" required />
 
-      <label for="apellido">Apellido:</label>
-      <input type="text" name="apellido" id="apellido" required />
+    <label for="apellido">Apellido:</label>
+    <input type="text" name="apellido" id="apellido" required />
 
-      <label for="dni">DNI:</label>
-      <input type="text" name="dni" id="dni" required />
+    <label for="dni">DNI:</label>
+    <input type="text" name="dni" id="dni" required />
 
-      <label for="especialidad">Especialidad:</label>
-      <input type="text" name="especialidad" id="especialidad" />
+    <label for="especialidad">Especialidad:</label>
+    <input type="text" name="especialidad" id="especialidad" />
 
-      <label for="fecha">Fecha del Turno:</label>
-      <input type="date" name="fecha" id="fecha" required />
+    <label for="fecha">Fecha del Turno:</label>
+    <input type="date" name="fecha" id="fecha" required />
 
-      <label for="horario">Horario:</label>
-      <input type="time" name="horario" id="horario" required />
+    <label for="horario">Horario:</label>
+    <input type="time" name="horario" id="horario" required />
 
-      <label for="profesional">Profesional:</label>
-      <input type="text" name="profesional" id="profesional" />
+    <label for="profesional">Profesional:</label>
+    <input type="text" name="profesional" id="profesional" />
+  </form>
 
-      <div class="botones-flotantes">
-        <button type="submit" id="enviar-btn" title="Enviar">Enviar</button>
-        <button type="reset" id="limpiar-btn" title="Limpiar">Limpiar</button>
-      </div>
-    </form>
-    <div id="alerta-turno"></div>
+  <!-- BOTONES FLOTANTES: iguales al admin -->
+  <div class="botones-flotantes">
+    <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
+      <img src="/static/icons/microfono.png" alt="Voz" />
+    </button>
+    <button type="submit" form="form-turnos" title="Guardar">
+      <img src="/static/icons/guardar.png" alt="Guardar" />
+    </button>
+    <button type="reset" form="form-turnos" title="Limpiar">
+      <img src="/static/icons/enviar.png" alt="Limpiar" />
+    </button>
   </div>
 
+  <!-- ALERT MANAGER -->
+  <div id="alert-manager" class="alert-container" style="display: none;">
+    <div class="alert-box">
+      <img id="alert-icon" src="" alt="icono-alerta" class="alert-icon" />
+      <span id="alert-text" class="alert-message">Texto de alerta</span>
+      <div id="alert-buttons" class="alert-buttons" style="display: none;">
+        <img src="/static/icons/alerta/alerta-boton-borrar.png" id="btn-borrar" class="alert-btn" />
+        <img src="/static/icons/alerta/alerta-boton-no.png" id="btn-no" class="alert-btn" />
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function activarVoz() {
+      const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+      recognition.lang = "es-ES";
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.onresult = function(event) {
+        const texto = event.results[0][0].transcript;
+        const campo = document.activeElement;
+        if (campo && (campo.tagName === "INPUT" || campo.tagName === "TEXTAREA")) {
+          campo.value += (campo.value ? " " : "") + texto;
+        }
+      };
+      recognition.start();
+    }
+  </script>
+  <script src="/static/js/alertas.js"></script>
   <script src="/static/app_publico/js/guardar_turnos_publicos.js"></script>
-  <!-- Si usás alertas visuales o JS de validación, incluí aquí tus scripts -->
-  <!-- <script src="/static/js/alertas.js"></script> -->
-  <!-- <script src="/static/js/guardar_turnos.js"></script> -->
 </body>
 </html>

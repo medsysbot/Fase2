@@ -1,87 +1,125 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<!-- ╔════════════════════════════════════╗ -->
-<!-- ║      CABECERA DEL FORMULARIO      ║ -->
-<!-- ╚════════════════════════════════════╝ -->
-  <meta charset="UTF-8">
-  <title>Estudios Médicos</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>Visualización de Estudios Médicos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/static/styles.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    .contenedor-estudios {
+      max-width: 510px;
+      margin: 32px auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px #0001;
+      padding: 30px 25px 22px 25px;
+    }
+    h2 { color: #16a085; text-align: center; }
+    .busqueda-form { display: flex; flex-direction: column; gap: 13px; margin-bottom: 18px; }
+    .busqueda-form label { font-weight: 600; margin-bottom: 3px; }
+    .busqueda-form input, .busqueda-form select {
+      font-family: inherit; font-size: 16px; padding: 8px 10px;
+      border: 1px solid #bbb; border-radius: 7px; outline: none;
+    }
+    .lista-fechas {
+      list-style: none; padding: 0; margin: 12px 0 0 0;
+      display: flex; flex-direction: column; gap: 7px;
+    }
+    .fecha-link {
+      color: #16a085;
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      background: none;
+      padding: 0;
+      text-align: left;
+      transition: color 0.15s;
+    }
+    .fecha-link:hover, .fecha-link.active {
+      color: #e67e22;
+    }
+    #visor-pdf-box {
+      margin-top: 22px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+    }
+    #visorPDF {
+      width: 100%;
+      min-height: 360px;
+      max-width: 600px;
+      border: 1px solid #bbb;
+      border-radius: 7px;
+      box-shadow: 0 2px 8px #0002;
+    }
+    .abrir-nueva-pestania {
+      margin-top: 6px;
+      background: #16a085;
+      color: #fff;
+      padding: 5px 16px;
+      border: none;
+      border-radius: 7px;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .abrir-nueva-pestania:hover {
+      background: #138c72;
+    }
+    .mensaje-inicial {
+      color: #666;
+      font-size: 14px;
+      margin-top: 14px;
+      text-align: center;
+    }
+    @media (max-width: 700px) {
+      .contenedor-estudios { padding: 10vw 2vw; }
+      #visorPDF { min-height: 45vw; }
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <img src="/static/icons/estudios.png" alt="Estudios Médicos" class="logo-grande">
-    <h2>Estudios Médicos</h2>
-  </header>
+  <div class="contenedor-estudios">
+    <h2>Consultar Estudios Médicos</h2>
+    <form class="busqueda-form" id="form-buscar-estudios" autocomplete="off">
+      <label for="paciente_id">DNI del Paciente:</label>
+      <input type="text" name="paciente_id" id="paciente_id" required />
 
-  <!-- ╔════════════════════════════════════╗ -->
-<!-- ║        DATOS DEL PACIENTE        ║ -->
-<!-- ╚════════════════════════════════════╝ -->
-<form id="form-estudio">
-    <label>Nombre:</label>
-    <input type="text" id="nombre" name="nombre" />
-    <label>Apellido:</label>
-    <input type="text" id="apellido" name="apellido" />
+      <label for="nombre">Nombre:</label>
+      <input type="text" name="nombre" id="nombre" />
 
-    <label>DNI del Paciente:</label>
-    <input type="number" id="paciente_id" name="paciente_id" required />
+      <label for="apellido">Apellido:</label>
+      <input type="text" name="apellido" id="apellido" />
 
-    <label>Tipo de Estudio:</label>
-    <select id="tipo_estudio" name="tipo_estudio" required>
-      <option value="">Seleccionar…</option>
-      <option value="Radiografia de Torax">Radiografía de Tórax</option>
-      <option value="Tomografia TAC">Tomografía (TAC)</option>
-      <option value="Resonancia Magnetica">Resonancia Magnética (RMN)</option>
-      <option value="Electrocardiograma">Electrocardiograma (ECG)</option>
-      <option value="Ecografia Abdominal">Ecografía Abdominal</option>
-      <option value="Ecografia Transvaginal">Ecografía Transvaginal</option>
-      <option value="Mamografia">Mamografía</option>
-      <option value="Analisis de Sangre">Análisis de Sangre</option>
-      <option value="Analisis de Orina">Análisis de Orina</option>
-      <option value="Colonoscopia">Colonoscopía</option>
-      <option value="Endoscopia">Endoscopía</option>
-      <option value="Espirometria">Espirometría</option>
-      <option value="Audiometria">Audiometría</option>
-      <option value="TAC de craneo">TAC de cráneo</option>
-      <option value="RMN de columna">RMN de columna</option>
-      <option value="Densitometria">Densitometría</option>
-      <option value="Otros">Otros…</option>
-    </select>
-
-    <ul id="lista-fechas" class="lista-fechas" style="display:none;"></ul>
-    <input type="hidden" id="pdf_url" name="pdf_url" />
-  </form>
-
-    <div id="visorContainer" style="width:100%; height:600px; overflow:auto;">
-      <!-- ╔════════════════════════════════════╗ -->
-<!-- ║             VISOR DE PDF         ║ -->
-<!-- ╚════════════════════════════════════╝ -->
-<iframe id="visorPDF" width="100%" height="100%" frameborder="0"></iframe>
+      <label for="tipo_estudio">Tipo de Estudio:</label>
+      <select name="tipo_estudio" id="tipo_estudio" required>
+        <option value="">Seleccione un tipo</option>
+        <option value="Radiografía">Radiografía</option>
+        <option value="Tomografía">Tomografía</option>
+        <option value="Laboratorio">Laboratorio</option>
+        <option value="Resonancia">Resonancia</option>
+        <!-- Agrega más según tu base -->
+      </select>
+      <button type="submit" style="margin-top:10px;">Buscar Estudios</button>
+    </form>
+    <div id="mensaje" class="mensaje-inicial">Complete el DNI y seleccione tipo de estudio para ver los resultados disponibles.</div>
+    <ul id="lista-fechas" class="lista-fechas"></ul>
+    <div id="visor-pdf-box">
+      <iframe id="visorPDF" src="" frameborder="0"></iframe>
+      <button class="abrir-nueva-pestania" style="display:none;" id="abrir-nueva-pestania">Ver en pestaña nueva</button>
     </div>
-
-  <div class="botones-flotantes">
-    <button type="button" ondblclick="marcarCamposVoz()" title="Reconocimiento por voz">
-      <img src="/static/icons/microfono.png" alt="Voz" />
-    </button>
-    <button type="button" onclick="enviarPorCorreo()" title="Enviar por Email">
-      <img src="/static/icons/enviar.png" alt="Enviar por Email" />
-    </button>
-    <button id="btnBuscar" type="button" onclick="buscarEstudio()" title="Buscar">
-      <img src="/static/icons/busquedas.png" alt="Buscar" width="24" />
-    </button>
-    <button type="button" id="btn-guardar" onclick="guardarEstudio()" title="Guardar" style="display:none;">
-      <img src="/static/icons/guardar.png" alt="Guardar" />
-    </button>
   </div>
 
-  <!-- ALERT MANAGER -->
-  <div id="alert-manager" class="alert-container" style="display:none;">
+  <!-- ALERTAS VISUALES MEDSYS -->
+  <div id="alert-manager" class="alert-container" style="display: none;">
     <div class="alert-box">
       <img id="alert-icon" src="" alt="icono-alerta" class="alert-icon" />
       <span id="alert-text" class="alert-message">Texto de alerta</span>
-      <div id="alert-buttons" class="alert-buttons" style="display:none;">
+      <div id="alert-buttons" class="alert-buttons" style="display: none;">
         <img src="/static/icons/alerta/alerta-boton-borrar.png" id="btn-borrar" class="alert-btn" />
         <img src="/static/icons/alerta/alerta-boton-no.png" id="btn-no" class="alert-btn" />
       </div>
@@ -89,7 +127,6 @@
   </div>
 
   <script src="/static/js/alertas.js"></script>
-  <script src="/static/js/estudios_medicos.js"></script>
-  <script src="/static/js/registro_voz.js"></script>
+  <script src="/static/app_publico/js/estudios_medicos.js"></script>
 </body>
 </html>

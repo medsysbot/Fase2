@@ -3,6 +3,7 @@
 # ╚════════════════════════════════════════════════════════════╝
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import JSONResponse
+import logging
 from utils.pdf_generator import generar_pdf_evolucion
 from utils.email_sender import enviar_email_con_pdf
 from dotenv import load_dotenv
@@ -24,18 +25,23 @@ BUCKET_FIRMAS = "firma-sello-usuarios"
 @router.post("/generar_pdf_evolucion")
 async def generar_evolucion(
     request: Request,
-    paciente: str = Form(...),
+    nombre: str = Form(...),
+    apellido: str = Form(...),
     dni: str = Form(...),
     fecha: str = Form(...),
     diagnostico: str = Form(...),
     evolucion: str = Form(...),
     indicaciones: str = Form(...),
+    paciente: str = Form(None),
 ):
     try:
         usuario = request.session.get("usuario")
         institucion_id = request.session.get("institucion_id")
         if institucion_id is None or not usuario:
             return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
+
+        paciente = paciente or f"{nombre} {apellido}".strip()
+
         datos = {
             "paciente": paciente,
             "dni": dni,
@@ -79,23 +85,21 @@ async def generar_evolucion(
         if sello_path and os.path.exists(sello_path):
             os.remove(sello_path)
 
-        supabase.table("consultas").insert({
-            "paciente": paciente,
+        supabase.table("evolucion_diaria").insert({
             "dni": dni,
+            "nombre": nombre,
+            "apellido": apellido,
             "fecha": fecha,
             "diagnostico": diagnostico,
             "evolucion": evolucion,
             "indicaciones": indicaciones,
-            "usuario_id": usuario,
             "institucion_id": institucion_id,
-            "firma_url": firma_url,
-            "sello_url": sello_url,
-            "pdf_url": pdf_url,
         }).execute()
 
         return JSONResponse({"exito": True, "pdf_url": pdf_url})
     except Exception as e:
-        return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)
+        logging.error(f"Error al guardar evolución diaria: {e}")
+        return JSONResponse(content={"exito": False, "mensaje": "Error al guardar la evolución"}, status_code=500)
 
 
 @router.post("/obtener_email_evolucion")

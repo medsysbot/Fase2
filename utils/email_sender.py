@@ -62,3 +62,27 @@ def enviar_email_con_pdf(email_destino, asunto, cuerpo, url_pdf):
         print(f"Error al enviar correo: {e}")
         print(traceback.format_exc())
         raise
+
+
+def enviar_email_simple(email_destino, asunto, cuerpo):
+    """Envía un correo de texto sin adjuntos."""
+    try:
+        if not all([SMTP_SERVER, SMTP_PORT, EMAIL_ORIGEN, EMAIL_PASSWORD]):
+            raise ValueError("Variables de entorno para email incompletas")
+        if int(SMTP_PORT) != 465:
+            raise ValueError("Para SMTP_SSL con Gmail se debe usar el puerto 465")
+
+        mensaje = EmailMessage()
+        mensaje["From"] = EMAIL_ORIGEN
+        mensaje["To"] = email_destino
+        mensaje["Subject"] = asunto
+        mensaje.set_content(cuerpo)
+
+        contexto = ssl.create_default_context()
+        with smtplib.SMTP_SSL(SMTP_SERVER, int(SMTP_PORT), context=contexto) as server:
+            server.login(EMAIL_ORIGEN, EMAIL_PASSWORD)
+            server.send_message(mensaje)
+    except Exception as e:
+        print(f"Error al enviar correo: {e}")
+        print(traceback.format_exc())
+        raise

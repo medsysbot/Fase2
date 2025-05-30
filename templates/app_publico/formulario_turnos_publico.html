@@ -20,7 +20,6 @@
       box-shadow: 0 3px 10px #0002;
       text-transform: uppercase;
     }
-    /* Si preferís gris clarito para letras, cambia #fff por #d6d6d6 o el valor que prefieras */
   </style>
 </head>
 <body>
@@ -54,20 +53,20 @@
 
     <label for="profesional">Profesional:</label>
     <input type="text" name="profesional" id="profesional" />
+    
+    <!-- BOTONES FLOTANTES (solo tres) -->
+    <div class="botones-flotantes">
+      <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
+        <img src="/static/icons/microfono.png" alt="Voz" />
+      </button>
+      <button type="submit" title="Enviar">
+        <img src="/static/icons/enviar.png" alt="Enviar" />
+      </button>
+      <button type="reset" title="Borrar">
+        <img src="/static/icons/limpiar.png" alt="Borrar" />
+      </button>
+    </div>
   </form>
-
-  <!-- BOTONES FLOTANTES: iguales al admin -->
-  <div class="botones-flotantes">
-    <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
-      <img src="/static/icons/microfono.png" alt="Voz" />
-    </button>
-    <button type="submit" form="form-turnos" title="Guardar">
-      <img src="/static/icons/guardar.png" alt="Guardar" />
-    </button>
-    <button type="reset" form="form-turnos" title="Limpiar">
-      <img src="/static/icons/enviar.png" alt="Limpiar" />
-    </button>
-  </div>
 
   <!-- ALERT MANAGER -->
   <div id="alert-manager" class="alert-container" style="display: none;">

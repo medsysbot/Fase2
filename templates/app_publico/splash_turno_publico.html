@@ -1,3 +1,4 @@
+<!-- Archivo: templates/app_publico/formulario_turnos.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,67 +7,58 @@
   <title>Solicitud de Turno</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      height: 100vh;
-      font-family: 'Poppins', sans-serif;
-      background: url('/static/splash-sacar-turno.png') no-repeat center center;
-      background-size: cover;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      color: #595959;
-      overflow: hidden;
-      text-align: center;
+    body { background: #f4f4f4; font-family: 'Poppins', sans-serif; color: #595959; }
+    .turnos-container {
+      max-width: 380px; margin: 60px auto; padding: 28px;
+      background: #fff; border-radius: 14px; box-shadow: 0 2px 12px #0002;
     }
-    .frase-splash {
-      font-size: 22px;
-      font-weight: 600;
-      color: #595959;
-      margin-top: 14px;
-      letter-spacing: 0.5px;
-      text-shadow: 1px 1px 4px #fff5;
+    h2 { color: #16a085; text-align: center; }
+    form { display: flex; flex-direction: column; gap: 12px; }
+    input, select {
+      font-family: inherit; font-size: 16px; padding: 8px 10px; border: 1px solid #bbb; border-radius: 7px; outline: none;
     }
-    #splash {
-      animation: fadeout 1s ease-in-out forwards;
-      animation-delay: 1.8s;
+    button {
+      font-weight: 600; font-size: 16px; padding: 10px 0;
+      border: none; border-radius: 7px; cursor: pointer; transition: 0.2s;
     }
-    @keyframes fadeout {
-      to { opacity: 0; pointer-events: none; }
-    }
+    #enviar-btn { background: #16a085; color: #fff; margin-right: 4px; }
+    #limpiar-btn { background: #e67e22; color: #fff; }
+    .botones { display: flex; gap: 10px; margin-top: 8px; }
+    #alerta-turno { margin-top: 15px; text-align: center; color: #e74c3c; display: none; }
   </style>
+  <script>
+    // Opcional: Podés agregar aquí el fetch para cargar especialidades y profesionales
+    function limpiarAlerta() {
+      document.getElementById('alerta-turno').style.display = 'none';
+    }
+    window.onload = limpiarAlerta;
+  </script>
 </head>
 <body>
-<div id="splash" style="width:100vw;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,0.5);">
-  <img src="/static/icons/logo-medsys-gris.png" alt="Logo MEDSYS" id="logo-medsys" style="max-width:160px;margin-bottom:10px;">
-  <div class="frase-splash">Salud Inteligente para un Mundo Real</div>
-</div>
-
-<div id="turnos-form" style="display:none;max-width:360px;margin:40px auto;padding:24px;background:#fff;border-radius:12px;box-shadow:0 2px 8px #0001;">
-  <h3 style="text-align:center;color:#16a085;margin-bottom:20px;">Solicitá tu Turno</h3>
-  <form id="form-turno">
-    <input type="text" name="nombre" placeholder="Nombre" required style="margin-bottom:10px;width:100%;">
-    <input type="text" name="apellido" placeholder="Apellido" required style="margin-bottom:10px;width:100%;">
-    <input type="text" name="dni" placeholder="DNI" required style="margin-bottom:10px;width:100%;">
-    <select name="especialidad" id="especialidad" required style="margin-bottom:10px;width:100%;">
-      <option value="">Especialidad</option>
-    </select>
-    <select name="profesional" id="profesional" required style="margin-bottom:10px;width:100%;">
-      <option value="">Profesional</option>
-    </select>
-    <input type="date" name="fecha" id="fecha" required style="margin-bottom:10px;width:100%;">
-    <select name="horario" id="horario" required style="margin-bottom:20px;width:100%;">
-      <option value="">Horario</option>
-    </select>
-    <div style="display:flex;gap:10px;">
-      <button type="submit" id="enviar-btn" style="flex:1;background:#16a085;color:#fff;padding:8px 0;border:none;border-radius:8px;font-weight:bold;">Enviar</button>
-      <button type="reset" style="flex:1;background:#e67e22;color:#fff;padding:8px 0;border:none;border-radius:8px;font-weight:bold;">Limpiar</button>
-    </div>
-  </form>
-  <div id="alerta-turno" style="margin-top:18px;text-align:center;color:#e74c3c;display:none;"></div>
-</div>
-<script src="/static/js/turnos_publicos.js"></script>
+  <div class="turnos-container">
+    <h2>Solicitá tu Turno</h2>
+    <form id="form-turno" action="/solicitar_turno" method="post" autocomplete="off">
+      <input type="text" name="nombre" placeholder="Nombre" required>
+      <input type="text" name="apellido" placeholder="Apellido" required>
+      <input type="text" name="dni" placeholder="DNI" required>
+      <select name="especialidad" id="especialidad" required>
+        <option value="">Especialidad</option>
+        <!-- Opciones cargadas dinámicamente -->
+      </select>
+      <select name="profesional" id="profesional" required>
+        <option value="">Profesional</option>
+      </select>
+      <input type="date" name="fecha" id="fecha" required>
+      <select name="horario" id="horario" required>
+        <option value="">Horario</option>
+      </select>
+      <div class="botones">
+        <button type="submit" id="enviar-btn">Enviar</button>
+        <button type="reset" id="limpiar-btn">Limpiar</button>
+      </div>
+    </form>
+    <div id="alerta-turno"></div>
+  </div>
+  <script src="/static/js/turnos_publicos.js"></script>
 </body>
 </html>

@@ -89,13 +89,6 @@ async def ver_estudios_alias(request: Request):
     return templates.TemplateResponse("estudios-medicos.html", {"request": request})
 
 
-@router.get("/firma-sello", response_class=HTMLResponse)
-async def ver_firma_sello(request: Request):
-    if not _session_activa(request):
-        return RedirectResponse(url="/login", status_code=303)
-    return templates.TemplateResponse("firma_sello.html", {"request": request})
-
-
 @router.get("/historia-resumen", response_class=HTMLResponse)
 async def ver_historia_resumen(request: Request):
     if not _session_activa(request):

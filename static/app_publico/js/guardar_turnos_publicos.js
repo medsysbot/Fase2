@@ -1,16 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('form-turnos');
-  const alerta = document.getElementById('alerta-turno');
-  const enviarBtn = document.getElementById('enviar-btn');
+  // Busca el botón "Enviar" por su tipo, así no dependés de IDs
+  const enviarBtn = form ? form.querySelector('button[type="submit"]') : null;
 
   if (form) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      alerta.style.display = "none";
-      enviarBtn.disabled = true;
-      enviarBtn.textContent = "Enviando...";
+      if (enviarBtn) {
+        enviarBtn.disabled = true;
+      }
 
-      // Tomar datos del formulario
+      // Arma el FormData con todos los campos del formulario
       const formData = new FormData(form);
 
       try {
@@ -22,22 +22,32 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = await response.json();
 
         if (data.exito) {
-          alerta.textContent = "¡Turno registrado con éxito! Se envió un email de confirmación.";
-          alerta.style.color = "#27ae60";
-          alerta.style.display = "block";
+          showAlert({
+            mensaje: "¡Turno registrado con éxito! Se envió un email de confirmación.",
+            tipo: "success"
+          });
           form.reset();
         } else {
-          alerta.textContent = data.mensaje || "No se pudo registrar el turno.";
-          alerta.style.color = "#e74c3c";
-          alerta.style.display = "block";
+          showAlert({
+            mensaje: data.mensaje || "No se pudo registrar el turno.",
+            tipo: "error"
+          });
         }
       } catch (error) {
-        alerta.textContent = "Error de conexión. Intenta nuevamente.";
-        alerta.style.color = "#e74c3c";
-        alerta.style.display = "block";
+        showAlert({
+          mensaje: "Error de conexión. Intenta nuevamente.",
+          tipo: "error"
+        });
       }
-      enviarBtn.disabled = false;
-      enviarBtn.textContent = "Enviar";
+      if (enviarBtn) {
+        enviarBtn.disabled = false;
+      }
+    });
+
+    // Limpieza del formulario (opcional)
+    form.addEventListener('reset', () => {
+      // Si querés podés agregar una alerta al limpiar, pero no es obligatorio
+      // showAlert({ mensaje: "Formulario limpio.", tipo: "info" });
     });
   }
 });

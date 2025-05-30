@@ -61,6 +61,8 @@ Notas Importantes
 - Esta versión es estable y lista para ampliaciones (firmas, QR, etc.)
 - Las imágenes de firma y sello deben estar en formato PNG. Otros formatos
   generarán un error 400 al enviar los formularios.
+- La única manera de subir o reemplazar la firma y el sello es mediante la
+  pantalla dedicada `firma_sello.html`.
 Contacto
 Desarrollado por Max & ChatGPT Codex
 README - MedSys | Sistema Médico Modular

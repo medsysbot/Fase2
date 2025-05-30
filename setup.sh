@@ -5,10 +5,9 @@ set -e
 # ║       INSTALACIÓN DE DEPENDENCIAS REQUERIDAS       ║
 # ╚═════════════════════════════════════════════════════╝
 
-echo "Instalando dependencias de Python..."
-
-pip install fastapi python-dotenv psycopg2-binary python-multipart jinja2 supabase
-
+echo "Instalando dependencias de Python (sin uvicorn)..."
+grep -iv '^uvicorn' requirements.txt > requirements-no-uvicorn.txt
+pip install -r requirements-no-uvicorn.txt
 echo "✅ Librerías instaladas correctamente"
 
 # ╔═════════════════════════════════════════════════════╗

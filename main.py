@@ -275,7 +275,8 @@ app.include_router(busqueda_router)
 app.include_router(estudios_router)
 app.include_router(admin_router)
 app.include_router(paginas_router)
-app.include_router(solicitar_turno_publico.router, prefix="/turnos-publico")
+app.include_router(solicitar_turno_publico_router, prefix="/turnos-publico")
+
 
 @app.on_event("startup")
 async def startup_event():

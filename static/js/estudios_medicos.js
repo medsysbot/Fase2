@@ -1,143 +1,89 @@
-// ╔════════════════════════════════════╗
-// ║      estudios_medicos.js      ║
-// ╚════════════════════════════════════╝
-// Funciones para visualizar y enviar estudios médicos
-let estudioSeleccionado = null;
-
-async function buscarEstudio() {
-  const dni = document.getElementById('paciente_id').value.trim();
-  const tipo = document.getElementById('tipo_estudio').value;
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('form-buscar-estudios');
   const listaFechas = document.getElementById('lista-fechas');
+  const mensaje = document.getElementById('mensaje');
+  const visorPDFBox = document.getElementById('visor-pdf-box');
+  const visorPDF = document.getElementById('visorPDF');
+  const abrirPestaniaBtn = document.getElementById('abrir-nueva-pestania');
 
-  if (!dni || !tipo) {
-    showAlert('error', 'Debe ingresar DNI y tipo de estudio.', false, 3000);
-    return;
-  }
+  let estudios = [];
 
-  try {
-    const resp = await fetch(`/consultar_estudios/${dni}`);
-    const data = await resp.json();
-  const lista = (data.estudios || []).filter(e => e.tipo_estudio === tipo);
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    listaFechas.innerHTML = '';
+    mensaje.textContent = '';
+    visorPDFBox.style.display = "none";
+    visorPDF.src = '';
+    abrirPestaniaBtn.style.display = "none";
 
-  listaFechas.innerHTML = '';
-  estudioSeleccionado = null;
+    const paciente_id = form.paciente_id.value.trim();
+    const tipo_estudio = form.tipo_estudio.value;
 
-    if (lista.length === 0) {
-      document.getElementById('visorPDF').src = '';
-      listaFechas.style.display = 'none';
-      showAlert('error', 'No se encontraron estudios.', false, 3000);
+    if (!paciente_id || !tipo_estudio) {
+      showAlert({
+        mensaje: "Debe completar el DNI y seleccionar tipo de estudio.",
+        tipo: "info"
+      });
+      mensaje.textContent = "Debe completar el DNI y seleccionar tipo de estudio.";
       return;
     }
 
-    if (lista.length === 1) {
-      listaFechas.style.display = 'none';
-      mostrarPDF(lista[0].id);
-    } else {
-    listaFechas.style.display = 'block';
-    lista.forEach(e => {
-      const li = document.createElement('li');
-      const a = document.createElement('a');
-      a.href = '#';
-      a.textContent = e.fecha_estudio;
-      a.onclick = (ev) => { ev.preventDefault(); cargarEstudio(e.id); };
-      li.appendChild(a);
-      listaFechas.appendChild(li);
-    });
-    document.getElementById('visorPDF').src = '';
-    showAlert('busqueda', 'Seleccione la fecha deseada', false, 3000);
-  }
-  } catch (err) {
-    console.error(err);
-    showAlert('error', 'Error al buscar estudios.', false, 3000);
-  }
-}
+    mensaje.textContent = "Buscando estudios...";
+    try {
+      // Modificá el endpoint según tu backend
+      const resp = await fetch(`/consultar_estudios/${paciente_id}`);
+      const data = await resp.json();
+      estudios = data.estudios || [];
 
-function cargarEstudio(id) {
-  mostrarPDF(id);
-}
+      // Filtra por tipo de estudio
+      const filtrados = estudios.filter(est => est.tipo_estudio === tipo_estudio);
 
-async function mostrarPDF(id) {
-  if (!id) return;
-  try {
-    const resp = await fetch(`/obtener_estudio/${id}`);
-    const data = await resp.json();
-    if (data.url_pdf) {
-      document.getElementById('visorPDF').src = data.url_pdf;
-      sessionStorage.setItem('pdfURL_estudios', data.url_pdf);
-      document.getElementById('pdf_url').value = data.url_pdf;
-      estudioSeleccionado = id;
-    } else {
-      showAlert('error', 'No se encontró el PDF.', false, 3000);
-    }
-  } catch (err) {
-    console.error(err);
-    showAlert('error', 'Error al cargar el PDF.', false, 3000);
-  }
-}
-
-async function enviarPorCorreo() {
-  const dni = document.getElementById('paciente_id').value.trim();
-  const idSeleccion = estudioSeleccionado;
-
-  if (!dni || !idSeleccion) {
-    showAlert('error', 'Debe seleccionar un estudio.', false, 3000);
-    return;
-  }
-
-  try {
-    showAlert('email', 'Enviando e-mail…', false, 3000);
-    await new Promise(r => setTimeout(r, 3200));
-    const formData = new FormData();
-    formData.append('dni', dni);
-    formData.append('estudio_id', idSeleccion);
-    const resp = await fetch('/enviar_pdf_estudio', { method: 'POST', body: formData });
-    const data = await resp.json();
-    if (data.exito) {
-      showAlert('suceso', 'E-mail enviado', false, 3000);
-    } else {
-      showAlert('error', data.mensaje || 'Error al enviar', false, 3000);
-    }
-  } catch (err) {
-    console.error(err);
-    showAlert('error', 'Error al enviar el e-mail', false, 3000);
-  }
-}
-
-async function guardarEstudio() {
-  const form = document.getElementById('form-estudio');
-  const formData = new FormData(form);
-  try {
-    showAlert('guardado', 'Guardando estudio…', false, 3000);
-    await new Promise(r => setTimeout(r, 3200));
-    const resp = await fetch('/guardar_estudio', { method: 'POST', body: formData });
-    const data = await resp.json();
-    if (data.exito && data.pdf_url) {
-      showAlert('suceso', 'Estudio guardado', false, 3000);
-      document.getElementById('visorPDF').src = data.pdf_url;
-      sessionStorage.setItem('pdfURL_estudios', data.pdf_url);
-      document.getElementById('pdf_url').value = data.pdf_url;
-    } else {
-      showAlert('error', data.mensaje || 'Error al guardar', false, 4000);
-    }
-  } catch (err) {
-    console.error(err);
-    showAlert('error', 'Error al guardar', false, 4000);
-  }
-}
-
-function abrirPDF() {
-  const url = sessionStorage.getItem('pdfURL_estudios');
-  if (url) {
-    showAlert('cargaPDF', 'Cargando PDF…', false, 3000);
-    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    setTimeout(() => {
-      if (isIOS) {
-        window.location.href = url;
-      } else {
-        window.open(url, '_blank');
+      if (filtrados.length === 0) {
+        showAlert({
+          mensaje: "No se encontraron estudios de este tipo para este paciente.",
+          tipo: "info"
+        });
+        mensaje.textContent = "No se encontraron estudios de este tipo para este paciente.";
+        return;
       }
-    }, 1000);
-  } else {
-    showAlert('error', 'No hay PDF para mostrar', false, 3000);
-  }
-}
+
+      mensaje.textContent = "Seleccione la fecha del estudio que desea visualizar:";
+      filtrados.forEach((est, i) => {
+        const li = document.createElement('li');
+        const btn = document.createElement('button');
+        btn.className = 'fecha-link';
+        btn.type = 'button';
+        btn.innerHTML = `<span>${est.fecha || 'Sin fecha'} — ${est.descripcion || est.tipo_estudio}</span>`;
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.fecha-link').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          visorPDF.src = est.pdf_url;
+          visorPDFBox.style.display = 'flex';
+          abrirPestaniaBtn.style.display = 'inline-block';
+          abrirPestaniaBtn.onclick = () => window.open(est.pdf_url, '_blank');
+          showAlert({
+            mensaje: "Mostrando estudio seleccionado.",
+            tipo: "success"
+          });
+        });
+        li.appendChild(btn);
+        listaFechas.appendChild(li);
+      });
+
+    } catch (err) {
+      showAlert({
+        mensaje: "Error consultando los estudios. Intente de nuevo.",
+        tipo: "error"
+      });
+      mensaje.textContent = "Error consultando los estudios. Intente de nuevo.";
+    }
+  });
+
+  // Limpia visor si cambia búsqueda
+  form.addEventListener('reset', () => {
+    listaFechas.innerHTML = '';
+    visorPDFBox.style.display = "none";
+    visorPDF.src = '';
+    mensaje.textContent = "Complete el DNI y seleccione tipo de estudio para ver los resultados disponibles.";
+  });
+});

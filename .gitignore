@@ -108,4 +108,5 @@ celerybeat.pid
 
 # PyPI
 .pypirc
+requirements-no-uvicorn.txt
 

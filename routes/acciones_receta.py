@@ -40,6 +40,14 @@ async def generar_receta(
         institucion_id = request.session.get("institucion_id")
         if institucion_id is None or not usuario:
             return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
+
+        if not all([dni, nombre, apellido, fecha, diagnostico, medicamentos]):
+            return JSONResponse({"error": "Faltan datos obligatorios"}, status_code=400)
+        try:
+            datetime.date.fromisoformat(fecha)
+        except ValueError:
+            return JSONResponse({"error": "Fecha inválida"}, status_code=400)
+
         datos = {
             "nombre_completo": f"{nombre} {apellido}",
             "dni": dni,
@@ -84,15 +92,13 @@ async def generar_receta(
         with open(pdf_path, "rb") as f:
             pdf_url = subir_pdf(BUCKET_PDFS, nombre_archivo, f)
 
-        supabase.table("recetas").insert({
+        supabase.table("recetas_medicas").insert({
+            "dni": dni,
             "nombre": nombre,
             "apellido": apellido,
-            "dni": dni,
             "fecha": fecha,
             "diagnostico": diagnostico,
             "medicamentos": medicamentos,
-            "pdf_url": pdf_url,
-            "usuario_id": usuario,
             "institucion_id": institucion_id,
         }).execute()
 

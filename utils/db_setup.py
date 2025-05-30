@@ -55,15 +55,17 @@ def prepare_consultas_table():
             """
             DO $$
             DECLARE
-                c RECORD;
+                constraint_name text;
             BEGIN
-                FOR c IN SELECT conname FROM pg_constraint
-                    WHERE conrelid = 'consultas'::regclass AND contype IN ('u', 'p') LOOP
-                    IF position('dni' IN pg_get_constraintdef(c.oid)) > 0 THEN
-                        EXECUTE format('ALTER TABLE consultas DROP CONSTRAINT %I', c.conname);
-                    END IF;
-                END LOOP;
-            END$$;
+                SELECT conname INTO constraint_name FROM pg_constraint c
+                WHERE conrelid = 'consultas'::regclass
+                AND pg_get_constraintdef(c.oid) LIKE '%dni%';
+
+                IF constraint_name IS NOT NULL THEN
+                    EXECUTE format('ALTER TABLE consultas DROP CONSTRAINT %I', constraint_name);
+                END IF;
+            END
+            $$;
             """
         )
 

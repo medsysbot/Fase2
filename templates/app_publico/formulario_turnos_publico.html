@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Turnos Médicos – Portal Público</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/styles.css" />
+  <style>
+    .publico-banner {
+      background: #16a085;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 8px 0 5px 0;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+      border-radius: 0 0 7px 7px;
+      text-align: center;
+    }
+    .turnos-container {
+      max-width: 400px; margin: 40px auto; padding: 30px 24px;
+      background: #fff; border-radius: 14px; box-shadow: 0 2px 12px #0002;
+    }
+    h2 { color: #16a085; text-align: center; margin-bottom: 8px; }
+    form { display: flex; flex-direction: column; gap: 13px; }
+    label { font-weight: 600; margin-bottom: 3px; }
+    input, select {
+      font-family: inherit; font-size: 16px; padding: 8px 10px; border: 1px solid #bbb; border-radius: 7px; outline: none;
+    }
+    .botones-flotantes {
+      display: flex; gap: 10px; margin-top: 12px;
+    }
+    #enviar-btn { background: #16a085; color: #fff; font-weight: 600; }
+    #limpiar-btn { background: #e67e22; color: #fff; font-weight: 600; }
+    #alerta-turno { margin-top: 14px; text-align: center; color: #e74c3c; display: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="/static/icons/icono-turnos.png" alt="Logo Turnos" class="logo-grande" />
+    <h2>Turnos Médicos</h2>
+    <div class="publico-banner">PORTAL PÚBLICO DE TURNOS</div>
+  </header>
+
+  <div class="turnos-container">
+    <form class="formulario" id="form-turnos" action="/solicitar_turno_publico" method="post" autocomplete="off">
+      <label for="nombre">Nombre:</label>
+      <input type="text" name="nombre" id="nombre" required />
+
+      <label for="apellido">Apellido:</label>
+      <input type="text" name="apellido" id="apellido" required />
+
+      <label for="dni">DNI:</label>
+      <input type="text" name="dni" id="dni" required />
+
+      <label for="especialidad">Especialidad:</label>
+      <input type="text" name="especialidad" id="especialidad" />
+
+      <label for="fecha">Fecha del Turno:</label>
+      <input type="date" name="fecha" id="fecha" required />
+
+      <label for="horario">Horario:</label>
+      <input type="time" name="horario" id="horario" required />
+
+      <label for="profesional">Profesional:</label>
+      <input type="text" name="profesional" id="profesional" />
+
+      <div class="botones-flotantes">
+        <button type="submit" id="enviar-btn" title="Enviar">Enviar</button>
+        <button type="reset" id="limpiar-btn" title="Limpiar">Limpiar</button>
+      </div>
+    </form>
+    <div id="alerta-turno"></div>
+  </div>
+
+  <!-- Si usás alertas visuales o JS de validación, incluí aquí tus scripts -->
+  <!-- <script src="/static/js/alertas.js"></script> -->
+  <!-- <script src="/static/js/guardar_turnos.js"></script> -->
+</body>
+</html>

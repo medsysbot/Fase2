@@ -6,21 +6,26 @@
 from fastapi import APIRouter, Request, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, JSONResponse
-from supabase import create_client, Client
 from utils.email_sender import enviar_email_simple
 
+from supabase import create_client, Client
 import os
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
-# Instanciar cliente de Supabase (ajusta tus variables)
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+# ╔══════════════════════════════════════════════════════════╗
+# ║    FUNCIÓN PARA OBTENER EL CLIENTE DE SUPABASE          ║
+# ╚══════════════════════════════════════════════════════════╝
+def get_supabase():
+    SUPABASE_URL = os.getenv("SUPABASE_URL")
+    SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        raise Exception("SUPABASE_URL o SUPABASE_KEY no están definidas en variables de entorno")
+    return create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # ╔══════════════════════════════════════════════════════════╗
-# ║   Splash público (opcional, podés quitar si no usás)    ║
+# ║   Splash público (opcional)                             ║
 # ╚══════════════════════════════════════════════════════════╝
 @router.get("/splash-turno", response_class=HTMLResponse)
 async def splash_turno(request: Request):
@@ -47,6 +52,8 @@ async def solicitar_turno_publico(
     horario: str = Form(...),
 ):
     try:
+        supabase = get_supabase()  # <--- ¡Inicialización aquí!
+
         # Buscar email en la tabla pacientes
         consulta = (
             supabase.table('pacientes')

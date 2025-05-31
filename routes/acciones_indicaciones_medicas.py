@@ -3,7 +3,7 @@
 # ╚════════════════════════════════════════════════════════════╝
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import JSONResponse
-from utils.pdf_generator import generar_pdf_indicaciones
+from utils.pdf_generator import generar_pdf_indicaciones_medicas
 from utils.email_sender import enviar_email_con_pdf
 from dotenv import load_dotenv
 import os
@@ -59,7 +59,7 @@ async def generar_indicaciones(
         if contenido_sello:
             sello_path = guardar_imagen_temporal(contenido_sello, nombre_sello)
 
-        pdf_path = generar_pdf_indicaciones(datos, firma_path, sello_path)
+        pdf_path = generar_pdf_indicaciones_medicas(datos, firma_path, sello_path)
         nombre_pdf = os.path.basename(pdf_path)
         with open(pdf_path, "rb") as f:
             pdf_url = subir_pdf(BUCKET_PDFS, nombre_pdf, f)

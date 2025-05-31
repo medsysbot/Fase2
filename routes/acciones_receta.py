@@ -99,6 +99,7 @@ async def generar_receta(
             "fecha": fecha,
             "diagnostico": diagnostico,
             "medicamentos": medicamentos,
+            "pdf_url": pdf_url,
             "institucion_id": institucion_id,
         }).execute()
 

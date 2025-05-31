@@ -219,7 +219,7 @@ def generar_pdf_indicaciones_medicas(datos, firma_path=None, sello_path=None):
         pdf.image(sello_path, x=60, y=pdf.get_y(), w=FIRMA_SELLO_ANCHO)
         pdf.ln(25)
 
-    filename = f"{datos['dni']}_indicaciones.pdf"
+    filename = f"{datos['dni']}_indicaciones_medicas.pdf"
     output_path = os.path.join("/tmp", filename)
     pdf.output(output_path)
 

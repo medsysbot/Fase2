@@ -96,11 +96,11 @@ async def ver_firma_sello(request: Request):
     return templates.TemplateResponse("firma_sello.html", {"request": request})
 
 
-@router.get("/historia-resumen", response_class=HTMLResponse)
-async def ver_historia_resumen(request: Request):
+@router.get("/historia_clinica_resumida", response_class=HTMLResponse)
+async def ver_historia_clinica_resumida(request: Request):
     if not _session_activa(request):
         return RedirectResponse(url="/login", status_code=303)
-    return templates.TemplateResponse("historia-resumen.html", {"request": request})
+    return templates.TemplateResponse("historia_clinica_resumida.html", {"request": request})
 
 
 @router.get("/historia-clinica-completa", response_class=HTMLResponse)

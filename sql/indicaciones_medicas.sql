@@ -6,5 +6,6 @@ CREATE TABLE IF NOT EXISTS indicaciones_medicas (
     fecha date,
     diagnostico text,
     indicaciones text,
+    pdf_url text,
     institucion_id text
 );

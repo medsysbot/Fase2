@@ -226,10 +226,10 @@ def generar_pdf_indicaciones(datos, firma_path=None, sello_path=None):
     return output_path
 
 
-def generar_pdf_evolucion(datos, firma_path=None, sello_path=None):
+def generar_pdf_consulta_diaria(datos, firma_path=None, sello_path=None):
     pdf = FPDF()
     pdf.add_page()
-    _agregar_encabezado(pdf, "Evolución Diaria")
+    _agregar_encabezado(pdf, "Consulta Diaria")
 
     pdf.cell(0, 10, f"Paciente: {datos['paciente']}", ln=True)
     pdf.cell(0, 10, f"DNI: {datos['dni']}", ln=True)
@@ -255,7 +255,7 @@ def generar_pdf_evolucion(datos, firma_path=None, sello_path=None):
         pdf.image(sello_path, x=60, y=pdf.get_y(), w=FIRMA_SELLO_ANCHO)
         pdf.ln(25)
 
-    filename = f"{datos['dni']}_evolucion.pdf"
+    filename = f"{datos['dni']}_consulta_diaria.pdf"
     output_path = os.path.join("/tmp", filename)
     pdf.output(output_path)
 

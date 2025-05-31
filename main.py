@@ -254,7 +254,7 @@ from routes import (
     receta_router,
     historia_clinica_router,
     indicaciones_router,
-    evolucion_router,
+    consulta_diaria_router,
     turnos_router,
     busqueda_router,
     estudios_router,
@@ -269,7 +269,7 @@ app.include_router(historia_clinica_router)
 app.include_router(historia_resumen_router)
 app.include_router(receta_router)
 app.include_router(indicaciones_router)
-app.include_router(evolucion_router)
+app.include_router(consulta_diaria_router)
 app.include_router(turnos_router)
 app.include_router(busqueda_router)
 app.include_router(estudios_router)

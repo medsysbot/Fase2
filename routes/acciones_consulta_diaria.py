@@ -4,7 +4,10 @@
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import JSONResponse
 import logging
-from utils.pdf_generator import generar_pdf_evolucion
+# La función para crear el PDF de la evolución diaria se renombró a
+# `generar_pdf_consulta_diaria` en `utils/pdf_generator.py`. Actualizamos el
+# import para usar el nombre correcto y evitar errores al iniciar la app.
+from utils.pdf_generator import generar_pdf_consulta_diaria
 from utils.email_sender import enviar_email_con_pdf
 from dotenv import load_dotenv
 import os
@@ -75,7 +78,10 @@ async def generar_evolucion(
         datos["firma_url"] = firma_url
         datos["sello_url"] = sello_url
 
-        pdf_path = generar_pdf_evolucion(datos, firma_path, sello_path)
+        # Generamos el PDF utilizando la función correcta del módulo
+        # `pdf_generator`. Antes se llamaba `generar_pdf_evolucion`, pero el
+        # nombre actual es `generar_pdf_consulta_diaria`.
+        pdf_path = generar_pdf_consulta_diaria(datos, firma_path, sello_path)
         nombre_pdf = os.path.basename(pdf_path)
         with open(pdf_path, "rb") as f:
             pdf_url = subir_pdf(BUCKET_PDFS, nombre_pdf, f)

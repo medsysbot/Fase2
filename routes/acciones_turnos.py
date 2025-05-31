@@ -18,6 +18,7 @@ BUCKET_PDFS = "turnos-medicos"
 async def generar_turno(
     request: Request,
     nombre: str = Form(...),
+    apellido: str = Form(""),
     dni: str = Form(...),
     especialidad: str = Form(""),
     fecha: str = Form(...),
@@ -31,6 +32,7 @@ async def generar_turno(
             return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
         datos = {
             "nombre": nombre,
+            "apellido": apellido,
             "dni": dni,
             "especialidad": especialidad,
             "fecha": fecha,
@@ -41,7 +43,7 @@ async def generar_turno(
         nombre_pdf = os.path.basename(pdf_path)
         with open(pdf_path, "rb") as f:
             pdf_url = subir_pdf(BUCKET_PDFS, nombre_pdf, f)
-        supabase.table("turnos").insert({**datos, "institucion_id": institucion_id, "pdf_url": pdf_url}).execute()
+        supabase.table("turnos_medicos").insert({**datos, "institucion_id": institucion_id, "pdf_url": pdf_url}).execute()
         return JSONResponse({"exito": True, "pdf_url": pdf_url})
     except Exception as e:
         return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)
@@ -50,7 +52,7 @@ async def generar_turno(
 @router.post("/enviar_pdf_turno")
 async def enviar_pdf_turno(email: str = Form(...), nombre: str = Form(...), dni: str = Form(...)):
     try:
-        registros = supabase.table("turnos").select("pdf_url").eq("dni", dni).order("id", desc=True).limit(1).execute()
+        registros = supabase.table("turnos_medicos").select("pdf_url").eq("dni", dni).order("id", desc=True).limit(1).execute()
         pdf_url = registros.data[0]["pdf_url"] if registros.data else None
         if not pdf_url:
             return JSONResponse({"exito": False, "mensaje": "No se encontró el PDF."}, status_code=404)

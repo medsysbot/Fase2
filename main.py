@@ -253,7 +253,7 @@ from routes import (
     historia_clinica_resumida_router,
     receta_router,
     historia_clinica_router,
-    indicaciones_router,
+    indicaciones_medicas_router,
     consulta_diaria_router,
     turnos_router,
     busqueda_router,
@@ -268,7 +268,7 @@ app.include_router(pacientes_router)
 app.include_router(historia_clinica_router)
 app.include_router(historia_clinica_resumida_router)
 app.include_router(receta_router)
-app.include_router(indicaciones_router)
+app.include_router(indicaciones_medicas_router)
 app.include_router(consulta_diaria_router)
 app.include_router(turnos_router)
 app.include_router(busqueda_router)

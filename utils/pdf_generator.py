@@ -195,7 +195,7 @@ def generar_pdf_receta(datos, firma=None, sello=None):
     return output_path
 
 
-def generar_pdf_indicaciones(datos, firma_path=None, sello_path=None):
+def generar_pdf_indicaciones_medicas(datos, firma_path=None, sello_path=None):
     pdf = FPDF()
     pdf.add_page()
     _agregar_encabezado(pdf, "Indicaciones Médicas")

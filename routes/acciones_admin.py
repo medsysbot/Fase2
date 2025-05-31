@@ -85,7 +85,7 @@ async def descargar_paciente(request: Request, dni: str):
         "historia-clinica-resumida",
         "recetas-medicas",
         "indicaciones-medicas",
-        "evolucion-diaria",
+        "consulta-diaria",
         "estudios-medicos",
     ]
 

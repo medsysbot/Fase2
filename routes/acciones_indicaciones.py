@@ -24,6 +24,7 @@ BUCKET_FIRMAS = "firma-sello-usuarios"
 async def generar_indicaciones(
     request: Request,
     nombre: str = Form(...),
+    apellido: str = Form(...),
     dni: str = Form(...),
     fecha: str = Form(...),
     diagnostico: str = Form(...),
@@ -35,7 +36,7 @@ async def generar_indicaciones(
         if institucion_id is None or not usuario:
             return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
         datos = {
-            "nombre": nombre,
+            "nombre": f"{nombre} {apellido}".strip(),
             "dni": dni,
             "fecha": fecha,
             "diagnostico": diagnostico,
@@ -68,8 +69,9 @@ async def generar_indicaciones(
         if sello_path and os.path.exists(sello_path):
             os.remove(sello_path)
 
-        supabase.table("indicaciones").insert({
+        supabase.table("indicaciones_medicas").insert({
             "nombre": nombre,
+            "apellido": apellido,
             "dni": dni,
             "fecha": fecha,
             "diagnostico": diagnostico,

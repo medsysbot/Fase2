@@ -37,7 +37,10 @@ Variables de Entorno principales
 - EMAIL_ORIGEN (pública)
 - EMAIL_PASSWORD (privada)
 - SMTP_SERVER (pública)
-- SMTP_PORT (pública)
+- SMTP_PORT (pública, 465 para Gmail)
+- EMAIL_IMAP_SERVER (opcional)
+- EMAIL_IMAP_USER (opcional)
+- EMAIL_IMAP_PASSWORD (opcional)
 
 Ejemplo rápido de configuración:
 

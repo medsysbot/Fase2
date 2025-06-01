@@ -30,6 +30,8 @@ README - MedSys | Sistema Médico Modular
 5. Cargar las variables de entorno requeridas.
    Una forma rápida es copiar el archivo `.env.example` a `.env` y
    completar los valores correspondientes.
+6. Instalar las dependencias ejecutando:
+   `pip install -r requirements.txt`
 Variables de Entorno principales
 - SUPABASE_URL (pública)
 - SUPABASE_KEY o SUPABASE_SERVICE_ROLE_KEY (privada)

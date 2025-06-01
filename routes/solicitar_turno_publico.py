@@ -25,17 +25,17 @@ def get_supabase():
     return create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # ╔══════════════════════════════════════════════════════════╗
-# ║   Splash público (opcional)                             ║
+# ║   Splash de acceso público a turnos                     ║
 # ╚══════════════════════════════════════════════════════════╝
-@router.get("/splash-turno", response_class=HTMLResponse)
-async def splash_turno(request: Request):
+@router.get("/turnos-publico", response_class=HTMLResponse)
+async def splash_turnos_publico(request: Request):
     return templates.TemplateResponse("app_publico/splash_turnos_publico.html", {"request": request})
 
 # ╔══════════════════════════════════════════════════════════╗
 # ║  Formulario público para solicitar turnos médicos       ║
 # ╚══════════════════════════════════════════════════════════╝
-@router.get("/turnos-publico", response_class=HTMLResponse)
-async def turno_publico(request: Request):
+@router.get("/turnos-publico/turnos-publico", response_class=HTMLResponse)
+async def formulario_turno_publico(request: Request):
     return templates.TemplateResponse("app_publico/formulario_turnos_publico.html", {"request": request})
 
 # ╔══════════════════════════════════════════════════════════╗
@@ -52,7 +52,7 @@ async def solicitar_turno_publico(
     horario: str = Form(...),
 ):
     try:
-        supabase = get_supabase()  # <--- ¡Inicialización aquí!
+        supabase = get_supabase()
 
         # Buscar email en la tabla pacientes
         consulta = (
@@ -71,7 +71,7 @@ async def solicitar_turno_publico(
             )
             return JSONResponse({'exito': False, 'mensaje': mensaje}, status_code=404)
 
-        # Guardar el turno en la tabla de turnos
+        # Guardar el turno en la tabla
         supabase.table('turnos_pacientes').insert({
             'dni': dni,
             'nombre': nombre,

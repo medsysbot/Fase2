@@ -100,6 +100,7 @@ async def generar_evolucion(
             "evolucion": evolucion,
             "indicaciones": indicaciones,
             "institucion_id": institucion_id,
+            "pdf_url": pdf_url,        
         }).execute()
 
         return JSONResponse({"exito": True, "pdf_url": pdf_url})

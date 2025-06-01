@@ -88,13 +88,20 @@
       recognition.start();
   }
 <script>
-  // Precargar datos desde sessionStorage (ajustá si usás otra fuente)
-  document.getElementById("institucion_id").value = sessionStorage.getItem("institucion_id");
-  document.getElementById("usuario_id").value = sessionStorage.getItem("usuario_id");
+
+<!-- ╔════════════════════════════════════╗ -->
+<!-- ║       SCRIPTS Y CONFIGURACIONES    ║ -->
+<!-- ╚════════════════════════════════════╝ -->
+
+<script>
+  // Precargar datos desde sessionStorage
+  document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("institucion_id").value = sessionStorage.getItem("institucion_id") || "";
+    document.getElementById("usuario_id").value = sessionStorage.getItem("usuario_id") || "";
+  });
 </script>
 
 <script src="/static/js/alertas.js"></script>
 <script src="/static/js/turnos_pacientes.js"></script>
-
 </body>
 </html>

@@ -2,39 +2,9 @@
 set -e
 
 # ╔═════════════════════════════════════════════════════╗
-# ║       INSTALACIÓN DE DEPENDENCIAS REQUERIDAS       ║
+# ║      INSTALACIÓN DE DEPENDENCIAS PARA MEDSYS       ║
 # ╚═════════════════════════════════════════════════════╝
 
-echo "Instalando dependencias de Python (sin uvicorn)..."
-grep -iv '^uvicorn' requirements.txt > requirements-no-uvicorn.txt
-pip install -r requirements-no-uvicorn.txt
-echo "✅ Librerías instaladas correctamente"
-
-# ╔═════════════════════════════════════════════════════╗
-# ║         VERIFICACIÓN DE ESTRUCTURA DE PROYECTO     ║
-# ╚═════════════════════════════════════════════════════╝
-
-mkdir -p static/js static/icons static/doc templates routes utils
-
-echo "📁 Carpetas esenciales verificadas"
-
-# ╔═════════════════════════════════════════════════════╗
-# ║        LIMPIEZA DE ARCHIVOS Y CACHÉS VIEJOS        ║
-# ╚═════════════════════════════════════════════════════╝
-
-echo "🧹 Limpiando archivos temporales y caché..."
-
-find . -type d -name "__pycache__" -exec rm -rf {} +
-find . -type f -name "*.pyc" -delete
-find . -type f -name "*.pyo" -delete
-find . -type f -name "*~" -delete
-find . -type f -name "*.bak" -delete
-rm -rf tmp 2>/dev/null || true
-
-echo "🧼 Limpieza completada"
-
-# ╔═════════════════════════════════════════════════════╗
-# ║       MENSAJE FINAL DE INSTALACIÓN COMPLETADA      ║
-# ╚═════════════════════════════════════════════════════╝
-
-echo "✅ Setup completo. Ya podés iniciar tu backend en Codex sin problemas."
+echo "📦 Instalando dependencias desde requirements.txt..."
+pip install -r requirements.txt
+echo "✅ Dependencias instaladas correctamente"

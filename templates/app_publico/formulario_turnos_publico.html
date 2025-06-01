@@ -3,19 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Turnos Médicos Públicos</title>
-  <link rel="stylesheet" href="/static/css/styles.css" />
+  <title>Solicitar Turno Público</title>
+  <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body>
-
   <header>
-    <h2 style="text-align: center;">Turnos Médicos Públicos</h2>
+    <h2 style="text-align: center;">Solicitar Turno Médico</h2>
   </header>
 
-  <!-- ╔════════════════════════════════════╗ -->
-  <!-- ║        FORMULARIO DE TURNOS       ║ -->
-  <!-- ╚════════════════════════════════════╝ -->
-  <form class="formulario" id="form-turnos-publico">
+  <form class="formulario" id="form-turnos">
     <label>Nombre:</label>
     <input type="text" name="nombre" id="nombre" required />
 
@@ -37,16 +33,14 @@
     <label>Profesional:</label>
     <input type="text" name="profesional" id="profesional" required />
 
-    <div style="margin-top: 20px; text-align: center;">
-      <button type="submit" id="btn-enviar-turno">Enviar Solicitud</button>
-      <button type="button" onclick="document.getElementById('form-turnos-publico').reset();">Borrar</button>
+    <div class="botones-formulario">
+      <button type="submit" id="enviar-btn">Enviar</button>
+      <button type="button" onclick="document.getElementById('form-turnos').reset();">Borrar</button>
     </div>
+
+    <div id="alerta-turno" style="display:none; margin-top: 15px;"></div>
   </form>
 
-  <!-- ╔════════════════════════════════════╗ -->
-  <!-- ║     SCRIPTS PARA FUNCIONALIDAD    ║ -->
-  <!-- ╚════════════════════════════════════╝ -->
-  <script src="/static/js/alertas.js"></script>
-  <script src="/static/js/turnos_publico.js"></script>
+  <script src="/static/js/guardar_turnos_publicos.js"></script>
 </body>
 </html>

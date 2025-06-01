@@ -125,6 +125,7 @@ async def solicitar_turno_paciente(
             'horario': horario,
             'profesional': profesional,
             'institucion_id': None,
+             "pdf_url": public_url,        
         }).execute()
 
         from utils.email_sender import enviar_email_simple

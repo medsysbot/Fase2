@@ -1,143 +1,120 @@
 # ╔════════════════════════════════════════════════════════════╗
-# ║               ACCIONES BACKEND - TURNOS MÉDICOS            ║
+# ║           ACCIONES BACKEND - TURNOS MÉDICOS               ║
 # ╚════════════════════════════════════════════════════════════╝
+
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import JSONResponse
-from utils.pdf_generator import generar_pdf_turno
-from utils.email_sender import enviar_email_con_pdf
-from dotenv import load_dotenv
 import os
+from utils.pdf_generator import generar_pdf_turno_paciente
+from utils.email_sender import enviar_email_con_pdf
+from utils.image_utils import (
+    guardar_imagen_temporal,
+    descargar_imagen,
+    eliminar_imagen,
+    imagen_existe,
+)
 from utils.supabase_helper import supabase, subir_pdf
+from dotenv import load_dotenv
 
 load_dotenv()
 router = APIRouter()
 
+# ╔══════════════════════════════════════════════╗
+# ║              CONFIGURACIÓN                   ║
+# ╚══════════════════════════════════════════════╝
 BUCKET_PDFS = "turnos-pacientes"
+BUCKET_FIRMAS = "firma-sello-usuarios"
 
+# ╔══════════════════════════════════════════════╗
+# ║          GENERAR Y GUARDAR TURNO             ║
+# ╚══════════════════════════════════════════════╝
 @router.post("/generar_pdf_turno_paciente")
-async def generar_turno_paciente(
+async def generar_pdf_turno_paciente(
     request: Request,
-    nombre: str = Form(...),
-    apellido: str = Form(""),
     dni: str = Form(...),
-    especialidad: str = Form(""),
+    institucion_id: str = Form(...),
+    usuario_id: str = Form(...),
+    profesional: str = Form(...),
+    especialidad: str = Form(...),
     fecha: str = Form(...),
-    horario: str = Form(...),
-    profesional: str = Form(""),
+    hora: str = Form(...),
+    observaciones: str = Form("")
 ):
     try:
-        usuario = request.session.get("usuario")
-        institucion_id = request.session.get("institucion_id")
-        if institucion_id is None or not usuario:
-            return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
         datos = {
-            "nombre": nombre,
-            "apellido": apellido,
             "dni": dni,
+            "institucion_id": institucion_id,
+            "usuario_id": usuario_id,
+            "profesional": profesional,
             "especialidad": especialidad,
             "fecha": fecha,
-            "horario": horario,
-            "profesional": profesional,
+            "hora": hora,
+            "observaciones": observaciones,
         }
-        pdf_path = generar_pdf_turno(datos)
-        nombre_pdf = os.path.basename(pdf_path)
-        with open(pdf_path, "rb") as f:
-            pdf_url = subir_pdf(BUCKET_PDFS, nombre_pdf, f)
-        supabase.table("turnos_pacientes").insert({**datos, "institucion_id": institucion_id, "pdf_url": pdf_url}).execute()
-        return JSONResponse({"exito": True, "pdf_url": pdf_url})
-    except Exception as e:
-        return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)
 
+        base_firma = f"firma_{usuario_id}_{institucion_id}"
+        base_sello = f"sello_{usuario_id}_{institucion_id}"
 
-@router.post("/enviar_pdf_turno_paciente")
-async def enviar_pdf_turno_paciente(email: str = Form(...), nombre: str = Form(...), dni: str = Form(...)):
-    try:
-        registros = supabase.table("turnos_pacientes").select("pdf_url").eq("dni", dni).order("id", desc=True).limit(1).execute()
-        pdf_url = registros.data[0]["pdf_url"] if registros.data else None
-        if not pdf_url:
-            return JSONResponse({"exito": False, "mensaje": "No se encontró el PDF."}, status_code=404)
-        enviar_email_con_pdf(
-            email_destino=email,
-            asunto="Turno Médico",
-            cuerpo=f"Estimado/a {nombre}, adjuntamos el turno solicitado.",
-            url_pdf=pdf_url,
-        )
-        return {"exito": True}
-    except Exception as e:
-        return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)
+        firma_path = sello_path = None
 
-@router.get('/api/especialidades')
-async def api_especialidades():
-    """Devuelve una lista de especialidades disponibles."""
-    return ["Clínica", "Pediatría", "Dermatología"]
+        contenido_firma, nombre_firma = descargar_imagen(supabase, BUCKET_FIRMAS, base_firma)
+        contenido_sello, nombre_sello = descargar_imagen(supabase, BUCKET_FIRMAS, base_sello)
 
+        if contenido_firma:
+            firma_path = guardar_imagen_temporal(contenido_firma, nombre_firma)
+        if contenido_sello:
+            sello_path = guardar_imagen_temporal(contenido_sello, nombre_sello)
 
-@router.get('/api/profesionales')
-async def api_profesionales(especialidad: str):
-    """Profesionales por especialidad (datos de ejemplo)."""
-    mapa = {
-        "Clínica": ["Dr. Gómez", "Dra. Pérez"],
-        "Pediatría": ["Dr. López"],
-        "Dermatología": ["Dra. Martínez"]
-    }
-    return mapa.get(especialidad, [])
+        pdf_path = generar_pdf_turno_paciente(datos, firma_path, sello_path)
+        filename = os.path.basename(pdf_path)
 
+        with open(pdf_path, "rb") as file_data:
+            public_url = subir_pdf(BUCKET_PDFS, filename, file_data)
 
-@router.get('/api/horarios')
-async def api_horarios(profesional: str, fecha: str):
-    """Horarios disponibles (ejemplo)."""
-    return ["08:00", "09:00", "10:00"]
+        if os.path.exists(pdf_path):
+            os.remove(pdf_path)
+        if firma_path and os.path.exists(firma_path):
+            os.remove(firma_path)
+        if sello_path and os.path.exists(sello_path):
+            os.remove(sello_path)
 
-
-@router.post('/solicitar_turno_paciente')
-async def solicitar_turno_paciente(
-    nombre: str = Form(...),
-    apellido: str = Form(...),
-    dni: str = Form(...),
-    especialidad: str = Form(...),
-    profesional: str = Form(...),
-    fecha: str = Form(...),
-    horario: str = Form(...),
-):
-    """Registra un turno público y envía confirmación por email."""
-    try:
-        consulta = (
-            supabase.table('pacientes')
-            .select('email')
-            .eq('dni', dni)
-            .single()
-            .execute()
-        )
-        email = consulta.data.get('email') if consulta.data else None
-        if not email:
-            mensaje = (
-                'Lo sentimos, no encontramos su registro como paciente en MEDSYS. '
-                'Por favor, acérquese a la clínica para registrarse.'
-            )
-            return JSONResponse({'exito': False, 'mensaje': mensaje}, status_code=404)
-
-        supabase.table('turnos_pacientes').insert({
-            'dni': dni,
-            'nombre': nombre,
-            'apellido': apellido,
-            'especialidad': especialidad,
-            'fecha': fecha,
-            'horario': horario,
-            'profesional': profesional,
-            'institucion_id': None,
-             "pdf_url": public_url,        
+        supabase.table("turnos_pacientes").insert({
+            "dni": dni,
+            "institucion_id": institucion_id,
+            "usuario_id": usuario_id,
+            "profesional": profesional,
+            "especialidad": especialidad,
+            "fecha": fecha,
+            "hora": hora,
+            "observaciones": observaciones,
+            "pdf_url": public_url
         }).execute()
 
-        from utils.email_sender import enviar_email_simple
-
-        cuerpo = (
-            f'Hola {nombre} {apellido},\n\n'
-            f'Su turno fue reservado para el {fecha} a las {horario} con '
-            f'{profesional} ({especialidad}).\n\n'
-            'Dirección de la clínica: ...\n\nSaludos, Equipo MEDSYS'
-        )
-        enviar_email_simple(email, 'Confirmación de turno', cuerpo)
-        return {"exito": True}
+        return JSONResponse({"exito": True, "pdf_url": public_url})
 
     except Exception as e:
-        return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+# ╔══════════════════════════════════════════════╗
+# ║         ENVIAR PDF POR EMAIL (OPCIONAL)      ║
+# ╚══════════════════════════════════════════════╝
+@router.post("/enviar_pdf_turno_paciente")
+async def enviar_pdf_turno_paciente(
+    email: str = Form(...),
+    nombre: str = Form(...),
+    pdf_url: str = Form(...)
+):
+    try:
+        cuerpo = (
+            f"Hola {nombre},\n\nAdjuntamos el comprobante de su turno médico.\n\n"
+            f"Gracias por usar MEDSYS."
+        )
+        enviar_email_con_pdf(
+            email_destino=email,
+            asunto="Turno Médico - MEDSYS",
+            cuerpo=cuerpo,
+            url_pdf=pdf_url
+        )
+        return JSONResponse({"exito": True})
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)

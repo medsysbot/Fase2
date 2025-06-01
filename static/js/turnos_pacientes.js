@@ -9,7 +9,7 @@ async function guardarPDF() {
     showAlert('guardado', 'Guardando turno…', false, 3000);
     await new Promise(r => setTimeout(r, 3200));
 
-    const response = await fetch('/generar_pdf_turno', {
+    const response = await fetch('/generar_pdf_turno_paciente', {
       method: 'POST',
       body: formData
     });
@@ -79,7 +79,7 @@ async function enviarPorCorreo() {
     formData.append('nombre', nombre);
     formData.append('dni', dni);
 
-    const response = await fetch('/enviar_pdf_turno', {
+    const response = await fetch('/enviar_pdf_turno_paciente', {
       method: 'POST',
       body: formData
     });

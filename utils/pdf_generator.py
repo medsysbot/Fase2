@@ -262,6 +262,47 @@ def generar_pdf_consulta_diaria(datos, firma_path=None, sello_path=None):
     return output_path
 
 
+def generar_pdf_turno_paciente(datos, firma_path=None, sello_path=None):
+    """Genera el comprobante en PDF para un turno médico."""
+    pdf = FPDF()
+    pdf.add_page()
+    _agregar_encabezado(pdf, "Turno Médico")
+
+    fecha = datos.get("fecha")
+    try:
+        fecha_obj = datetime.datetime.strptime(fecha, "%Y-%m-%d")
+        fecha = fecha_obj.strftime("%d/%m/%Y")
+    except Exception:
+        pass
+
+    campos = [
+        ("DNI", datos["dni"]),
+        ("Especialidad", datos.get("especialidad", "")),
+        ("Fecha", fecha),
+        ("Hora", datos["hora"]),
+        ("Profesional", datos.get("profesional", "")),
+    ]
+    for label, value in campos:
+        pdf.cell(0, 10, f"{label}: {value}", ln=True)
+
+    if firma_path and os.path.exists(firma_path):
+        pdf.ln(10)
+        pdf.cell(200, 10, txt="Firma del Profesional:", ln=True)
+        pdf.image(firma_path, x=10, y=pdf.get_y(), w=FIRMA_SELLO_ANCHO)
+        pdf.ln(25)
+
+    if sello_path and os.path.exists(sello_path):
+        pdf.cell(200, 10, txt="Sello del Profesional:", ln=True)
+        pdf.image(sello_path, x=60, y=pdf.get_y(), w=FIRMA_SELLO_ANCHO)
+        pdf.ln(25)
+
+    filename = f"{datos['dni']}_turno_medico.pdf"
+    output_path = os.path.join("/tmp", filename)
+    pdf.output(output_path)
+
+    return output_path
+
+
 def generar_pdf_turno(datos):
     pdf = FPDF()
     pdf.add_page()

@@ -12,9 +12,10 @@ from utils.email_sender import enviar_email_con_pdf
 from dotenv import load_dotenv
 import os
 from utils.image_utils import (
-    guardar_imagen_temporal,
     descargar_imagen,
+    eliminar_imagen,
     imagen_existe,
+    guardar_imagen_temporal,
 )
 
 from utils.supabase_helper import supabase, SUPABASE_URL, subir_pdf

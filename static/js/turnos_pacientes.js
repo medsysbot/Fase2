@@ -1,5 +1,5 @@
 // ╔════════════════════════════════════╗
-// ║      guardar_turnos.js      ║
+// ║        guardar_turnos.js          ║
 // ╚════════════════════════════════════╝
 async function guardarPDF() {
   const form = document.getElementById('form-turnos');
@@ -40,7 +40,7 @@ function abrirPDF() {
       }
     }, 1000);
   } else {
-    showAlert('pdf', 'Error Al Cargar El PDF', false, 3000);
+    showAlert('pdf', 'Error al cargar el PDF', false, 3000);
   }
 }
 

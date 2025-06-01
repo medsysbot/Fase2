@@ -260,7 +260,7 @@ from routes import (
     estudios_router,
     admin_router,
     paginas_router,
-    solicitar_turnos_publico_router
+    solicitar_turno_publico_router
 )
 
 from routes.acciones_estudios import iniciar_monitor
@@ -275,7 +275,7 @@ app.include_router(busqueda_router)
 app.include_router(estudios_router)
 app.include_router(admin_router)
 app.include_router(paginas_router)
-app.include_router(solicitar_turnos_publico_router, prefix="/turnos-publico")
+app.include_router(solicitar_turno_publico_router, prefix="/turnos-publico")
 
 
 @app.on_event("startup")

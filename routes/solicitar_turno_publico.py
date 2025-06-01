@@ -72,7 +72,7 @@ async def solicitar_turno_publico(
             return JSONResponse({'exito': False, 'mensaje': mensaje}, status_code=404)
 
         # Guardar el turno en la tabla de turnos
-        supabase.table('turnos_medicos').insert({
+        supabase.table('turnos_pacientes').insert({
             'dni': dni,
             'nombre': nombre,
             'apellido': apellido,

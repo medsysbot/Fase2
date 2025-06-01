@@ -1,11 +1,12 @@
 import os
 import logging
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from supabase import create_client, Client
 import psycopg2
 
-# Cargar variables de entorno una sola vez
-load_dotenv()
+# Cargar variables de entorno una sola vez. ``find_dotenv``
+# asegura que se ubique el archivo desde cualquier directorio.
+load_dotenv(find_dotenv())
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("SUPABASE_KEY")

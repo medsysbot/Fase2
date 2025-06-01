@@ -12,10 +12,10 @@ from utils.supabase_helper import supabase, subir_pdf
 load_dotenv()
 router = APIRouter()
 
-BUCKET_PDFS = "turnos-medicos"
+BUCKET_PDFS = "turnos-pacientes"
 
-@router.post("/generar_pdf_turno")
-async def generar_turno(
+@router.post("/generar_pdf_turno_paciente")
+async def generar_turno_paciente(
     request: Request,
     nombre: str = Form(...),
     apellido: str = Form(""),
@@ -43,16 +43,16 @@ async def generar_turno(
         nombre_pdf = os.path.basename(pdf_path)
         with open(pdf_path, "rb") as f:
             pdf_url = subir_pdf(BUCKET_PDFS, nombre_pdf, f)
-        supabase.table("turnos_medicos").insert({**datos, "institucion_id": institucion_id, "pdf_url": pdf_url}).execute()
+        supabase.table("turnos_pacientes").insert({**datos, "institucion_id": institucion_id, "pdf_url": pdf_url}).execute()
         return JSONResponse({"exito": True, "pdf_url": pdf_url})
     except Exception as e:
         return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)
 
 
-@router.post("/enviar_pdf_turno")
-async def enviar_pdf_turno(email: str = Form(...), nombre: str = Form(...), dni: str = Form(...)):
+@router.post("/enviar_pdf_turno_paciente")
+async def enviar_pdf_turno_paciente(email: str = Form(...), nombre: str = Form(...), dni: str = Form(...)):
     try:
-        registros = supabase.table("turnos_medicos").select("pdf_url").eq("dni", dni).order("id", desc=True).limit(1).execute()
+        registros = supabase.table("turnos_pacientes").select("pdf_url").eq("dni", dni).order("id", desc=True).limit(1).execute()
         pdf_url = registros.data[0]["pdf_url"] if registros.data else None
         if not pdf_url:
             return JSONResponse({"exito": False, "mensaje": "No se encontró el PDF."}, status_code=404)
@@ -89,8 +89,8 @@ async def api_horarios(profesional: str, fecha: str):
     return ["08:00", "09:00", "10:00"]
 
 
-@router.post('/solicitar_turno')
-async def solicitar_turno_publico(
+@router.post('/solicitar_turno_paciente')
+async def solicitar_turno_paciente(
     nombre: str = Form(...),
     apellido: str = Form(...),
     dni: str = Form(...),
@@ -116,7 +116,7 @@ async def solicitar_turno_publico(
             )
             return JSONResponse({'exito': False, 'mensaje': mensaje}, status_code=404)
 
-        supabase.table('turnos_medicos').insert({
+        supabase.table('turnos_pacientes').insert({
             'dni': dni,
             'nombre': nombre,
             'apellido': apellido,

@@ -55,11 +55,11 @@ async def ver_indicaciones_medicas(request: Request):
     return templates.TemplateResponse("indicaciones_medicas.html", {"request": request})
 
 
-@router.get("/turnos", response_class=HTMLResponse)
-async def ver_turnos(request: Request):
+@router.get("/turnos_pacientes", response_class=HTMLResponse)
+async def ver_turnos_pacientes(request: Request):
     if not _session_activa(request):
         return RedirectResponse(url="/login", status_code=303)
-    return templates.TemplateResponse("turnos.html", {"request": request})
+    return templates.TemplateResponse("turnos_pacientes.html", {"request": request})
 
 
 @router.get("/enfermeria", response_class=HTMLResponse)

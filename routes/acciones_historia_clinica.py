@@ -7,9 +7,10 @@ import os
 from utils.pdf_generator import generar_pdf_historia_completa
 from utils.email_sender import enviar_email_con_pdf
 from utils.image_utils import (
-    guardar_imagen_temporal,
     descargar_imagen,
+    eliminar_imagen,
     imagen_existe,
+    guardar_imagen_temporal,
 )
 from utils.supabase_helper import supabase, SUPABASE_URL, subir_pdf
 from dotenv import load_dotenv
@@ -98,7 +99,7 @@ async def generar_pdf_historia_completa(
 
         # Subir a Supabase
         with open(pdf_path, "rb") as file_data:
-            public_url = subir_pdf(BUCKET_PDFS, filename, file_data)
+            pdf_url = subir_pdf(BUCKET_PDFS, filename, file_data)
 
         if os.path.exists(pdf_path):
             os.remove(pdf_path)
@@ -130,10 +131,11 @@ async def generar_pdf_historia_completa(
             "estudios": estudios,
             "historial_tratamientos": historial_tratamientos,
             "historial_consultas": historial_consultas,
+            "pdf_url": pdf_url,
             "institucion_id": institucion_id
         }).execute()
 
-        return JSONResponse({"exito": True, "pdf_url": public_url})
+        return JSONResponse({"exito": True, "pdf_url": pdf_url})
 
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)

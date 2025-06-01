@@ -259,8 +259,8 @@ from routes import (
     estudios_router,
     admin_router,
     paginas_router,
-    solicitar_turno_publico_router,
 )
+from routes.solicitar_turno_publico import router as turnos_publicos_router
 from routes.acciones_turnos import router as turnos_router
 from routes.acciones_enfermeria import router as enfermeria_router
 
@@ -277,7 +277,7 @@ app.include_router(busqueda_router)
 app.include_router(estudios_router)
 app.include_router(admin_router)
 app.include_router(paginas_router)
-app.include_router(solicitar_turno_publico_router)
+app.include_router(turnos_publicos_router)
 
 
 @app.on_event("startup")

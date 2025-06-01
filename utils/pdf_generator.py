@@ -293,14 +293,48 @@ def generar_pdf_turno(datos):
 
 
 def generar_pdf_busqueda(datos):
+    """Genera un PDF consolidado con toda la información del paciente."""
     pdf = FPDF()
     pdf.add_page()
-    _agregar_encabezado(pdf, "Resultado de Búsqueda")
+    _agregar_encabezado(pdf, "Búsqueda de Paciente")
 
-    for key, value in datos.items():
-        pdf.cell(0, 10, f"{key}: {value}", ln=True)
+    paciente = datos.get("paciente", {})
+    pdf.set_font("Arial", "B", 12)
+    pdf.cell(0, 10, "Datos del Paciente", ln=True)
+    pdf.set_font("Arial", size=12)
+    campos_paciente = [
+        ("Nombre", f"{paciente.get('nombres', '')} {paciente.get('apellido', '')}"),
+        ("DNI", paciente.get("dni", "")),
+        ("Teléfono", paciente.get("telefono", "")),
+        ("Email", paciente.get("email", "")),
+    ]
+    for etiqueta, valor in campos_paciente:
+        if valor:
+            pdf.cell(0, 10, f"{etiqueta}: {valor}", ln=True)
 
-    filename = f"{datos.get('dni', 'busqueda')}.pdf"
+    def _seccion(titulo, items):
+        pdf.ln(5)
+        pdf.set_font("Arial", "B", 12)
+        pdf.cell(0, 10, titulo, ln=True)
+        pdf.set_font("Arial", size=12)
+        if not items:
+            pdf.cell(0, 10, "Sin datos", ln=True)
+            return
+        for item in items:
+            for k, v in item.items():
+                if v:
+                    pdf.multi_cell(0, 10, f"{k}: {v}")
+            pdf.ln(2)
+
+    _seccion("Historia Clínica Completa", datos.get("historia_clinica_completa"))
+    _seccion("Historia Clínica Resumida", datos.get("historia_clinica_resumida"))
+    _seccion("Consultas", datos.get("consultas"))
+    _seccion("Recetas", datos.get("recetas"))
+    _seccion("Indicaciones", datos.get("indicaciones"))
+    _seccion("Estudios", datos.get("estudios"))
+    _seccion("Turnos", datos.get("turnos"))
+
+    filename = f"{paciente.get('dni', 'busqueda')}_busqueda.pdf"
     output_path = os.path.join("/tmp", filename)
     pdf.output(output_path)
 

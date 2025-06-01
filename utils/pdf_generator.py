@@ -151,7 +151,7 @@ def _es_url(path: str) -> bool:
     return path.startswith("http://") or path.startswith("https://")
 
 
-def generar_pdf_receta(datos, firma=None, sello=None):
+def generar_pdf_recetas_medicas(datos, firma=None, sello=None):
     """Genera el PDF de la receta utilizando rutas locales o URLs de imagen."""
     pdf = FPDF()
     pdf.add_page()
@@ -188,7 +188,7 @@ def generar_pdf_receta(datos, firma=None, sello=None):
         pdf.image(sello, x=10, y=y_sello, w=FIRMA_SELLO_ANCHO, type=_img_type_from_name(sello))
         pdf.ln(FIRMA_SELLO_ANCHO + 5)
 
-    filename = f"{datos['dni']}_receta.pdf"
+    filename = f"{datos['dni']}_recetas_medicas.pdf"
     output_path = os.path.join("/tmp", filename)
     pdf.output(output_path)
 

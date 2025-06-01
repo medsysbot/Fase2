@@ -34,11 +34,11 @@ async def ver_consulta_diaria(request: Request):
     return templates.TemplateResponse("consulta_diaria.html", {"request": request})
 
 
-@router.get("/receta", response_class=HTMLResponse)
-async def ver_receta(request: Request):
+@router.get("/recetas_medicas", response_class=HTMLResponse)
+async def ver_recetas_medicas(request: Request):
     if not _session_activa(request):
         return RedirectResponse(url="/login", status_code=303)
-    return templates.TemplateResponse("receta.html", {"request": request})
+    return templates.TemplateResponse("recetas_medicas.html", {"request": request})
 
 
 @router.get("/historia", response_class=HTMLResponse)

@@ -29,7 +29,7 @@ def get_supabase():
 # ╚══════════════════════════════════════════════════════════╝
 @router.get("/splash-turno", response_class=HTMLResponse)
 async def splash_turno(request: Request):
-    return templates.TemplateResponse("app_publico/splash_turno_publico.html", {"request": request})
+    return templates.TemplateResponse("app_publico/splash_turnos_publico.html", {"request": request})
 
 # ╔══════════════════════════════════════════════════════════╗
 # ║  Formulario público para solicitar turnos médicos       ║

@@ -2,101 +2,51 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Turnos Médicos – Portal Público</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/static/styles.css" />
-  <style>
-    .publico-banner {
-      background: #595959;
-      color: #fff;
-      font-size: 17px;
-      font-weight: 600;
-      padding: 8px 0 5px 0;
-      margin-bottom: 18px;
-      letter-spacing: 1px;
-      border-radius: 0 0 7px 7px;
-      text-align: center;
-      box-shadow: 0 3px 10px #0002;
-      text-transform: uppercase;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Turnos Médicos Públicos</title>
+  <link rel="stylesheet" href="/static/css/styles.css" />
 </head>
 <body>
+
   <header>
-    <img src="/static/icons/icono-turnos.png" alt="Logo Turnos" class="logo-grande" />
-    <h2 style="text-align: center; color: #595959;">Turnos Médicos</h2>
-    <div class="publico-banner">Portal Público de Turnos</div>
+    <h2 style="text-align: center;">Turnos Médicos Públicos</h2>
   </header>
 
   <!-- ╔════════════════════════════════════╗ -->
-  <!-- ║        DATOS DEL PACIENTE        ║ -->
+  <!-- ║        FORMULARIO DE TURNOS       ║ -->
   <!-- ╚════════════════════════════════════╝ -->
-  <form class="formulario" id="form-turnos">
-    <label for="nombre">Nombre:</label>
+  <form class="formulario" id="form-turnos-publico">
+    <label>Nombre:</label>
     <input type="text" name="nombre" id="nombre" required />
 
-    <label for="apellido">Apellido:</label>
+    <label>Apellido:</label>
     <input type="text" name="apellido" id="apellido" required />
 
-    <label for="dni">DNI:</label>
+    <label>DNI:</label>
     <input type="text" name="dni" id="dni" required />
 
-    <label for="especialidad">Especialidad:</label>
-    <input type="text" name="especialidad" id="especialidad" />
+    <label>Especialidad:</label>
+    <input type="text" name="especialidad" id="especialidad" required />
 
-    <label for="fecha">Fecha del Turno:</label>
+    <label>Fecha del Turno:</label>
     <input type="date" name="fecha" id="fecha" required />
 
-    <label for="horario">Horario:</label>
+    <label>Horario:</label>
     <input type="time" name="horario" id="horario" required />
 
-    <label for="profesional">Profesional:</label>
-    <input type="text" name="profesional" id="profesional" />
-    
-    <!-- BOTONES FLOTANTES (solo tres) -->
-    <div class="botones-flotantes">
-      <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
-        <img src="/static/icons/microfono.png" alt="Voz" />
-      </button>
-      <button type="submit" title="Enviar">
-        <img src="/static/icons/enviar.png" alt="Enviar" />
-      </button>
-      <button type="reset" title="Borrar">
-        <img src="/static/icons/limpiar.png" alt="Borrar" />
-      </button>
+    <label>Profesional:</label>
+    <input type="text" name="profesional" id="profesional" required />
+
+    <div style="margin-top: 20px; text-align: center;">
+      <button type="submit" id="btn-enviar-turno">Enviar Solicitud</button>
+      <button type="button" onclick="document.getElementById('form-turnos-publico').reset();">Borrar</button>
     </div>
   </form>
 
-  <!-- ALERT MANAGER -->
-  <div id="alert-manager" class="alert-container" style="display: none;">
-    <div class="alert-box">
-      <img id="alert-icon" src="" alt="icono-alerta" class="alert-icon" />
-      <span id="alert-text" class="alert-message">Texto de alerta</span>
-      <div id="alert-buttons" class="alert-buttons" style="display: none;">
-        <img src="/static/icons/alerta/alerta-boton-borrar.png" id="btn-borrar" class="alert-btn" />
-        <img src="/static/icons/alerta/alerta-boton-no.png" id="btn-no" class="alert-btn" />
-      </div>
-    </div>
-  </div>
-
-  <script>
-    function activarVoz() {
-      const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
-      recognition.lang = "es-ES";
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.onresult = function(event) {
-        const texto = event.results[0][0].transcript;
-        const campo = document.activeElement;
-        if (campo && (campo.tagName === "INPUT" || campo.tagName === "TEXTAREA")) {
-          campo.value += (campo.value ? " " : "") + texto;
-        }
-      };
-      recognition.start();
-    }
-  </script>
+  <!-- ╔════════════════════════════════════╗ -->
+  <!-- ║     SCRIPTS PARA FUNCIONALIDAD    ║ -->
+  <!-- ╚════════════════════════════════════╝ -->
   <script src="/static/js/alertas.js"></script>
-  <script src="/static/app_publico/js/guardar_turnos_publicos.js"></script>
+  <script src="/static/js/turnos_publico.js"></script>
 </body>
 </html>

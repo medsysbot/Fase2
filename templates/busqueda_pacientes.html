@@ -42,20 +42,14 @@
     <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
       <img src="/static/icons/microfono.png" alt="Voz" />
     </button>
-    <button type="button" title="Buscar">
-      <img src="/static/icons/busquedas.png" alt="Buscar" />
-    </button>
     <button type="button" title="Guardar">
       <img src="/static/icons/guardar.png" alt="Guardar" />
     </button>
     <button type="button" title="Enviar">
       <img src="/static/icons/enviar.png" alt="Enviar" />
     </button>
-    <button type="button" onclick="imprimirPagina()" title="Imprimir">
-      <img src="/static/icons/imprimir.png" alt="Imprimir" />
-    </button>
-    <button type="button" onclick="document.getElementById('busqueda').value=''" title="Limpiar">
-      <img src="/static/icons/borrar.png" alt="Borrar" />
+    <button type="button" onclick="abrirPDF()" title="Ver PDF">
+      <img src="/static/icons/icono-ver-pdf.png" alt="Ver PDF" />
     </button>
   </div>
 
@@ -85,9 +79,6 @@
         if (campo) campo.value += (campo.value ? ' ' : '') + texto;
       };
       recognition.start();
-    }
-    function imprimirPagina(){
-      window.print();
     }
   </script>
   <script src="/static/js/alertas.js"></script>

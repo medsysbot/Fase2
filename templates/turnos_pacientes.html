@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<!-- ╔════════════════════════════════════╗ -->
-<!-- ║      CABECERA DEL FORMULARIO      ║ -->
-<!-- ╚════════════════════════════════════╝ -->
   <meta charset="UTF-8" />
   <title>Turnos Médicos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,74 +8,81 @@
   <link rel="stylesheet" href="/static/styles.css" />
 </head>
 <body>
+  <!-- ╔════════════════════════════════════╗ -->
+  <!-- ║      PRELOAD DE ÍCONOS ALERTAS    ║ -->
+  <!-- ╚════════════════════════════════════╝ -->
+  <div style="display: none;">
+    <img src="/static/icons/alerta/alerta-guardado.png" alt="guardado" />
+    <img src="/static/icons/alerta/alerta-error.png" alt="error" />
+    <img src="/static/icons/alerta/alerta-enviado.png" alt="enviado" />
+    <img src="/static/icons/alerta/alerta-boton-borrar.png" alt="borrar" />
+    <img src="/static/icons/alerta/alerta-boton-no.png" alt="cancelar" />
+  </div>
+
   <header>
     <img src="/static/icons/icono-turnos.png" alt="Logo Turnos" class="logo-grande" />
     <h2 style="text-align: center;">Turnos Médicos</h2>
   </header>
 
-  <!-- ╔════════════════════════════════════╗ -->
-<!-- ║        DATOS DEL PACIENTE        ║ -->
-<!-- ╚════════════════════════════════════╝ -->
-<form class="formulario" id="form-turnos">
-  <label>Nombre:</label>
-  <input type="text" name="nombre" id="nombre" required />
+  <form class="formulario" id="form-turnos">
+    <label>Nombre:</label>
+    <input type="text" name="nombre" id="nombre" required />
 
-  <label>Apellido:</label>
-  <input type="text" name="apellido" id="apellido" required />
+    <label>Apellido:</label>
+    <input type="text" name="apellido" id="apellido" required />
 
-  <label>DNI:</label>
-  <input type="text" name="dni" id="dni" required />
+    <label>DNI:</label>
+    <input type="text" name="dni" id="dni" required />
 
-  <label>Especialidad:</label>
-  <input type="text" name="especialidad" id="especialidad" required />
+    <label>Especialidad:</label>
+    <input type="text" name="especialidad" id="especialidad" required />
 
-  <label>Fecha del Turno:</label>
-  <input type="date" name="fecha" id="fecha" required />
+    <label>Fecha del Turno:</label>
+    <input type="date" name="fecha" id="fecha" required />
 
-  <label>Horario:</label>
-  <input type="time" name="horario" id="horario" required />
+    <label>Horario:</label>
+    <input type="time" name="horario" id="horario" required />
 
-  <label>Profesional:</label>
-  <input type="text" name="profesional" id="profesional" required />
- <!-- CAMPOS OCULTOS NECESARIOS PARA EL BACKEND -->
-  <input type="hidden" name="institucion_id" id="institucion_id" />
-  <input type="hidden" name="usuario_id" id="usuario_id" />
-</form>
- 
+    <label>Profesional:</label>
+    <input type="text" name="profesional" id="profesional" required />
+
+    <input type="hidden" name="institucion_id" id="institucion_id" />
+    <input type="hidden" name="usuario_id" id="usuario_id" />
+  </form>
+
   <div class="botones-flotantes">
-  <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
-    <img src="/static/icons/microfono.png" alt="Voz" />
-  </button>
-  <button type="button" onclick="guardarPDF()" title="Guardar">
-    <img src="/static/icons/guardar.png" alt="Guardar" />
-  </button>
-  <button type="button" onclick="enviarPorCorreo()" title="Enviar">
-    <img src="/static/icons/enviar.png" alt="Enviar" />
-  </button>
-  <button type="button" onclick="abrirPDF()" title="Ver PDF">
-    <img src="/static/icons/icono-ver-pdf.png" alt="Ver PDF" />
-  </button>
-</div>
+    <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
+      <img src="/static/icons/microfono.png" alt="Voz" />
+    </button>
+    <button type="button" onclick="guardarPDF()" title="Guardar">
+      <img src="/static/icons/guardar.png" alt="Guardar" />
+    </button>
+    <button type="button" onclick="enviarPorCorreo()" title="Enviar">
+      <img src="/static/icons/enviar.png" alt="Enviar" />
+    </button>
+    <button type="button" onclick="abrirPDF()" title="Ver PDF">
+      <img src="/static/icons/icono-ver-pdf.png" alt="Ver PDF" />
+    </button>
+  </div>
 
-<!-- ALERT MANAGER -->
-<div id="alert-manager" class="alert-container" style="display: none;">
-  <div class="alert-box">
-    <img id="alert-icon" src="" alt="icono-alerta" class="alert-icon" />
-    <span id="alert-text" class="alert-message">Texto de alerta</span>
-    <div id="alert-buttons" class="alert-buttons" style="display: none;">
-      <img src="/static/icons/alerta/alerta-boton-borrar.png" id="btn-borrar" class="alert-btn" />
-      <img src="/static/icons/alerta/alerta-boton-no.png" id="btn-no" class="alert-btn" />
+  <div id="alert-manager" class="alert-container" style="display: none;">
+    <div class="alert-box">
+      <img id="alert-icon" src="" alt="icono-alerta" class="alert-icon" />
+      <span id="alert-text" class="alert-message">Texto de alerta</span>
+      <div id="alert-buttons" class="alert-buttons" style="display: none;">
+        <img src="/static/icons/alerta/alerta-boton-borrar.png" id="btn-borrar" class="alert-btn" />
+        <img src="/static/icons/alerta/alerta-boton-no.png" id="btn-no" class="alert-btn" />
+      </div>
     </div>
   </div>
-</div>
 
-<script>
-  function activarVoz() {
-      const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+  <script>
+    function activarVoz() {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
       recognition.lang = "es-ES";
       recognition.continuous = false;
       recognition.interimResults = false;
-      recognition.onresult = function(event) {
+      recognition.onresult = function (event) {
         const texto = event.results[0][0].transcript;
         const campo = document.activeElement;
         if (campo && (campo.tagName === "INPUT" || campo.tagName === "TEXTAREA")) {
@@ -86,22 +90,17 @@
         }
       };
       recognition.start();
-  }
-<script>
+    }
+  </script>
 
-<!-- ╔════════════════════════════════════╗ -->
-<!-- ║       SCRIPTS Y CONFIGURACIONES    ║ -->
-<!-- ╚════════════════════════════════════╝ -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      document.getElementById("institucion_id").value = sessionStorage.getItem("institucion_id") || "";
+      document.getElementById("usuario_id").value = sessionStorage.getItem("usuario_id") || "";
+    });
+  </script>
 
-<script>
-  // Precargar datos desde sessionStorage
-  document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("institucion_id").value = sessionStorage.getItem("institucion_id") || "";
-    document.getElementById("usuario_id").value = sessionStorage.getItem("usuario_id") || "";
-  });
-</script>
-
-<script src="/static/js/alertas.js"></script>
-<script src="/static/js/turnos_pacientes.js"></script>
+  <script src="/static/js/alertas.js"></script>
+  <script src="/static/js/guardar_turnos_publicos.js"></script>
 </body>
 </html>

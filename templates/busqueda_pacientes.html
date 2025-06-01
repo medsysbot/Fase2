@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <!-- ╔════════════════════════════════════╗ -->
+  <!-- ║      CABECERA DEL FORMULARIO      ║ -->
+  <!-- ╚════════════════════════════════════╝ -->
+  <meta charset="UTF-8" />
+  <title>Búsqueda de Pacientes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/static/styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header>
+    <img src="/static/icons/busqueda.png" alt="Buscar" class="logo-grande" />
+    <h2>Búsqueda de Pacientes</h2>
+  </header>
+
+  <!-- ╔════════════════════════════════════╗ -->
+  <!-- ║        FORMULARIO DE BÚSQUEDA      ║ -->
+  <!-- ╚════════════════════════════════════╝ -->
+  <form id="form-busqueda" class="formulario">
+    <label for="busqueda">
+      Ingrese DNI del paciente:
+    </label>
+    <input type="search" id="busqueda" name="busqueda" placeholder="Ej: 12345678" />
+
+    <label>Nombre:</label>
+    <div class="resultado" id="res-nombre">-</div>
+
+    <label>Apellido:</label>
+    <div class="resultado" id="res-apellido">-</div>
+
+    <label>Teléfono:</label>
+    <div class="resultado" id="res-telefono">-</div>
+
+    <label>Email:</label>
+    <div class="resultado" id="res-email">-</div>
+  </form>
+
+  <div class="botones-flotantes">
+    <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
+      <img src="/static/icons/microfono.png" alt="Voz" />
+    </button>
+    <button type="button" title="Buscar">
+      <img src="/static/icons/busquedas.png" alt="Buscar" />
+    </button>
+    <button type="button" title="Guardar">
+      <img src="/static/icons/guardar.png" alt="Guardar" />
+    </button>
+    <button type="button" title="Enviar">
+      <img src="/static/icons/enviar.png" alt="Enviar" />
+    </button>
+    <button type="button" onclick="imprimirPagina()" title="Imprimir">
+      <img src="/static/icons/imprimir.png" alt="Imprimir" />
+    </button>
+    <button type="button" onclick="document.getElementById('busqueda').value=''" title="Limpiar">
+      <img src="/static/icons/borrar.png" alt="Borrar" />
+    </button>
+  </div>
+
+  <!-- ALERT MANAGER -->
+  <div id="alert-manager" class="alert-container" style="display:none;">
+    <div class="alert-box">
+      <img id="alert-icon" src="" alt="icono-alerta" class="alert-icon" />
+      <span id="alert-text" class="alert-message">Texto de alerta</span>
+      <div id="alert-buttons" class="alert-buttons" style="display:none;">
+        <img src="/static/icons/alerta/alerta-boton-borrar.png" id="btn-borrar" class="alert-btn" />
+        <img src="/static/icons/alerta/alerta-boton-no.png" id="btn-no" class="alert-btn" />
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/guardar_busqueda.js"></script>
+  <script src="/static/js/voz-a-formulario-busqueda.js"></script>
+  <script>
+    function activarVoz() {
+      const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+      recognition.lang = "es-ES";
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.onresult = function(event) {
+        const texto = event.results[0][0].transcript;
+        const campo = document.getElementById("busqueda");
+        if (campo) campo.value += (campo.value ? ' ' : '') + texto;
+      };
+      recognition.start();
+    }
+    function imprimirPagina(){
+      window.print();
+    }
+  </script>
+  <script src="/static/js/alertas.js"></script>
+</body>
+</html>

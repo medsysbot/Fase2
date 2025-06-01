@@ -251,7 +251,7 @@ async def mostrar_alertas(request: Request):
 from routes import (
     pacientes_router,
     historia_clinica_resumida_router,
-    receta_router,
+    recetas_medicas_router,
     historia_clinica_router,
     indicaciones_medicas_router,
     consulta_diaria_router,
@@ -267,7 +267,7 @@ from routes.acciones_estudios import iniciar_monitor
 app.include_router(pacientes_router)
 app.include_router(historia_clinica_router)
 app.include_router(historia_clinica_resumida_router)
-app.include_router(receta_router)
+app.include_router(recetas_medicas_router)
 app.include_router(indicaciones_medicas_router)
 app.include_router(consulta_diaria_router)
 app.include_router(turnos_router)

@@ -1,13 +1,15 @@
--- Tabla historia_completa vinculada al bucket 'historia-completa'
-CREATE TABLE IF NOT EXISTS historia_completa (
+-- Tabla historia_clinica_completa vinculada al bucket 'historia-completa'
+CREATE TABLE IF NOT EXISTS historia_clinica_completa (
+    paciente_id text,
     dni text PRIMARY KEY,
     nombre text,
     apellido text,
     fecha_nacimiento date,
     edad text,
     sexo text,
-    domicilio text,
     telefono text,
+    email text,
+    domicilio text,
     obra_social text,
     numero_afiliado text,
     antecedentes_personales text,

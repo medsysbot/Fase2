@@ -9,7 +9,7 @@ from fastapi import APIRouter, Form, UploadFile, File, Request
 import base64
 from fastapi.responses import JSONResponse
 import os, datetime
-from utils.pdf_generator import generar_pdf_receta
+from utils.pdf_generator import generar_pdf_recetas_medicas
 from utils.email_sender import enviar_email_con_pdf
 from utils.image_utils import (
     descargar_imagen,
@@ -85,7 +85,7 @@ async def generar_receta(
         if contenido_sello:
             sello_path = guardar_imagen_temporal(contenido_sello, nombre_sello)
 
-        pdf_path = generar_pdf_receta(datos, firma_path, sello_path)
+        pdf_path = generar_pdf_recetas_medicas(datos, firma_path, sello_path)
 
         nombre_archivo = f"{dni}_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.pdf"
 

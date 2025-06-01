@@ -73,7 +73,7 @@ async def ver_enfermeria(request: Request):
 async def ver_busqueda(request: Request):
     if not _session_activa(request):
         return RedirectResponse(url="/login", status_code=303)
-    return templates.TemplateResponse("busqueda.html", {"request": request})
+    return templates.TemplateResponse("busqueda_pacientes.html", {"request": request})
 
 
 @router.get("/estudios", response_class=HTMLResponse)

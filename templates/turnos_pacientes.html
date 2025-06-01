@@ -20,27 +20,31 @@
 <!-- ║        DATOS DEL PACIENTE        ║ -->
 <!-- ╚════════════════════════════════════╝ -->
 <form class="formulario" id="form-turnos">
-    <label>Nombre:</label>
-    <input type="text" name="nombre" id="nombre" required />
-    <label>Apellido:</label>
-    <input type="text" name="apellido" id="apellido" required />
+  <label>Nombre:</label>
+  <input type="text" name="nombre" id="nombre" required />
 
-    <label>DNI:</label>
-    <input type="text" name="dni" id="dni" required />
+  <label>Apellido:</label>
+  <input type="text" name="apellido" id="apellido" required />
 
-    <label>Especialidad:</label>
-    <input type="text" name="especialidad" id="especialidad" />
+  <label>DNI:</label>
+  <input type="text" name="dni" id="dni" required />
 
-    <label>Fecha del Turno:</label>
-    <input type="date" name="fecha" id="fecha" required />
+  <label>Especialidad:</label>
+  <input type="text" name="especialidad" id="especialidad" required />
 
-    <label>Horario:</label>
-    <input type="time" name="horario" id="horario" required />
+  <label>Fecha del Turno:</label>
+  <input type="date" name="fecha" id="fecha" required />
 
-    <label>Profesional:</label>
-    <input type="text" name="profesional" id="profesional" />
-  </form>
+  <label>Horario:</label>
+  <input type="time" name="horario" id="horario" required />
 
+  <label>Profesional:</label>
+  <input type="text" name="profesional" id="profesional" required />
+ <!-- CAMPOS OCULTOS NECESARIOS PARA EL BACKEND -->
+  <input type="hidden" name="institucion_id" id="institucion_id" />
+  <input type="hidden" name="usuario_id" id="usuario_id" />
+</form>
+ 
   <div class="botones-flotantes">
   <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
     <img src="/static/icons/microfono.png" alt="Voz" />
@@ -83,8 +87,14 @@
       };
       recognition.start();
   }
+<script>
+  // Precargar datos desde sessionStorage (ajustá si usás otra fuente)
+  document.getElementById("institucion_id").value = sessionStorage.getItem("institucion_id");
+  document.getElementById("usuario_id").value = sessionStorage.getItem("usuario_id");
 </script>
+
 <script src="/static/js/alertas.js"></script>
 <script src="/static/js/turnos_pacientes.js"></script>
+
 </body>
 </html>

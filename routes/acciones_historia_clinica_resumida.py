@@ -4,10 +4,14 @@ import os
 import datetime
 
 from utils.pdf_generator import generar_pdf_resumen
-
-# Asume que estos helpers y la instancia supabase ya están importados
-# from .helpers import descargar_imagen, guardar_imagen_temporal, generar_pdf_resumen, subir_pdf, enviar_email_con_pdf
-# from .db import supabase
+from utils.email_sender import enviar_email_con_pdf
+from utils.image_utils import (
+    descargar_imagen,
+    eliminar_imagen,
+    imagen_existe,
+    guardar_imagen_temporal,
+)
+from utils.supabase_helper import supabase, subir_pdf
 
 router = APIRouter()
 

@@ -12,4 +12,3 @@ psycopg2-binary
 fastapi-mail==1.4.1
 asyncpg
 httpx
-fpdf

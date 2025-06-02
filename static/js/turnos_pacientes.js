@@ -61,9 +61,15 @@ async function obtenerEmailPorDni(dni) {
 }
 
 async function enviarPorCorreo() {
-  const nombre = document.querySelector('[name="nombre"]').value.trim();
   const dni = document.querySelector('[name="dni"]').value.trim();
+  const nombre = 'Paciente';
+  const pdfURL = sessionStorage.getItem('pdfURL_turnos');
   const email = await obtenerEmailPorDni(dni);
+
+  if (!pdfURL) {
+    showAlert('pdf', 'Genera y guarda el turno antes de enviarlo.', false, 3000);
+    return;
+  }
 
   if (!email) {
     showAlert('error', 'No se encontró un e-mail para este DNI.', false, 3000);
@@ -77,7 +83,7 @@ async function enviarPorCorreo() {
     const formData = new FormData();
     formData.append('email', email);
     formData.append('nombre', nombre);
-    formData.append('dni', dni);
+    formData.append('pdf_url', pdfURL);
 
     const response = await fetch('/enviar_pdf_turno_paciente', {
       method: 'POST',

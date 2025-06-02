@@ -2,7 +2,7 @@
 # ║           ACCIONES BACKEND - TURNOS MÉDICOS               ║
 # ╚════════════════════════════════════════════════════════════╝
 
-from fastapi import APIRouter, Form, Request
+from fastapi import APIRouter, Form
 from fastapi.responses import JSONResponse
 import os
 from utils.pdf_generator import generar_pdf_turno_paciente as generar_pdf_turno_paciente_sync
@@ -10,8 +10,6 @@ from utils.email_sender import enviar_email_con_pdf
 from utils.image_utils import (
     guardar_imagen_temporal,
     descargar_imagen,
-    eliminar_imagen,
-    imagen_existe,
 )
 from utils.supabase_helper import supabase, subir_pdf
 from dotenv import load_dotenv
@@ -30,7 +28,6 @@ BUCKET_FIRMAS = "firma-sello-usuarios"
 # ╚══════════════════════════════════════════════╝
 @router.post("/generar_pdf_turno_paciente")
 async def generar_pdf_turno_paciente(
-    request: Request,
     dni: str = Form(...),
     institucion_id: str = Form(...),
     usuario_id: str = Form(...),

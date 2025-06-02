@@ -4,13 +4,14 @@ from .acciones_recetas_medicas import router as recetas_medicas_router
 from .acciones_historia_clinica import router as historia_clinica_router
 from .acciones_indicaciones_medicas import router as indicaciones_medicas_router
 from .acciones_consulta_diaria import router as consulta_diaria_router
-from .acciones_turnos import router as turnos_router
+from routes.acciones_turnos import router as turnos_pacientes_router
 from .acciones_enfermeria import router as enfermeria_router
 from .acciones_busqueda import router as busqueda_router
 from .acciones_estudios import router as estudios_router
 from .acciones_admin import router as admin_router
 from .paginas import router as paginas_router
-from .solicitar_turno_publico import router as solicitar_turno_publico_router
+from .solicitar_turno_publico import router as turnos_publicos_router
+
 
 __all__ = [
     "pacientes_router",
@@ -19,12 +20,12 @@ __all__ = [
     "historia_clinica_router",
     "indicaciones_medicas_router",
     "consulta_diaria_router",
-    "turnos_router",
+    "turnos_pacientes_router",  
     "enfermeria_router",
     "busqueda_router",
     "estudios_router",
     "admin_router",
     "paginas_router",
-    "solicitar_turno_publico_router",    
+    "turnos_publicos_router",    
 ]
 

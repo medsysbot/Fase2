@@ -1,94 +1,101 @@
-from fastapi import APIRouter, Form, UploadFile, File, Request
+# ╔════════════════════════════════════════════════╗
+# ║          RUTA BACKEND - TURNOS PACIENTES      ║
+# ╚════════════════════════════════════════════════╝
+
+from fastapi import APIRouter, Request, Form, UploadFile, File
 from fastapi.responses import JSONResponse
-from utils.pdf_generator import generar_pdf_turno_paciente
-from utils.email_sender import enviar_email_con_pdf
-from utils.image_utils import guardar_imagen_temporal
-from utils.supabase_helper import supabase
-from datetime import datetime
-import uuid
+from utils import (
+    generar_pdf_turno_paciente,
+    enviar_email_con_pdf,
+)
+from utils.supabase_helper import supabase, subir_pdf_a_bucket
+import tempfile
 
 router = APIRouter()
 
-# ╔════════════════════════════════════════════╗
-# ║     GUARDAR TURNO Y GENERAR PDF (PÚBLICO) ║
-# ╚════════════════════════════════════════════╝
 @router.post("/generar_pdf_turno_paciente")
-async def generar_turno_y_pdf(
+async def generar_turno_paciente(
     request: Request,
     nombre: str = Form(...),
     apellido: str = Form(...),
     dni: str = Form(...),
     especialidad: str = Form(...),
+    profesional: str = Form(...),
     fecha: str = Form(...),
     hora: str = Form(...),
-    profesional: str = Form(...),
-    usuario_id: str = Form(...),
+    observaciones: str = Form(""),
     institucion_id: int = Form(...),
+    usuario_id: str = Form(...)
 ):
     try:
-        # Validación mínima
-        campos_obligatorios = [dni, fecha, hora, profesional, usuario_id, institucion_id]
-        if not all(campos_obligatorios):
-            return JSONResponse(content={"exito": False, "mensaje": "Faltan campos obligatorios"}, status_code=400)
+        # ═════ Validar sesión ═════
+        if not institucion_id or not usuario_id:
+            return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
 
-        # Generar nombre único para PDF
-        nombre_archivo = f"{dni}_{fecha}_{uuid.uuid4().hex[:8]}.pdf"
+        # ═════ Validación de campos ═════
+        campos = [dni, nombre, apellido, especialidad, profesional, fecha, hora, usuario_id, institucion_id]
+        if not all(c and str(c).strip() != "" for c in campos):
+            return JSONResponse({"exito": False, "mensaje": "Faltan campos obligatorios."})
 
-        # Generar PDF
-        pdf_bytes = await generar_pdf_turno_paciente(nombre, apellido, dni, especialidad, fecha, hora, profesional)
+        # ═════ Generar PDF temporal ═════
+        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+        pdf_path = temp_file.name
+        generar_pdf_turno_paciente(
+            nombre=nombre,
+            apellido=apellido,
+            dni=dni,
+            especialidad=especialidad,
+            profesional=profesional,
+            fecha=fecha,
+            hora=hora,
+            observaciones=observaciones,
+            output_path=pdf_path
+        )
 
-        # Subir a Supabase
-        bucket = "turnos_pacientes"
-        supabase.storage.from_(bucket).upload(nombre_archivo, pdf_bytes, {"content-type": "application/pdf"})
+        # ═════ Subir a Supabase ═════
+        nombre_archivo = f"{dni}_{fecha}_{hora}.pdf".replace(" ", "_").replace(":", "-")
+        url_pdf = subir_pdf_a_bucket(
+            bucket="turnos_pacientes",
+            archivo_path=pdf_path,
+            nombre_archivo=nombre_archivo,
+            carpeta=f"{dni}"
+        )
 
-        # Obtener URL pública
-        pdf_url = f"https://{supabase.storage_url}/{bucket}/{nombre_archivo}"
-
-        # Insertar en la tabla
+        # ═════ Insertar en Supabase DB ═════
         supabase.table("turnos_pacientes").insert({
+            "dni": dni,
             "nombre": nombre,
             "apellido": apellido,
-            "dni": dni,
             "especialidad": especialidad,
+            "profesional": profesional,
             "fecha": fecha,
             "hora": hora,
-            "profesional": profesional,
+            "observaciones": observaciones,
+            "pdf_url": url_pdf,
             "usuario_id": usuario_id,
-            "institucion_id": institucion_id,
-            "pdf_url": pdf_url,
-            "created_at": datetime.utcnow().isoformat()
+            "institucion_id": institucion_id
         }).execute()
 
-        return JSONResponse(content={"exito": True, "pdf_url": pdf_url})
+        return {"exito": True, "pdf_url": url_pdf}
 
     except Exception as e:
-        return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)
+        return JSONResponse({"exito": False, "mensaje": f"Error al generar turno: {str(e)}"})
 
-# ╔═════════════════════════════════════════════════╗
-# ║       ENVIAR PDF DE TURNO POR CORREO           ║
-# ╚═════════════════════════════════════════════════╝
 @router.post("/enviar_pdf_turno_paciente")
-async def enviar_pdf_turno(
-    dni: str = Form(...),
-    nombre: str = Form(...),
+async def enviar_turno_paciente_por_email(
     email: str = Form(...),
+    nombre: str = Form(...),
+    pdf_url: str = Form(...)
 ):
     try:
-        # Buscar el turno más reciente
-        resultado = supabase.table("turnos_pacientes") \
-            .select("pdf_url") \
-            .eq("dni", dni) \
-            .order("created_at", desc=True) \
-            .limit(1).execute()
-
-        if not resultado.data:
-            return JSONResponse(content={"exito": False, "mensaje": "No se encontró el PDF"}, status_code=404)
-
-        pdf_url = resultado.data[0]["pdf_url"]
         asunto = "Confirmación de turno médico"
-        cuerpo = f"Estimado/a {nombre},\n\nAdjuntamos el comprobante de su turno médico.\n\nGracias por usar MedSys."
+        cuerpo = f"Estimado/a {nombre},\n\nAdjuntamos el PDF con los detalles de su turno médico.\n\nSaludos,\nEquipo MedSys"
+        exito = enviar_email_con_pdf(email_destino=email, asunto=asunto, cuerpo=cuerpo, pdf_url=pdf_url)
 
-        await enviar_email_con_pdf(email, asunto, cuerpo, pdf_url)
-        return JSONResponse(content={"exito": True})
+        if exito:
+            return {"exito": True}
+        else:
+            return {"exito": False, "mensaje": "No se pudo enviar el correo"}
+
     except Exception as e:
-        return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)
+        return JSONResponse({"exito": False, "mensaje": f"Error al enviar el email: {str(e)}"})

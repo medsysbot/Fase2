@@ -8,7 +8,8 @@ from utils import (
     generar_pdf_turno_paciente,
     enviar_email_con_pdf,
 )
-from utils.supabase_helper import supabase, subir_pdfimport tempfile
+from utils.supabase_helper import supabase, subir_pdf
+import tempfile
 
 router = APIRouter()
 

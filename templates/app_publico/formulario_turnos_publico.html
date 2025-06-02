@@ -8,6 +8,17 @@
   <link rel="stylesheet" href="/static/styles.css" />
 </head>
 <body>
+  <!-- ╔════════════════════════════════════╗ -->
+  <!-- ║      PRELOAD DE ÍCONOS ALERTAS    ║ -->
+  <!-- ╚════════════════════════════════════╝ -->
+  <div style="display: none;">
+    <img src="/static/icons/alerta/alerta-guardado.png" alt="guardado" />
+    <img src="/static/icons/alerta/alerta-error.png" alt="error" />
+    <img src="/static/icons/alerta/alerta-enviado.png" alt="enviado" />
+    <img src="/static/icons/alerta/alerta-boton-borrar.png" alt="borrar" />
+    <img src="/static/icons/alerta/alerta-boton-no.png" alt="cancelar" />
+  </div>
+
   <header>
     <img src="/static/icons/icono-turnos.png" alt="Logo Turnos" class="logo-grande" />
     <h2 style="text-align: center;">Turno Médico (Público)</h2>
@@ -69,7 +80,7 @@
 
   <script>
     function activarVoz() {
-      const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
       recognition.lang = "es-ES";
       recognition.continuous = false;
       recognition.interimResults = false;
@@ -86,8 +97,15 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      document.getElementById("institucion_id").value = sessionStorage.getItem("institucion_id") || "";
-      document.getElementById("usuario_id").value = sessionStorage.getItem("usuario_id") || "";
+      const inst = sessionStorage.getItem("institucion_id") || "";
+      document.getElementById("institucion_id").value = inst;
+
+      let usuario = sessionStorage.getItem("usuario_id");
+      if (!usuario) {
+        usuario = "bot_publico";
+        sessionStorage.setItem("usuario_id", usuario);
+      }
+      document.getElementById("usuario_id").value = usuario;
     });
   </script>
 

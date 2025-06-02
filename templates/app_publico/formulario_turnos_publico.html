@@ -6,13 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/static/styles.css" />
-</head>
-<body>
-  <!-- ╔════════════════════════════════════╗ -->
-  <!-- ║      PRELOAD DE ÍCONOS ALERTAS    ║ -->
-  <!-- ╚════════════════════════════════════╝ -->
 
-  <div style="display: none;">
+  <!-- Preload de íconos de alerta -->
   <link rel="preload" href="/static/icons/alerta/alerta-alerta.png" as="image">
   <link rel="preload" href="/static/icons/alerta/alerta-borrado.png" as="image">
   <link rel="preload" href="/static/icons/alerta/alerta-busqueda.png" as="image">
@@ -23,7 +18,8 @@
   <link rel="preload" href="/static/icons/alerta/alerta-pdf.png" as="image">
   <link rel="preload" href="/static/icons/alerta/alerta-email.png" as="image">
   <link rel="preload" href="/static/icons/alerta/alerta-carga-pdf.png" as="image">
-  </div>
+</head>
+<body>
   <header>
     <img src="/static/icons/icono-turnos.png" alt="Logo Turnos" class="logo-grande" />
     <h2 style="text-align: center;">Turno Médico (Público)</h2>
@@ -42,14 +38,17 @@
     <label>Especialidad:</label>
     <input type="text" name="especialidad" id="especialidad" required />
 
+    <label>Profesional:</label>
+    <input type="text" name="profesional" id="profesional" required />
+
     <label>Fecha del Turno:</label>
     <input type="date" name="fecha" id="fecha" required />
 
     <label>Horario:</label>
     <input type="time" name="hora" id="hora" required />
 
-    <label>Profesional:</label>
-    <input type="text" name="profesional" id="profesional" required />
+    <label>Observaciones:</label>
+    <textarea name="observaciones" id="observaciones" rows="3"></textarea>
 
     <!-- Campos ocultos -->
     <input type="hidden" name="institucion_id" id="institucion_id" />

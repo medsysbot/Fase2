@@ -1,10 +1,5 @@
 #!/bin/bash
-set -e
 
-# ╔═════════════════════════════════════════════════════╗
-# ║      INSTALACIÓN DE DEPENDENCIAS PARA MEDSYS       ║
-# ╚═════════════════════════════════════════════════════╝
-
-echo "📦 Instalando dependencias desde requirements.txt..."
+# Actualiza pip y luego instala las dependencias
+pip install --upgrade pip
 pip install -r requirements.txt
-echo "✅ Dependencias instaladas correctamente"

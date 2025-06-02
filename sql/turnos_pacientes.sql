@@ -1,15 +1,14 @@
--- Tabla turnos_pacientes vinculada al bucket 'turnos-pacientes'
-CREATE TABLE IF NOT EXISTS turnos_pacientes (
-    id serial PRIMARY KEY,
-    dni text,
-    nombre text,
-    apellido text,
-    especialidad text,
-    fecha date,
-    hora time,
-    profesional text,
-    observaciones text,
-    pdf_url text,
-    institucion_id text,
-    usuario_id text
+create table public.turnos_pacientes (
+  id serial primary key,
+  dni text not null,
+  institucion_id integer not null,
+  usuario_id text not null,
+  profesional text not null,
+  especialidad text not null,
+  fecha date not null,
+  hora text not null,
+  observaciones text,
+  pdf_url text,
+  created_at timestamp without time zone default CURRENT_TIMESTAMP,
+  constraint turnos_pacientes_institucion_id_fkey foreign key (institucion_id) references instituciones (id) on delete cascade
 );

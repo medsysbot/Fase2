@@ -1,16 +1,26 @@
-// ╔════════════════════════════════════════╗
-// ║   guardar_turnos_publicos.js (Público) ║
-// ╚════════════════════════════════════════╝
+// ╔═══════════════════════════════════╗
+// ║   turno_publico.js (Público)      ║
+// ╚═══════════════════════════════════╝
 async function guardarPDF() {
   const form = document.getElementById('form-turnos');
   const formData = new FormData(form);
 
+  const campos = ['nombre', 'apellido', 'dni', 'profesional', 'especialidad', 'fecha', 'hora'];
+  for (const campo of campos) {
+    const valor = form.querySelector(`[name="${campo}"]`).value.trim();
+    if (!valor) {
+      showAlert('error', 'Completa todos los campos.', false, 3000);
+      return;
+    }
+  }
+
   // Si no hay usuario_id en público, asignamos uno genérico
   let usuario_id = sessionStorage.getItem('usuario_id');
   if (!usuario_id) {
-    usuario_id = "bot_publico";
-    formData.set('usuario_id', usuario_id);
+    usuario_id = 'bot_publico';
   }
+  formData.set('usuario_id', usuario_id);
+  formData.set('institucion_id', sessionStorage.getItem('institucion_id') || '');
 
   try {
     showAlert('guardado', 'Guardando turno…', false, 3000);
@@ -25,6 +35,9 @@ async function guardarPDF() {
     if (resultado.exito && resultado.pdf_url) {
       showAlert('suceso', 'Turno guardado', false, 3000);
       sessionStorage.setItem('pdfURL_turnos', resultado.pdf_url);
+      sessionStorage.setItem('pdfURL', resultado.pdf_url);
+      const btn = document.getElementById('btn-verpdf');
+      if (btn) btn.style.display = 'inline-block';
     } else {
       showAlert('error', resultado.mensaje || 'Error al guardar', false, 4000);
     }
@@ -102,3 +115,19 @@ async function enviarPorCorreo() {
     showAlert('error', 'Error al enviar el e-mail', false, 3000);
   }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const instInput = document.getElementById('institucion_id');
+  const userInput = document.getElementById('usuario_id');
+  const btn = document.getElementById('btn-verpdf');
+  if (instInput) instInput.value = sessionStorage.getItem('institucion_id') || '';
+  if (userInput) {
+    const usuario = sessionStorage.getItem('usuario_id') || 'bot_publico';
+    userInput.value = usuario;
+    sessionStorage.setItem('usuario_id', usuario);
+  }
+  if (btn) {
+    const url = sessionStorage.getItem('pdfURL');
+    btn.style.display = url ? 'inline-block' : 'none';
+  }
+});

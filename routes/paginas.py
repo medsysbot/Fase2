@@ -114,6 +114,6 @@ async def ver_historia_completa(request: Request):
 async def ver_turno_publico(request: Request):
     """Formulario público para solicitar turnos."""
     return templates.TemplateResponse(
-        "app_publico/formulario_turnos_publico.html",
+        "solicitar-turno-publico.html",
         {"request": request},
     )

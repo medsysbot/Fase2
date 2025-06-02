@@ -1,16 +1,19 @@
-// ╔════════════════════════════════════╗
-// ║        guardar_turnos.js          ║
-// ╚════════════════════════════════════╝
-async function guardarPDF() {
-  const form = document.getElementById('form-turnos');
+// ╔═══════════════════════════════════╗
+// ║   enfermeria.js                   ║
+// ╚═══════════════════════════════════╝
+async function guardarEnfermeria() {
+  const form = document.getElementById('form-enfermeria');
   const formData = new FormData(form);
-  // Aseguramos que los IDs ocultos se envíen correctamente
   formData.set('institucion_id', sessionStorage.getItem('institucion_id') || '');
   formData.set('usuario_id', sessionStorage.getItem('usuario_id') || '');
 
-  const campos = ['nombre', 'apellido', 'dni', 'profesional', 'especialidad', 'fecha', 'hora'];
-  for (const campo of campos) {
-    const valor = form.querySelector(`[name="${campo}"]`).value.trim();
+  const campos = [
+    'nombre', 'apellido', 'dni', 'profesional', 'motivo_consulta', 'hora',
+    'temperatura', 'saturacion', 'ta', 'tad', 'frecuencia_cardiaca', 'glasgow',
+    'dolor', 'glucemia', 'triaje'
+  ];
+  for (const c of campos) {
+    const valor = form.querySelector(`[name="${c}"]`).value.trim();
     if (!valor) {
       showAlert('error', 'Completa todos los campos.', false, 3000);
       return;
@@ -18,32 +21,29 @@ async function guardarPDF() {
   }
 
   try {
-    showAlert('guardado', 'Guardando turno…', false, 3000);
+    showAlert('guardado', 'Guardando datos…', false, 3000);
     await new Promise(r => setTimeout(r, 3200));
 
-    const response = await fetch('/generar_pdf_turno_paciente', {
-      method: 'POST',
-      body: formData
-    });
-    const resultado = await response.json();
+    const resp = await fetch('/generar_pdf_enfermeria', { method: 'POST', body: formData });
+    const resultado = await resp.json();
 
     if (resultado.exito && resultado.pdf_url) {
-      showAlert('suceso', 'Turno guardado', false, 3000);
-      sessionStorage.setItem('pdfURL_turnos', resultado.pdf_url);
+      showAlert('suceso', 'Datos guardados', false, 3000);
+      sessionStorage.setItem('pdfURL_enfermeria', resultado.pdf_url);
       sessionStorage.setItem('pdfURL', resultado.pdf_url);
       const btn = document.getElementById('btn-verpdf');
       if (btn) btn.style.display = 'inline-block';
     } else {
       showAlert('error', resultado.mensaje || 'Error al guardar', false, 4000);
     }
-  } catch (error) {
-    console.error('Error al guardar:', error);
+  } catch (e) {
+    console.error('Error al guardar:', e);
     showAlert('error', 'Error al guardar', false, 4000);
   }
 }
 
 function abrirPDF() {
-  const url = sessionStorage.getItem('pdfURL_turnos');
+  const url = sessionStorage.getItem('pdfURL_enfermeria');
   if (url) {
     showAlert('cargaPDF', 'Cargando PDF…', false, 3000);
     const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -62,12 +62,12 @@ function abrirPDF() {
 async function enviarPorCorreo() {
   const nombre = document.querySelector('[name="nombre"]').value.trim();
   const apellido = document.querySelector('[name="apellido"]').value.trim();
-  const nombreCompleto = `${nombre} ${apellido}`.trim();
+  const paciente = `${nombre} ${apellido}`.trim();
   const dni = document.querySelector('[name="dni"]').value.trim();
-  const pdfURL = sessionStorage.getItem('pdfURL_turnos');
+  const pdfURL = sessionStorage.getItem('pdfURL_enfermeria');
 
   if (!pdfURL) {
-    showAlert('pdf', 'Genera y guarda el turno antes de enviarlo.', false, 3000);
+    showAlert('pdf', 'Genera y guarda antes de enviar.', false, 3000);
     return;
   }
 
@@ -75,20 +75,17 @@ async function enviarPorCorreo() {
     showAlert('email', 'Enviando e-mail…', false, 3000);
     await new Promise(r => setTimeout(r, 3200));
 
-    const formData = new FormData();
-    formData.append('nombre', nombreCompleto);
-    formData.append('dni', dni);
+    const fd = new FormData();
+    fd.append('paciente', paciente);
+    fd.append('dni', dni);
 
-    const response = await fetch('/enviar_pdf_turno_paciente', {
-      method: 'POST',
-      body: formData
-    });
-    const resultado = await response.json();
+    const res = await fetch('/enviar_pdf_enfermeria', { method: 'POST', body: fd });
+    const resultado = await res.json();
 
     if (resultado.exito) {
       showAlert('suceso', 'E-mail enviado con éxito', false, 3000);
     } else {
-      showAlert('error', 'Error al enviar el e-mail', false, 3000);
+      showAlert('error', resultado.mensaje || 'Error al enviar el e-mail', false, 3000);
     }
   } catch (error) {
     console.error('Error al enviar:', error);
@@ -97,15 +94,7 @@ async function enviarPorCorreo() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const instInput = document.getElementById('institucion_id');
-  const userInput = document.getElementById('usuario_id');
   const btn = document.getElementById('btn-verpdf');
-  if (instInput) {
-    instInput.value = sessionStorage.getItem('institucion_id') || '';
-  }
-  if (userInput) {
-    userInput.value = sessionStorage.getItem('usuario_id') || '';
-  }
   if (btn) {
     const url = sessionStorage.getItem('pdfURL');
     btn.style.display = url ? 'inline-block' : 'none';

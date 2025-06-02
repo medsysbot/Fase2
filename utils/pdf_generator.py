@@ -262,6 +262,50 @@ def generar_pdf_consulta_diaria(datos, firma_path=None, sello_path=None):
     return output_path
 
 
+def generar_pdf_enfermeria(datos, firma_path=None, sello_path=None):
+    """Genera un PDF con los datos de enfermería."""
+    pdf = FPDF()
+    pdf.add_page()
+    _agregar_encabezado(pdf, "Enfermería")
+
+    campos = [
+        ("Paciente", f"{datos['nombre']} {datos['apellido']}") ,
+        ("DNI", datos['dni']),
+        ("Profesional", datos['profesional']),
+        ("Motivo", datos['motivo_consulta']),
+        ("Hora", datos['hora']),
+        ("Temperatura", datos['temperatura']),
+        ("Saturación", datos['saturacion']),
+        ("TA", datos['ta']),
+        ("TAD", datos['tad']),
+        ("Frecuencia", datos['frecuencia_cardiaca']),
+        ("Glasgow", datos['glasgow']),
+        ("Dolor", datos['dolor']),
+        ("Glucemia", datos['glucemia']),
+        ("Triaje", datos['triaje']),
+    ]
+
+    for label, value in campos:
+        pdf.cell(0, 10, f"{label}: {value}", ln=True)
+
+    if firma_path and os.path.exists(firma_path):
+        pdf.ln(10)
+        pdf.cell(200, 10, txt="Firma del Profesional:", ln=True)
+        pdf.image(firma_path, x=10, y=pdf.get_y(), w=FIRMA_SELLO_ANCHO)
+        pdf.ln(25)
+
+    if sello_path and os.path.exists(sello_path):
+        pdf.cell(200, 10, txt="Sello del Profesional:", ln=True)
+        pdf.image(sello_path, x=60, y=pdf.get_y(), w=FIRMA_SELLO_ANCHO)
+        pdf.ln(25)
+
+    filename = f"{datos['dni']}_enfermeria.pdf"
+    output_path = os.path.join("/tmp", filename)
+    pdf.output(output_path)
+
+    return output_path
+
+
 def generar_pdf_turno_paciente(datos, firma_path=None, sello_path=None):
     """Genera el comprobante en PDF para un turno médico."""
     pdf = FPDF()

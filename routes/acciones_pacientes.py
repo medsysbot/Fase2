@@ -1,201 +1,108 @@
-# ╔════════════════════════════════════════════════════════════╗
-# ║              ACCIONES BACKEND - PACIENTES                 ║
-# ╚════════════════════════════════════════════════════════════╝
-from fastapi import APIRouter, Form, Request
-from fastapi.responses import JSONResponse
-import os
-from fpdf import FPDF
-from utils.pdf_generator import generar_pdf_paciente
-from utils.email_sender import enviar_email_con_pdf
-from utils.supabase_helper import supabase, SUPABASE_URL, subir_pdf
-from dotenv import load_dotenv
+# ╔══════════════════════════════════════════════════════════════════════╗
+# ║              RUTAS - TURNOS PACIENTES (INTERNOS Y PÚBLICOS)         ║
+# ╚══════════════════════════════════════════════════════════════════════╝
 
-load_dotenv()
+from fastapi import APIRouter, Request, Form, UploadFile
+from fastapi.responses import JSONResponse
+from utils.supabase_helper import supabase, subir_pdf
+from utils.pdf_generator import generar_pdf_turno_paciente
+from utils.email_sender import enviar_email_con_pdf
+import tempfile
+from datetime import datetime
+
 router = APIRouter()
 
-# Configuración Supabase
-BUCKET_PDFS = "registro-pacientes"
-BUCKET_BACKUPS = "backups"
-
-# ╔══════════════════════════════════════════════╗
-# ║   REGISTRAR PACIENTE Y GENERAR PDF           ║
-# ╚══════════════════════════════════════════════╝
-@router.post("/guardar_paciente")
-async def guardar_paciente(
+# ════════════════════════════════════════════════════════════════════════
+# 📌 ENDPOINT: Generar y guardar PDF de turno médico
+# ════════════════════════════════════════════════════════════════════════
+@router.post("/generar_pdf_turno_paciente")
+async def generar_pdf_turno_paciente_route(
     request: Request,
-    nombres: str = Form(...),
+    nombre: str = Form(...),
     apellido: str = Form(...),
     dni: str = Form(...),
-    fecha_nacimiento: str = Form(...),
-    telefono: str = Form(""),
-    email: str = Form(""),
-    domicilio: str = Form(""),
-    obra_social: str = Form(""),
-    numero_afiliado: str = Form(""),
-    contacto_emergencia: str = Form("")
+    especialidad: str = Form(...),
+    fecha: str = Form(...),
+    hora: str = Form(...),
+    profesional: str = Form(...),
+    usuario_id: str = Form(...),
+    institucion_id: int = Form(...)
 ):
     try:
-        institucion_id = request.session.get("institucion_id")
-        if institucion_id is None:
-            return JSONResponse({"error": "Sesión sin institución activa"}, status_code=403)
+        # Validaciones mínimas
+        campos_obligatorios = [nombre, apellido, dni, especialidad, fecha, hora, profesional]
+        if not all(campos_obligatorios):
+            return JSONResponse({"exito": False, "mensaje": "Faltan campos obligatorios."}, status_code=400)
 
-        existe = (
-            supabase
-            .table("pacientes")
-            .select("dni")
-            .eq("dni", dni)
-            .eq("institucion_id", institucion_id)
-            .execute()
-        )
-        if existe.data:
-            return JSONResponse({"mensaje": "Ya existe un paciente con ese DNI."}, status_code=200)
+        # Generar el PDF en archivo temporal
         datos = {
-            "nombres": nombres,
+            "nombre": nombre,
             "apellido": apellido,
             "dni": dni,
-            "fecha_nacimiento": fecha_nacimiento,
-            "telefono": telefono,
-            "email": email,
-            "domicilio": domicilio,
-            "obra_social": obra_social,
-            "numero_afiliado": numero_afiliado,
-            "contacto_emergencia": contacto_emergencia,
-        }
-        pdf_path = generar_pdf_paciente(datos)
-        filename = os.path.basename(pdf_path)
-
-        # Subir a Supabase
-        with open(pdf_path, "rb") as file_data:
-            public_url = subir_pdf(BUCKET_PDFS, filename, file_data)
-
-        # Guardar en base
-        supabase.table("pacientes").insert({
-            "dni": dni,
-            "nombres": nombres,
-            "apellido": apellido,
-            "fecha_nacimiento": fecha_nacimiento,
-            "telefono": telefono,
-            "email": email,
-            "domicilio": domicilio,
-            "obra_social": obra_social,
-            "numero_afiliado": numero_afiliado,
-            "contacto_emergencia": contacto_emergencia,
+            "especialidad": especialidad,
+            "fecha": fecha,
+            "hora": hora,
+            "profesional": profesional,
             "institucion_id": institucion_id
-        }).execute()
+        }
+        pdf_path = generar_pdf_turno_paciente(datos)
 
-        return JSONResponse({"exito": True, "pdf_url": public_url})
+        # Guardar PDF en Supabase
+        bucket = "turnos_pacientes"
+        nombre_archivo = f"{dni}/{dni}_turno_{fecha}_{hora.replace(':','-')}.pdf"
+        with open(pdf_path, "rb") as f:
+            contenido_pdf = f.read()
+        url_pdf = subir_pdf(bucket, nombre_archivo, contenido_pdf)
 
-    except Exception as e:
-        error_text = str(e)
-        if "Duplicate" in error_text or "duplicate" in error_text:
-            return JSONResponse({"error": "No se pudo guardar el paciente. Verifica si el DNI ya existe."}, status_code=400)
-        return JSONResponse({"error": error_text}, status_code=500)
+        # Guardar registro en la tabla
+        supabase.table("turnos_pacientes").insert([{
+            "nombre": nombre,
+            "apellido": apellido,
+            "dni": dni,
+            "especialidad": especialidad,
+            "fecha": fecha,
+            "hora": hora,
+            "profesional": profesional,
+            "usuario_id": usuario_id,
+            "institucion_id": institucion_id,
+            "pdf_url": url_pdf
+        }]).execute()
 
-# ╔══════════════════════════════════════════════╗
-# ║              ENVIAR PDF POR EMAIL            ║
-# ╚══════════════════════════════════════════════╝
-@router.post("/obtener_email_paciente")
-async def obtener_email_paciente(dni: str = Form(...)):
-    """Devuelve el email del paciente a partir de su DNI."""
-    try:
-        resultado = (
-            supabase.table("pacientes")
-            .select("email")
-            .eq("dni", dni)
-            .single()
-            .execute()
-        )
-        email = resultado.data.get("email") if resultado.data else None
-        return {"email": email}
+        return JSONResponse({"exito": True, "pdf_url": url_pdf})
+
     except Exception as e:
         return JSONResponse({"exito": False, "mensaje": str(e)}, status_code=500)
 
-
-@router.post("/enviar_pdf_paciente")
-async def enviar_pdf_paciente(dni: str = Form(...)):
-    """Envía por correo el PDF generado del paciente."""
+# ════════════════════════════════════════════════════════════════════════
+# 📩 ENDPOINT: Enviar PDF por correo al paciente
+# ════════════════════════════════════════════════════════════════════════
+@router.post("/enviar_pdf_turno_paciente")
+async def enviar_pdf_turno(
+    nombre: str = Form(...),
+    dni: str = Form(...),
+    email: str = Form(...)
+):
     try:
-        # Obtener datos del paciente
-        consulta = (
-            supabase.table("pacientes")
-            .select("nombres, apellido, email")
-            .eq("dni", dni)
-            .single()
+        # Buscar último PDF generado para el paciente
+        resultado = supabase.table("turnos_pacientes") \
+            .select("pdf_url") \
+            .eq("dni", dni) \
+            .order("created_at", desc=True) \
+            .limit(1) \
             .execute()
-        )
-        datos = consulta.data
-        if not datos:
-            return JSONResponse({"error": "Paciente no encontrado"}, status_code=404)
 
-        email = datos.get("email")
-        nombres = datos.get("nombres", "")
-        apellido = datos.get("apellido", "")
+        if not resultado.data or not resultado.data[0].get("pdf_url"):
+            return JSONResponse({"exito": False, "mensaje": "No se encontró PDF para este paciente"}, status_code=404)
 
-        if not email:
-            return JSONResponse({"error": "Paciente sin email registrado"}, status_code=400)
+        url_pdf = resultado.data[0]["pdf_url"]
+        asunto = "Turno Médico Confirmado"
+        cuerpo = f"Hola {nombre},\n\nAdjuntamos el comprobante de su turno médico.\n\nGracias por usar MedSys."
+        enviado = enviar_email_con_pdf(email, asunto, cuerpo, url_pdf)
 
-        safe_name = f"{nombres.strip().replace(' ', '_')}_{apellido.strip().replace(' ', '_')}"
-        filename = f"paciente_{safe_name}.pdf"
-        pdf_obj = supabase.storage.from_(BUCKET_PDFS).get_public_url(filename)
-        pdf_url = pdf_obj.get("publicUrl") if isinstance(pdf_obj, dict) else pdf_obj
-
-        enviar_email_con_pdf(
-            email_destino=email,
-            asunto="registro de paciente PDF",
-            cuerpo=(
-                f"Estimado/a {nombres} {apellido},\n\n"
-                "Adjuntamos su registro en PDF.\n\nSaludos,\nEquipo MEDSYS"
-            ),
-            url_pdf=pdf_url,
-        )
-
-        return JSONResponse({"exito": True})
-    except Exception as e:
-        return JSONResponse({"error": str(e)}, status_code=500)
-
-# ╔══════════════════════════════════════════════╗
-# ║         ELIMINAR PACIENTE CON BACKUP          ║
-# ╚══════════════════════════════════════════════╝
-@router.post("/eliminar_paciente")
-async def eliminar_paciente(request: Request):
-    try:
-        datos = await request.json()
-        dni = datos.get("dni")
-        institucion_id = request.session.get("institucion_id")
-        if not dni or not institucion_id:
-            return JSONResponse({"error": "Faltan datos necesarios"}, status_code=400)
-
-        # Buscar paciente
-        paciente = supabase.table("pacientes").select("*").eq("dni", dni).eq("institucion_id", institucion_id).single().execute()
-        if not paciente.data:
-            return JSONResponse({"error": "Paciente no encontrado"}, status_code=404)
-
-        datos_paciente = paciente.data
-
-        # Generar PDF de backup
-        safe_name = f"{datos_paciente['nombres'].replace(' ', '_')}_{datos_paciente['apellido'].replace(' ', '_')}"
-        backup_name = f"backup_{safe_name}_{dni}.pdf"
-        backup_path = os.path.join("static/doc", backup_name)
-
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", "B", 16)
-        pdf.cell(0, 10, "Backup del Paciente", ln=True, align="C")
-        pdf.set_font("Arial", size=12)
-        pdf.ln(10)
-        for key, value in datos_paciente.items():
-            pdf.cell(0, 10, f"{key}: {value}", ln=True)
-
-        pdf.output(backup_path)
-
-        # Subir backup
-        with open(backup_path, "rb") as f:
-            supabase.storage.from_(BUCKET_BACKUPS).upload(backup_name, f)
-
-        # Eliminar paciente
-        supabase.table("pacientes").delete().eq("dni", dni).eq("institucion_id", institucion_id).execute()
-
-        return JSONResponse({"exito": True, "mensaje": f"Paciente eliminado y respaldado como {backup_name}"})
+        if enviado:
+            return JSONResponse({"exito": True})
+        else:
+            return JSONResponse({"exito": False, "mensaje": "No se pudo enviar el correo"}, status_code=500)
 
     except Exception as e:
-        return JSONResponse({"error": str(e)}, status_code=500)
+        return JSONResponse({"exito": False, "mensaje": str(e)}, status_code=500)

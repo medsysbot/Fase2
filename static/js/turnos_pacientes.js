@@ -61,8 +61,10 @@ async function obtenerEmailPorDni(dni) {
 }
 
 async function enviarPorCorreo() {
+  const nombre = document.querySelector('[name="nombre"]').value.trim();
+  const apellido = document.querySelector('[name="apellido"]').value.trim();
+  const nombreCompleto = `${nombre} ${apellido}`.trim();
   const dni = document.querySelector('[name="dni"]').value.trim();
-  const nombre = 'Paciente';
   const pdfURL = sessionStorage.getItem('pdfURL_turnos');
   const email = await obtenerEmailPorDni(dni);
 
@@ -82,7 +84,7 @@ async function enviarPorCorreo() {
 
     const formData = new FormData();
     formData.append('email', email);
-    formData.append('nombre', nombre);
+    formData.append('nombre', nombreCompleto);
     formData.append('pdf_url', pdfURL);
 
     const response = await fetch('/enviar_pdf_turno_paciente', {
@@ -101,3 +103,14 @@ async function enviarPorCorreo() {
     showAlert('error', 'Error al enviar el e-mail', false, 3000);
   }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const instInput = document.getElementById('institucion_id');
+  const userInput = document.getElementById('usuario_id');
+  if (instInput) {
+    instInput.value = sessionStorage.getItem('institucion_id') || '';
+  }
+  if (userInput) {
+    userInput.value = sessionStorage.getItem('usuario_id') || '';
+  }
+});

@@ -20,7 +20,7 @@ router = APIRouter()
 # ╔══════════════════════════════════════════════╗
 # ║              CONFIGURACIÓN                   ║
 # ╚══════════════════════════════════════════════╝
-BUCKET_PDFS = "turnos-pacientes"
+BUCKET_PDFS = "turnos_pacientes"
 BUCKET_FIRMAS = "firma-sello-usuarios"
 
 # ╔══════════════════════════════════════════════╗
@@ -28,17 +28,27 @@ BUCKET_FIRMAS = "firma-sello-usuarios"
 # ╚══════════════════════════════════════════════╝
 @router.post("/generar_pdf_turno_paciente")
 async def generar_pdf_turno_paciente(
+    nombre: str = Form(...),
+    apellido: str = Form(...),
     dni: str = Form(...),
     institucion_id: str = Form(...),
     usuario_id: str = Form(...),
-    profesional: str = Form(...),
     especialidad: str = Form(...),
+    profesional: str = Form(...),
     fecha: str = Form(...),
     hora: str = Form(...),
     observaciones: str = Form("")
 ):
     try:
+        if not usuario_id or not institucion_id:
+            return JSONResponse(
+                {"error": "usuario_id e institucion_id son obligatorios"},
+                status_code=400,
+            )
+
         datos = {
+            "nombre": nombre,
+            "apellido": apellido,
             "dni": dni,
             "institucion_id": institucion_id,
             "usuario_id": usuario_id,
@@ -76,15 +86,17 @@ async def generar_pdf_turno_paciente(
             os.remove(sello_path)
 
         supabase.table("turnos_pacientes").insert({
+            "nombre": nombre,
+            "apellido": apellido,
             "dni": dni,
             "institucion_id": institucion_id,
             "usuario_id": usuario_id,
-            "profesional": profesional,
             "especialidad": especialidad,
+            "profesional": profesional,
             "fecha": fecha,
             "hora": hora,
             "observaciones": observaciones,
-            "pdf_url": public_url
+            "pdf_url": public_url,
         }).execute()
 
         return JSONResponse({"exito": True, "pdf_url": public_url})

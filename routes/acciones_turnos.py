@@ -44,6 +44,24 @@ async def generar_pdf_turno_paciente(
         if institucion_id is None or not usuario_id:
             return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
 
+        # Validar campos requeridos
+        campos_obligatorios = [
+            dni,
+            nombre,
+            apellido,
+            profesional,
+            especialidad,
+            fecha,
+            hora,
+            usuario_id,
+            institucion_id,
+        ]
+        campos_validos = [
+            c.strip() if isinstance(c, str) else c for c in campos_obligatorios
+        ]
+        if not all(campos_validos):
+            return JSONResponse({"error": "Faltan datos obligatorios"}, status_code=400)
+
         datos = {
             "nombre": nombre,
             "apellido": apellido,
@@ -73,6 +91,9 @@ async def generar_pdf_turno_paciente(
 
         with open(pdf_path, "rb") as file_data:
             public_url = subir_pdf(BUCKET_PDFS, filename, file_data)
+
+        if not public_url:
+            return JSONResponse({"error": "No se pudo obtener URL del PDF"}, status_code=500)
 
         if os.path.exists(pdf_path):
             os.remove(pdf_path)

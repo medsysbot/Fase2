@@ -2,7 +2,7 @@
 # ║           ACCIONES BACKEND - TURNOS MÉDICOS               ║
 # ╚════════════════════════════════════════════════════════════╝
 
-from fastapi import APIRouter, Form
+from fastapi import APIRouter, Form, Request
 from fastapi.responses import JSONResponse
 import os
 from utils.pdf_generator import generar_pdf_turno_paciente as generar_pdf_turno_paciente_sync
@@ -28,11 +28,10 @@ BUCKET_FIRMAS = "firma-sello-usuarios"
 # ╚══════════════════════════════════════════════╝
 @router.post("/generar_pdf_turno_paciente")
 async def generar_pdf_turno_paciente(
+    request: Request,
     nombre: str = Form(...),
     apellido: str = Form(...),
     dni: str = Form(...),
-    institucion_id: str = Form(...),
-    usuario_id: str = Form(...),
     especialidad: str = Form(...),
     profesional: str = Form(...),
     fecha: str = Form(...),
@@ -40,18 +39,15 @@ async def generar_pdf_turno_paciente(
     observaciones: str = Form("")
 ):
     try:
-        if not usuario_id or not institucion_id:
-            return JSONResponse(
-                {"error": "usuario_id e institucion_id son obligatorios"},
-                status_code=400,
-            )
+        usuario_id = request.session.get("usuario")
+        institucion_id = request.session.get("institucion_id")
+        if institucion_id is None or not usuario_id:
+            return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
 
         datos = {
             "nombre": nombre,
             "apellido": apellido,
             "dni": dni,
-            "institucion_id": institucion_id,
-            "usuario_id": usuario_id,
             "profesional": profesional,
             "especialidad": especialidad,
             "fecha": fecha,

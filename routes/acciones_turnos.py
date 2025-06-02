@@ -5,7 +5,7 @@
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import JSONResponse
 import os
-from utils.pdf_generator import generar_pdf_turno_paciente
+from utils.pdf_generator import generar_pdf_turno_paciente as generar_pdf_turno_paciente_sync
 from utils.email_sender import enviar_email_con_pdf
 from utils.image_utils import (
     guardar_imagen_temporal,
@@ -65,7 +65,7 @@ async def generar_pdf_turno_paciente(
         if contenido_sello:
             sello_path = guardar_imagen_temporal(contenido_sello, nombre_sello)
 
-        pdf_path = generar_pdf_turno_paciente(datos, firma_path, sello_path)
+        pdf_path = generar_pdf_turno_paciente_sync(datos, firma_path, sello_path)
         filename = os.path.basename(pdf_path)
 
         with open(pdf_path, "rb") as file_data:

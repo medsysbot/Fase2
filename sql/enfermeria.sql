@@ -1,18 +1,20 @@
--- Tabla datos_enfermeria para formulario de enfermería
-CREATE TABLE IF NOT EXISTS datos_enfermeria (
-    dni text PRIMARY KEY,
-    institucion_id text,
-    usuario_id text,
-    profesional text,
-    motivo_consulta text,
-    hora time,
-    temperatura numeric,
-    saturacion numeric,
-    ta numeric,
-    tad numeric,
-    frecuencia_cardiaca numeric,
-    glasgow int,
-    dolor int,
-    glucemia numeric,
-    triaje text
+create table public.enfermeria (
+  id serial primary key,
+  nombre text not null,
+  apellido text not null,
+  dni text not null,
+  edad text,
+  peso text,
+  altura text,
+  temperatura text,
+  presion_arterial text,
+  frecuencia_cardiaca text,
+  saturacion_oxigeno text,
+  motivo text,
+  procedimiento text,
+  observaciones text,
+  usuario_id text,
+  institucion_id integer,
+  pdf_url text,
+  created_at timestamp without time zone default current_timestamp
 );

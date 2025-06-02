@@ -8,8 +8,7 @@ from utils import (
     generar_pdf_turno_paciente,
     enviar_email_con_pdf,
 )
-from utils.supabase_helper import supabase, subir_pdf_a_bucket
-import tempfile
+from utils.supabase_helper import supabase, subir_pdfimport tempfile
 
 router = APIRouter()
 

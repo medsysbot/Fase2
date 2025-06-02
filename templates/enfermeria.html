@@ -32,6 +32,15 @@
   <!-- ║          DATOS ENFERMERÍA         ║ -->
   <!-- ╚════════════════════════════════════╝ -->
   <form id="form-enfermeria" enctype="multipart/form-data">
+    <label>Nombre:</label>
+    <input type="text" name="nombre" id="nombre" />
+
+    <label>Apellido:</label>
+    <input type="text" name="apellido" id="apellido" />
+
+    <label>DNI:</label>
+    <input type="text" name="dni" id="dni" />
+
     <label>Profesional:</label>
     <input type="text" name="profesional" id="profesional" readonly />
 
@@ -74,6 +83,9 @@
       <option value="Amarillo">Amarillo</option>
       <option value="Verde">Verde</option>
     </select>
+
+    <input type="hidden" name="institucion_id" id="institucion_id" />
+    <input type="hidden" name="usuario_id" id="usuario_id" />
   </form>
 
   <!--────────────────────────────────────-->
@@ -86,10 +98,10 @@
     <button type="button" onclick="guardarEnfermeria()" title="Guardar">
       <img src="/static/icons/guardar.png" alt="Guardar" />
     </button>
-    <button type="button" onclick="enviarAlMedico()" title="Enviar al médico">
+    <button type="button" onclick="enviarPorCorreo()" title="Enviar">
       <img src="/static/icons/enviar.png" alt="Enviar" />
     </button>
-    <button type="button" onclick="abrirPDF()" title="Ver PDF">
+    <button id="btn-verpdf" type="button" onclick="abrirPDF()" title="Ver PDF" style="display:none;">
       <img src="/static/icons/icono-ver-pdf.png" alt="Ver PDF" />
     </button>
   </div>
@@ -108,7 +120,7 @@
 
   <!-- SCRIPTS -->
   <script src="/static/js/alertas.js"></script>
-  <script src="/static/js/guardar_enfermeria.js"></script>
+  <script src="/static/js/enfermeria.js"></script>
   <script src="/static/js/voz-a-formulario-enfermeria.js"></script>
 </body>
 </html>

@@ -31,7 +31,7 @@ async def splash_turnos_publico(request: Request):
 # ╚══════════════════════════════════════════════════════════╝
 @router.get("/turnos-publico/turnos-publico", response_class=HTMLResponse)
 async def formulario_turno_publico(request: Request):
-    return templates.TemplateResponse("app_publico/formulario_turnos_publico.html", {"request": request})
+    return templates.TemplateResponse("solicitar-turno-publico.html", {"request": request})
 
 # ╔══════════════════════════════════════════════════════════╗
 # ║      Registro de turno público + email confirmación      ║

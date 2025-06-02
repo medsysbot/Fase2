@@ -40,9 +40,9 @@ async def generar_pdf_turno_paciente(
 ):
     try:
      usuario_id = request.session.get("usuario")
-        institucion_id = request.session.get("institucion_id")
-        if institucion_id is None or not usuario_id:
-            return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
+     institucion_id = request.session.get("institucion_id")
+     if institucion_id is None or not usuario_id:
+         return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
 
         # Validar campos requeridos sin espacios
         campos_obligatorios = [

@@ -14,7 +14,7 @@ async function guardarPDF() {
 
   try {
     showAlert('guardado', 'Guardando turno…', false, 3000);
-    await new Promise(r => setTimeout(r, 3200));
+    await new Promise(r => setTimeout(r, 3000));
 
     const response = await fetch('/generar_pdf_turno_paciente', {
       method: 'POST',
@@ -79,7 +79,7 @@ async function enviarPorCorreo() {
 
   try {
     showAlert('email', 'Enviando e-mail…', false, 3000);
-    await new Promise(r => setTimeout(r, 3200));
+    await new Promise(r => setTimeout(r, 3000));
 
     const formData = new FormData();
     formData.append('email', email);

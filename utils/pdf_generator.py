@@ -268,6 +268,16 @@ def generar_pdf_turno_paciente(datos, firma_path=None, sello_path=None):
     pdf.add_page()
     _agregar_encabezado(pdf, "Turno Médico")
 
+    # ------------------------------------------------------------------
+    # Preparar datos
+    # ------------------------------------------------------------------
+    nombre_completo = datos.get("nombre_completo")
+    if not nombre_completo:
+        nombre = datos.get("nombre") or datos.get("nombres", "")
+        apellido = datos.get("apellido", "")
+        if nombre or apellido:
+            nombre_completo = f"{nombre} {apellido}".strip()
+
     fecha = datos.get("fecha")
     try:
         fecha_obj = datetime.datetime.strptime(fecha, "%Y-%m-%d")
@@ -276,12 +286,14 @@ def generar_pdf_turno_paciente(datos, firma_path=None, sello_path=None):
         pass
 
     campos = [
-        ("DNI", datos["dni"]),
+        ("Paciente", nombre_completo or ""),
+        ("DNI", datos.get("dni", "")),
         ("Especialidad", datos.get("especialidad", "")),
         ("Fecha", fecha),
-        ("Hora", datos["hora"]),
+        ("Hora", datos.get("hora", "")),
         ("Profesional", datos.get("profesional", "")),
     ]
+
     for label, value in campos:
         pdf.cell(0, 10, f"{label}: {value}", ln=True)
 
@@ -297,7 +309,7 @@ def generar_pdf_turno_paciente(datos, firma_path=None, sello_path=None):
         pdf.ln(25)
 
     filename = f"{datos['dni']}_turno_medico.pdf"
-    output_path = os.path.join("/tmp", filename)
+    output_path = os.path.abspath(os.path.join("/tmp", filename))
     pdf.output(output_path)
 
     return output_path

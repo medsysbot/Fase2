@@ -39,13 +39,13 @@ async def generar_pdf_turno_paciente(
     observaciones: str = Form("")
 ):
     try:
-        usuario_id = request.session.get("usuario")
+     usuario_id = request.session.get("usuario")
         institucion_id = request.session.get("institucion_id")
         if institucion_id is None or not usuario_id:
             return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
 
-        # Validar campos requeridos
-        campos_requeridos = [
+        # Validar campos requeridos sin espacios
+        campos_obligatorios = [
             dni,
             nombre,
             apellido,
@@ -56,8 +56,13 @@ async def generar_pdf_turno_paciente(
             usuario_id,
             institucion_id,
         ]
-        if not all(campos_requeridos):
+        campos_validos = [
+            c.strip() if isinstance(c, str) else c
+            for c in campos_obligatorios
+        ]
+        if not all(campos_validos):
             return JSONResponse({"error": "Faltan datos obligatorios"}, status_code=400)
+        ]
 
         datos = {
             "nombre": nombre,
@@ -88,56 +93,8 @@ async def generar_pdf_turno_paciente(
 
         with open(pdf_path, "rb") as file_data:
             public_url = subir_pdf(BUCKET_PDFS, filename, file_data)
-
         if not public_url:
-            return JSONResponse({"error": "No se pudo obtener URL del PDF"}, status_code=500)
+            return JSONResponse({"error": "No se pudo obtener URL del PDF"}, status_code=500)      
 
-        if os.path.exists(pdf_path):
-            os.remove(pdf_path)
-        if firma_path and os.path.exists(firma_path):
-            os.remove(firma_path)
-        if sello_path and os.path.exists(sello_path):
-            os.remove(sello_path)
-
-        supabase.table("turnos_pacientes").insert({
-            "nombre": nombre,
-            "apellido": apellido,
-            "dni": dni,
-            "institucion_id": institucion_id,
-            "usuario_id": usuario_id,
-            "especialidad": especialidad,
-            "profesional": profesional,
-            "fecha": fecha,
-            "hora": hora,
-            "observaciones": observaciones,
-            "pdf_url": public_url,
-        }).execute()
-
-        return JSONResponse({"exito": True, "pdf_url": public_url})
-
-    except Exception as e:
-        return JSONResponse({"error": str(e)}, status_code=500)
-
-# ╔══════════════════════════════════════════════╗
-# ║         ENVIAR PDF POR EMAIL (OPCIONAL)      ║
-# ╚══════════════════════════════════════════════╝
-@router.post("/enviar_pdf_turno_paciente")
-async def enviar_pdf_turno_paciente(
-    email: str = Form(...),
-    nombre: str = Form(...),
-    pdf_url: str = Form(...)
-):
-    try:
-        cuerpo = (
-            f"Hola {nombre},\n\nAdjuntamos el comprobante de su turno médico.\n\n"
-            f"Gracias por usar MEDSYS."
-        )
-        enviar_email_con_pdf(
-            email_destino=email,
-            asunto="Turno Médico - MEDSYS",
-            cuerpo=cuerpo,
-            url_pdf=pdf_url
-        )
-        return JSONResponse({"exito": True})
-    except Exception as e:
+        if os.path.exists(pdf_path): 
         return JSONResponse({"error": str(e)}, status_code=500)

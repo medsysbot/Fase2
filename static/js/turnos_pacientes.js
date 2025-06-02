@@ -4,6 +4,9 @@
 async function guardarPDF() {
   const form = document.getElementById('form-turnos');
   const formData = new FormData(form);
+  // Aseguramos que los IDs ocultos se envíen correctamente
+  formData.set('institucion_id', sessionStorage.getItem('institucion_id') || '');
+  formData.set('usuario_id', sessionStorage.getItem('usuario_id') || '');
 
   try {
     showAlert('guardado', 'Guardando turno…', false, 3000);

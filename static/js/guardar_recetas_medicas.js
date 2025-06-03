@@ -4,29 +4,26 @@
 async function guardarPDF() {
   const form = document.getElementById("form-receta");
   const formData = new FormData(form);
+  formData.set('institucion_id', sessionStorage.getItem('institucion_id') || '');
 
 
   try {
     showAlert("guardado", "Guardando receta…", false, 3000);
     await new Promise(resolve => setTimeout(resolve, 3200));
 
-    const response = await fetch('/generar_pdf_receta', {
+    const response = await fetch('/guardar_receta_medica', {
       method: 'POST',
       body: formData
     });
 
     const resultado = await response.json();
 
-    if (resultado.resultado === 'ok' && resultado.pdf_url) {
+    if (resultado.pdf_url) {
       showAlert("suceso", "Receta generada y guardada correctamente", false, 3000);
       sessionStorage.setItem('pdfURL_receta', resultado.pdf_url);
     } else {
-      const mensaje = resultado.mensaje || "Error al guardar la receta";
-      if (mensaje.includes('receta') && mensaje.includes('datos')) {
-        showAlert('error', 'Ya existe una receta para este paciente con esos datos.', false, 4000);
-      } else {
-        showAlert('error', mensaje, false, 4000);
-      }
+      const mensaje = resultado.error || resultado.mensaje || "Error al guardar la receta";
+      showAlert('error', mensaje, false, 4000);
     }
   } catch (error) {
     console.error('Error al guardar:', error);
@@ -110,4 +107,11 @@ async function enviarPorCorreo() {
     showAlert('error', 'Error al enviar el e-mail', false, 3000);
   }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const instInput = document.getElementById('institucion_id');
+  if (instInput) {
+    instInput.value = sessionStorage.getItem('institucion_id') || '';
+  }
+});
 

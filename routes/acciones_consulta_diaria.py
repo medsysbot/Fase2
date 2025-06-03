@@ -8,7 +8,6 @@ from utils.supabase_helper import supabase, subir_pdf, SUPABASE_URL
 from utils.email_sender import enviar_email_con_pdf
 from utils.pdf_generator import generar_pdf_consulta_diaria
 from utils.image_utils import descargar_imagen, guardar_imagen_temporal
-from datetime import datetime
 import os
 import logging
 
@@ -44,7 +43,6 @@ async def guardar_consulta_diaria(
             "indicaciones": indicaciones,
             "institucion_id": institucion_id,
             "usuario_id": usuario_id,
-            "fecha_creacion": datetime.now().isoformat(),
         }
         supabase.table(TABLE_NAME).insert(data).execute()
         return {"message": "Guardado exitosamente"}
@@ -112,7 +110,6 @@ async def generar_pdf_consulta_diaria_route(
             "institucion_id": institucion_id,
             "usuario_id": usuario_id,
             "pdf_url": pdf_url,
-            "fecha_creacion": datetime.now().isoformat(),
         }).execute()
 
         return {"pdf_url": pdf_url}

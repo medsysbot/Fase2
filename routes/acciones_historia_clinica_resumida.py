@@ -7,7 +7,6 @@ from fastapi.responses import JSONResponse
 from utils.pdf_generator import generar_pdf_historia_clinica_resumida
 from utils.email_sender import enviar_email_con_pdf
 from dotenv import load_dotenv
-from datetime import datetime
 import os
 from utils.image_utils import (
     descargar_imagen,
@@ -50,8 +49,7 @@ async def guardar_historia_clinica_resumida(
             "tratamiento": tratamiento,
             "observaciones": observaciones,
             "institucion_id": institucion_id,
-            "usuario_id": usuario_id,
-            "fecha_creacion": datetime.now().isoformat()
+            "usuario_id": usuario_id
         }
         supabase.table("historia_clinica_resumida").insert(data).execute()
         return {"message": "Guardado exitosamente"}

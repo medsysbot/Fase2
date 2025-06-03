@@ -1,5 +1,5 @@
--- Tabla historia_resumen vinculada al bucket 'historia-resumen'
-CREATE TABLE IF NOT EXISTS historia_resumen (
+-- Tabla historia_clinica_resumida vinculada al bucket 'historia-clinica-resumida'
+CREATE TABLE IF NOT EXISTS historia_clinica_resumida (
     dni text PRIMARY KEY,
     nombre text,
     apellido text,

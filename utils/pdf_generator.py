@@ -52,6 +52,40 @@ def generar_pdf_resumen(datos, firma_path=None, sello_path=None):
 
     return output_path
 
+
+def generar_pdf_historia_clinica_resumida(datos, firma_path=None, sello_path=None):
+    """Genera el PDF para la historia clínica resumida."""
+    pdf = FPDF()
+    pdf.add_page()
+    _agregar_encabezado(pdf, "Historia Clínica Resumida")
+
+    pdf.cell(0, 10, txt=f"Paciente: {datos['nombre']}", ln=True)
+    pdf.cell(0, 10, txt=f"DNI: {datos['dni']}", ln=True)
+    pdf.cell(0, 10, txt=f"Edad: {datos['edad']}", ln=True)
+    pdf.ln(5)
+
+    pdf.multi_cell(0, 10, f"Motivo de consulta:\n{datos['motivo']}\n")
+    pdf.multi_cell(0, 10, f"Diagnóstico:\n{datos['diagnostico']}\n")
+    pdf.multi_cell(0, 10, f"Tratamiento:\n{datos['tratamiento']}\n")
+    pdf.multi_cell(0, 10, f"Observaciones:\n{datos['observaciones']}\n")
+
+    if firma_path and os.path.exists(firma_path):
+        pdf.ln(10)
+        pdf.cell(200, 10, txt="Firma del Profesional:", ln=True)
+        pdf.image(firma_path, x=10, y=pdf.get_y(), w=FIRMA_SELLO_ANCHO)
+        pdf.ln(25)
+
+    if sello_path and os.path.exists(sello_path):
+        pdf.cell(200, 10, txt="Sello del Profesional:", ln=True)
+        pdf.image(sello_path, x=60, y=pdf.get_y(), w=FIRMA_SELLO_ANCHO)
+        pdf.ln(25)
+
+    filename = f"{datos['dni']}_historia_resumida.pdf"
+    output_path = os.path.join("/tmp", filename)
+    pdf.output(output_path)
+
+    return output_path
+
 def generar_pdf_paciente(datos):
     pdf = FPDF()
     pdf.add_page()

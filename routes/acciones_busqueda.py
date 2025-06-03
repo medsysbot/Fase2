@@ -39,7 +39,7 @@ async def buscar_paciente(request: Request, dni: str = Form(...)):
         datos_pdf = {
             "paciente": {**paciente, "dni": dni},
             "historia_clinica_completa": _datos("historia_clinica_completa"),
-            "historia_clinica_resumida": _datos("historia_resumen"),
+            "historia_clinica_resumida": _datos("historia_clinica_resumida"),
             "consultas": _datos("consultas"),
             "recetas": _datos("recetas_medicas"),
             "indicaciones": _datos("indicaciones_medicas"),

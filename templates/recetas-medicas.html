@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<!-- ╔════════════════════════════════════╗ -->
+<!-- ║      CABECERA DEL FORMULARIO      ║ -->
+<!-- ╚════════════════════════════════════╝ -->
+  <meta charset="UTF-8" />
+  <title>Receta Médica</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/styles.css" />
+
+  <!-- Preload de íconos de alerta -->
+  <link rel="preload" href="/static/icons/alerta/alerta-alerta.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-borrado.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-busqueda.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-error.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-guardado.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-suceso.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-paciente-cargado.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-pdf.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-email.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-carga-pdf.png" as="image">
+</head>
+<body>
+
+<header>
+  <img src="/static/icons/icono-receta.png" alt="Logo Receta Médica" class="logo-grande" />
+  <h2>Receta Médica</h2>
+</header>
+
+<!-- ╔════════════════════════════════════╗ -->
+<!-- ║        DATOS DEL PACIENTE        ║ -->
+<!-- ╚════════════════════════════════════╝ -->
+<form id="form-receta" enctype="multipart/form-data">
+  <label>Nombre:</label>
+  <input type="text" name="nombre" id="nombre" />
+
+  <label>DNI:</label>
+  <input type="text" name="dni" id="dni" />
+
+  <label>Profesional:</label>
+  <input type="text" name="profesional" id="profesional" />
+
+  <label>Fecha:</label>
+  <input type="date" name="fecha" id="fecha" />
+
+  <label>Diagnóstico:</label>
+  <textarea name="diagnostico" id="diagnostico"></textarea>
+
+  <label>Medicamentos indicados:</label>
+  <textarea name="medicamentos" id="medicamentos"></textarea>
+
+  <input type="hidden" name="institucion_id" id="institucion_id" />
+
+</form>
+
+<!--────────────────────────────────────-->
+<!--         BOTONES DE ACCIÓN          -->
+<!--────────────────────────────────────-->
+<div class="botones-flotantes">
+  <button type="button" ondblclick="iniciarReconocimiento()" title="Reconocimiento por voz">
+    <img src="/static/icons/microfono.png" alt="Voz" />
+  </button>
+  <button type="button" onclick="guardarPDF()" title="Guardar">
+    <img src="/static/icons/guardar.png" alt="Guardar" />
+  </button>
+  <button type="button" onclick="enviarPorCorreo()" title="Enviar">
+    <img src="/static/icons/enviar.png" alt="Enviar" />
+  </button>
+  <button type="button" id="btn-ver-pdf" onclick="abrirPDF()" title="Ver PDF" style="display:none;">
+    <img src="/static/icons/icono-ver-pdf.png" alt="Ver PDF" />
+  </button>
+</div>
+
+<!-- ALERT MANAGER -->
+<div id="alert-manager" class="alert-container" style="display: none;">
+  <div class="alert-box">
+    <img id="alert-icon" src="" alt="icono-alerta" class="alert-icon" />
+    <span id="alert-text" class="alert-message">Texto de alerta</span>
+    <div id="alert-buttons" class="alert-buttons" style="display: none;">
+      <img src="/static/icons/alerta/alerta-boton-borrar.png" id="btn-borrar" class="alert-btn" />
+      <img src="/static/icons/alerta/alerta-boton-no.png" id="btn-no" class="alert-btn" />
+    </div>
+  </div>
+</div>
+
+<!-- SCRIPTS -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const inst = sessionStorage.getItem("institucion_id") || "";
+    const inputInst = document.getElementById("institucion_id");
+    if (inputInst) {
+      inputInst.value = inst;
+    }
+
+    const pdfBtn = document.getElementById("btn-ver-pdf");
+    if (pdfBtn) {
+      pdfBtn.style.display = sessionStorage.getItem("pdfURL_receta") ? "inline-block" : "none";
+    }
+  });
+</script>
+<script src="/static/js/alertas.js"></script>
+<script src="/static/js/recetas_medicas.js"></script>
+<script src="/static/js/voz-a-formulario-recetas_medicas.js"></script>
+
+</body>
+</html>

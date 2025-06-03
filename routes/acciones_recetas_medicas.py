@@ -25,6 +25,10 @@ router = APIRouter()
 BUCKET_PDFS = "recetas-medicas"
 BUCKET_FIRMAS = "firma-sello-usuarios"
 
+# ╔═══════════════════════════════════╗
+# ║        GUARDAR FORMULARIO        ║
+# ╚═══════════════════════════════════╝
+
 @router.post("/guardar_receta_medica")
 async def guardar_receta_medica(
     request: Request,
@@ -85,6 +89,9 @@ async def guardar_receta_medica(
         if contenido_sello:
             sello_path = guardar_imagen_temporal(contenido_sello, nombre_sello)
 
+        # ╔═══════════════════════════════════════╗
+        # ║     GENERAR Y GUARDAR PDF RECETA     ║
+        # ╚═══════════════════════════════════════╝
         pdf_path = generar_pdf_recetas_medicas(datos, firma_path, sello_path)
 
         nombre_archivo = f"{dni}_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.pdf"
@@ -189,8 +196,11 @@ async def subir_firma_sello(
         return JSONResponse({"exito": False, "mensaje": str(e)}, status_code=500)
 
 
-@router.post("/enviar_pdf_receta")
-async def enviar_pdf_receta(
+# ╔════════════════════════════════════════════╗
+# ║      ENVIAR RECETA MÉDICA POR CORREO      ║
+# ╚════════════════════════════════════════════╝
+@router.post("/enviar_pdf_receta_medica")
+async def enviar_pdf_receta_medica(
     nombre: str = Form(...),
     dni: str = Form(...),
     pdf_url: str = Form(...),

@@ -10,7 +10,7 @@ async function guardarPDF() {
     showAlert('guardado', 'Guardando indicaciones…', false, 3000);
     await new Promise(r => setTimeout(r, 3200));
 
-    const response = await fetch('/generar_pdf_indicaciones', {
+    const response = await fetch('/generar_pdf_indicacion_medica', {
       method: 'POST',
       body: formData
     });
@@ -18,7 +18,9 @@ async function guardarPDF() {
 
     if (resultado.exito && resultado.pdf_url) {
       showAlert('suceso', 'Indicaciones guardadas', false, 3000);
-      sessionStorage.setItem('pdfURL_indicaciones', resultado.pdf_url);
+      sessionStorage.setItem('pdfURL_indicaciones_medicas', resultado.pdf_url);
+      const btn = document.getElementById('btn-verpdf');
+      if (btn) btn.style.display = 'inline-block';
     } else {
       showAlert('error', resultado.mensaje || 'Error al guardar', false, 4000);
     }
@@ -29,7 +31,7 @@ async function guardarPDF() {
 }
 
 function abrirPDF() {
-  const url = sessionStorage.getItem('pdfURL_indicaciones');
+  const url = sessionStorage.getItem('pdfURL_indicaciones_medicas');
   if (url) {
     showAlert('cargaPDF', 'Cargando PDF…', false, 3000);
     const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -65,7 +67,7 @@ async function enviarPorCorreo() {
   const nombre = document.querySelector('[name="nombre"]').value.trim();
   const dni = document.querySelector('[name="dni"]').value.trim();
   const email = await obtenerEmailPorDni(dni);
-  const pdfURL = sessionStorage.getItem('pdfURL_indicaciones');
+  const pdfURL = sessionStorage.getItem('pdfURL_indicaciones_medicas');
 
   if (!pdfURL) {
     showAlert('pdf', 'Genera y guarda las indicaciones antes de enviarlas.', false, 3000);
@@ -86,7 +88,7 @@ async function enviarPorCorreo() {
     formData.append('dni', dni);
     formData.append('pdf_url', pdfURL);
 
-    const response = await fetch('/enviar_pdf_indicaciones', {
+    const response = await fetch('/enviar_pdf_indicacion_medica', {
       method: 'POST',
       body: formData
     });
@@ -102,3 +104,11 @@ async function enviarPorCorreo() {
     showAlert('error', 'Error al enviar el e-mail', false, 3000);
   }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('btn-verpdf');
+  if (btn) {
+    const url = sessionStorage.getItem('pdfURL_indicaciones_medicas');
+    btn.style.display = url ? 'inline-block' : 'none';
+  }
+});

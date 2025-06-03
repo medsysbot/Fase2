@@ -10,7 +10,7 @@ Esta tabla resume qué archivos HTML usan cada JavaScript, qué rutas del backen
 | recetas_medicas.html | guardar_recetas_medicas.js, voz-a-formulario-recetas_medicas.js, alertas.js | acciones_recetas_medicas.py | recetas_medicas |
 | historia_clinica_completa.html | guardar_historia_clinica_completa.js, voz-a-formulario-historia_clinica_completa.js, alertas.js | acciones_historia_clinica.py | historia_clinica_completa |
 | historia_clinica_resumida.html | guardar_historia_clinica_resumida.js, voz-a-formulario-historia_clinica_resumida.js, alertas.js | acciones_historia_clinica_resumida.py | historia_clinica_resumida |
-| indicaciones_medicas.html | guardar_indicaciones_medicas.js, voz-a-formulario-indicaciones_medicas.js, alertas.js | acciones_indicaciones_medicas.py | indicaciones_medicas |
+| indicaciones-medicas.html | indicaciones_medicas.js, voz-a-formulario-indicaciones_medicas.js, alertas.js | acciones_indicaciones_medicas.py | indicaciones_medicas |
 | enfermeria.html | enfermeria.js, voz-a-formulario-enfermeria.js, alertas.js | acciones_enfermeria.py | enfermeria |
 | estudios-medicos.html | estudios_medicos.js, alertas.js | acciones_estudios.py | estudios |
 | turnos_pacientes.html | turnos_pacientes.js, alertas.js | acciones_turnos.py | turnos_pacientes |

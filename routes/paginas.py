@@ -52,7 +52,7 @@ async def ver_historia(request: Request):
 async def ver_indicaciones_medicas(request: Request):
     if not _session_activa(request):
         return RedirectResponse(url="/login", status_code=303)
-    return templates.TemplateResponse("indicaciones_medicas.html", {"request": request})
+    return templates.TemplateResponse("indicaciones-medicas.html", {"request": request})
 
 
 @router.get("/turnos_pacientes", response_class=HTMLResponse)

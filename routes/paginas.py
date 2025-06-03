@@ -100,7 +100,7 @@ async def ver_firma_sello(request: Request):
 async def ver_historia_clinica_resumida(request: Request):
     if not _session_activa(request):
         return RedirectResponse(url="/login", status_code=303)
-    return templates.TemplateResponse("historia_clinica_resumida.html", {"request": request})
+    return templates.TemplateResponse("historia-clinica-resumida.html", {"request": request})
 
 
 @router.get("/historia_clinica_completa", response_class=HTMLResponse)

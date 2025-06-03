@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 from utils.pdf_generator import generar_pdf_indicaciones_medicas
 from utils.email_sender import enviar_email_con_pdf
 from dotenv import load_dotenv
+from datetime import datetime
 import os
 from utils.image_utils import (
     descargar_imagen,
@@ -22,8 +23,36 @@ router = APIRouter()
 BUCKET_PDFS = "indicaciones-medicas"
 BUCKET_FIRMAS = "firma-sello-usuarios"
 
-@router.post("/generar_pdf_indicaciones")
-async def generar_indicaciones(
+# ╔════════════════════════════════════╗
+# ║        GUARDAR FORMULARIO          ║
+# ╚════════════════════════════════════╝
+@router.post("/guardar_indicacion_medica")
+async def guardar_indicacion_medica(
+    dni: str = Form(...),
+    profesional: str = Form(...),
+    institucion_id: str = Form(...),
+    usuario_id: str = Form(...),
+    indicacion: str = Form(...),
+):
+    try:
+        data = {
+            "dni": dni,
+            "profesional": profesional,
+            "institucion_id": institucion_id,
+            "usuario_id": usuario_id,
+            "indicaciones": indicacion,
+            "fecha_creacion": datetime.now().isoformat(),
+        }
+        supabase.table("indicaciones_medicas").insert(data).execute()
+        return {"message": "Guardado exitosamente"}
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+# ╔══════════════════════════════════════╗
+# ║   GENERAR Y GUARDAR PDF INDICACIÓN   ║
+# ╚══════════════════════════════════════╝
+@router.post("/generar_pdf_indicacion_medica")
+async def generar_pdf_indicacion_medica(
     request: Request,
     nombre: str = Form(...),
     apellido: str = Form(...),
@@ -87,8 +116,11 @@ async def generar_indicaciones(
         return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)
 
 
-@router.post("/enviar_pdf_indicaciones")
-async def enviar_pdf_indicaciones(
+# ╔════════════════════════════════════════════╗
+# ║   ENVIAR INDICACIÓN MÉDICA POR CORREO      ║
+# ╚════════════════════════════════════════════╝
+@router.post("/enviar_pdf_indicacion_medica")
+async def enviar_pdf_indicacion_medica(
     nombre: str = Form(...),
     dni: str = Form(...),
     pdf_url: str = Form(...)

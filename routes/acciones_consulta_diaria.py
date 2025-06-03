@@ -1,33 +1,62 @@
-# ╔════════════════════════════════════════════════════════════╗
-# ║            ACCIONES BACKEND - EVOLUCIÓN DIARIA             ║
-# ╚════════════════════════════════════════════════════════════╝
+# ╔════════════════════════════════════════════════════╗
+# ║     CONSULTA DIARIA - ENDPOINTS BACKEND FASTAPI   ║
+# ╚════════════════════════════════════════════════════╝
+
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import JSONResponse
-import logging
-# La función para crear el PDF de la evolución diaria se renombró a
-# `generar_pdf_consulta_diaria` en `utils/pdf_generator.py`. Actualizamos el
-# import para usar el nombre correcto y evitar errores al iniciar la app.
-from utils.pdf_generator import generar_pdf_consulta_diaria
+from utils.supabase_helper import supabase, subir_pdf, SUPABASE_URL
 from utils.email_sender import enviar_email_con_pdf
-from dotenv import load_dotenv
+from utils.pdf_generator import generar_pdf_consulta_diaria
+from utils.image_utils import descargar_imagen, guardar_imagen_temporal
+from datetime import datetime
 import os
-from utils.image_utils import (
-    descargar_imagen,
-    eliminar_imagen,
-    imagen_existe,
-    guardar_imagen_temporal,
-)
+import logging
 
-from utils.supabase_helper import supabase, SUPABASE_URL, subir_pdf
-
-load_dotenv()
 router = APIRouter()
 
-BUCKET_PDFS = "evolucion-diaria"
+BUCKET_PDFS = "consulta-diaria"
 BUCKET_FIRMAS = "firma-sello-usuarios"
+TABLE_NAME = "consulta_diaria"
 
-@router.post("/generar_pdf_evolucion")
-async def generar_evolucion(
+# ╔════════════════════════════════════╗
+# ║        GUARDAR FORMULARIO         ║
+# ╚════════════════════════════════════╝
+@router.post("/guardar_consulta_diaria")
+async def guardar_consulta_diaria(
+    nombre: str = Form(...),
+    apellido: str = Form(...),
+    dni: str = Form(...),
+    fecha: str = Form(...),
+    diagnostico: str = Form(...),
+    evolucion: str = Form(...),
+    indicaciones: str = Form(...),
+    institucion_id: str = Form(...),
+    usuario_id: str = Form(...),
+):
+    try:
+        data = {
+            "nombre": nombre,
+            "apellido": apellido,
+            "dni": dni,
+            "fecha": fecha,
+            "diagnostico": diagnostico,
+            "evolucion": evolucion,
+            "indicaciones": indicaciones,
+            "institucion_id": institucion_id,
+            "usuario_id": usuario_id,
+            "fecha_creacion": datetime.now().isoformat(),
+        }
+        supabase.table(TABLE_NAME).insert(data).execute()
+        return {"message": "Guardado exitosamente"}
+    except Exception as e:
+        logging.error(f"Error al guardar consulta diaria: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+# ╔════════════════════════════════════════════╗
+# ║     GENERAR Y SUBIR PDF DE LA CONSULTA     ║
+# ╚════════════════════════════════════════════╝
+@router.post("/generar_pdf_consulta_diaria")
+async def generar_pdf_consulta_diaria_route(
     request: Request,
     nombre: str = Form(...),
     apellido: str = Form(...),
@@ -36,18 +65,12 @@ async def generar_evolucion(
     diagnostico: str = Form(...),
     evolucion: str = Form(...),
     indicaciones: str = Form(...),
-    paciente: str = Form(None),
+    institucion_id: str = Form(...),
+    usuario_id: str = Form(...),
 ):
     try:
-        usuario = request.session.get("usuario")
-        institucion_id = request.session.get("institucion_id")
-        if institucion_id is None or not usuario:
-            return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
-
-        paciente = paciente or f"{nombre} {apellido}".strip()
-
         datos = {
-            "paciente": paciente,
+            "paciente": f"{nombre} {apellido}".strip(),
             "dni": dni,
             "fecha": fecha,
             "diagnostico": diagnostico,
@@ -55,33 +78,19 @@ async def generar_evolucion(
             "indicaciones": indicaciones,
         }
 
-        firma_path = sello_path = None
-        firma_url = sello_url = None
-        base_firma = f"firma_{usuario}_{institucion_id}"
-        base_sello = f"sello_{usuario}_{institucion_id}"
-        contenido_firma, nombre_firma = descargar_imagen(
-            supabase, BUCKET_FIRMAS, base_firma
-        )
-        contenido_sello, nombre_sello = descargar_imagen(
-            supabase, BUCKET_FIRMAS, base_sello
-        )
+        base_firma = f"firma_{usuario_id}_{institucion_id}"
+        base_sello = f"sello_{usuario_id}_{institucion_id}"
+        contenido_firma, nombre_firma = descargar_imagen(supabase, BUCKET_FIRMAS, base_firma)
+        contenido_sello, nombre_sello = descargar_imagen(supabase, BUCKET_FIRMAS, base_sello)
+
+        firma_path = guardar_imagen_temporal(contenido_firma, nombre_firma) if contenido_firma else None
+        sello_path = guardar_imagen_temporal(contenido_sello, nombre_sello) if contenido_sello else None
+
         if nombre_firma:
-            firma_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_FIRMAS}/{nombre_firma}"
+            datos["firma_url"] = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_FIRMAS}/{nombre_firma}"
         if nombre_sello:
-            sello_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_FIRMAS}/{nombre_sello}"
+            datos["sello_url"] = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_FIRMAS}/{nombre_sello}"
 
-        if contenido_firma:
-            firma_path = guardar_imagen_temporal(contenido_firma, nombre_firma)
-
-        if contenido_sello:
-            sello_path = guardar_imagen_temporal(contenido_sello, nombre_sello)
-
-        datos["firma_url"] = firma_url
-        datos["sello_url"] = sello_url
-
-        # Generamos el PDF utilizando la función correcta del módulo
-        # `pdf_generator`. Antes se llamaba `generar_pdf_evolucion`, pero el
-        # nombre actual es `generar_pdf_consulta_diaria`.
         pdf_path = generar_pdf_consulta_diaria(datos, firma_path, sello_path)
         nombre_pdf = os.path.basename(pdf_path)
         with open(pdf_path, "rb") as f:
@@ -92,55 +101,48 @@ async def generar_evolucion(
         if sello_path and os.path.exists(sello_path):
             os.remove(sello_path)
 
-        supabase.table("evolucion_diaria").insert({
-            "dni": dni,
+        supabase.table(TABLE_NAME).insert({
             "nombre": nombre,
             "apellido": apellido,
+            "dni": dni,
             "fecha": fecha,
             "diagnostico": diagnostico,
             "evolucion": evolucion,
             "indicaciones": indicaciones,
             "institucion_id": institucion_id,
-            "pdf_url": pdf_url,        
+            "usuario_id": usuario_id,
+            "pdf_url": pdf_url,
+            "fecha_creacion": datetime.now().isoformat(),
         }).execute()
 
-        return JSONResponse({"exito": True, "pdf_url": pdf_url})
+        return {"pdf_url": pdf_url}
     except Exception as e:
-        logging.error(f"Error al guardar evolución diaria: {e}")
-        return JSONResponse(content={"exito": False, "mensaje": "Error al guardar la evolución"}, status_code=500)
+        logging.error(f"Error al generar PDF de consulta diaria: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
 
-
-@router.post("/obtener_email_evolucion")
-async def obtener_email_evolucion(dni: str = Form(...)):
-    """Devuelve el email del paciente a partir de su DNI."""
+# ╔════════════════════════════════════════════════╗
+# ║     ENVIAR CONSULTA DIARIA POR CORREO EMAIL    ║
+# ╚════════════════════════════════════════════════╝
+@router.post("/enviar_pdf_consulta_diaria")
+async def enviar_pdf_consulta_diaria(
+    dni: str = Form(...),
+    pdf_url: str = Form(...),
+    nombre: str = Form(None)
+):
     try:
-        resultado = supabase.table("pacientes").select("email").eq("dni", dni).single().execute()
-        email = resultado.data.get("email") if resultado.data else None
-        return {"email": email}
-    except Exception as e:
-        return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)
-
-
-@router.post("/enviar_pdf_evolucion")
-async def enviar_pdf_evolucion(paciente: str = Form(...), dni: str = Form(...)):
-    try:
-        resultado = supabase.table("pacientes").select("email").eq("dni", dni).single().execute()
-        email = resultado.data.get("email") if resultado.data else None
+        paciente = supabase.table("pacientes").select("email").eq("dni", dni).single().execute()
+        email = paciente.data.get("email") if paciente.data else None
 
         if not email:
-            return JSONResponse({"exito": False, "mensaje": "No se encontró un e-mail para este DNI."}, status_code=404)
+            return JSONResponse(status_code=404, content={"error": "Email no encontrado"})
 
-        registros = supabase.table("consultas").select("pdf_url").eq("dni", dni).order("id", desc=True).limit(1).execute()
-        pdf_url = registros.data[0]["pdf_url"] if registros.data else None
-        if not pdf_url:
-            return JSONResponse({"exito": False, "mensaje": "No se encontró el PDF."}, status_code=404)
+        asunto = "Consulta Diaria - PDF"
+        mensaje = "Adjuntamos el archivo correspondiente a la consulta diaria realizada."
+        if nombre:
+            mensaje = f"Estimado/a {nombre}, adjuntamos la consulta diaria."
+        enviar_email_con_pdf(email, asunto, mensaje, pdf_url)
+        return {"message": "Correo enviado correctamente"}
 
-        enviar_email_con_pdf(
-            email_destino=email,
-            asunto="Evolución Diaria",
-            cuerpo=f"Estimado/a {paciente}, adjuntamos la evolución registrada.",
-            url_pdf=pdf_url,
-        )
-        return {"exito": True}
     except Exception as e:
-        return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)
+        logging.error(f"Error al enviar correo: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})

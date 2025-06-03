@@ -31,7 +31,7 @@ async def ver_registro(request: Request):
 async def ver_consulta_diaria(request: Request):
     if not _session_activa(request):
         return RedirectResponse(url="/login", status_code=303)
-    return templates.TemplateResponse("consulta_diaria.html", {"request": request})
+    return templates.TemplateResponse("consulta-diaria.html", {"request": request})
 
 
 @router.get("/recetas_medicas", response_class=HTMLResponse)

@@ -6,7 +6,7 @@ Esta tabla resume qué archivos HTML usan cada JavaScript, qué rutas del backen
 |-----------------|--------------------|-------------|---------------|
 | registro.html | alertas.js, registro_formulario.js, registro_voz.js | **(ruta no encontrada en este repo)** | registro_pacientes |
 | busqueda_pacientes.html | guardar_busqueda.js, voz-a-formulario-busqueda.js, alertas.js | acciones_busqueda.py | busqueda_pacientes |
-| consulta_diaria.html | guardar_consulta_diaria.js, voz-a-formulario-consulta-diaria.js, alertas.js | acciones_consulta_diaria.py | evolucion_diaria |
+| consulta-diaria.html | consulta_diaria.js, voz-a-formulario-consulta-diaria.js, alertas.js | acciones_consulta_diaria.py | consulta_diaria |
 | recetas_medicas.html | guardar_recetas_medicas.js, voz-a-formulario-recetas_medicas.js, alertas.js | acciones_recetas_medicas.py | recetas_medicas |
 | historia_clinica_completa.html | guardar_historia_clinica_completa.js, voz-a-formulario-historia_clinica_completa.js, alertas.js | acciones_historia_clinica.py | historia_clinica_completa |
 | historia_clinica_resumida.html | guardar_historia_clinica_resumida.js, voz-a-formulario-historia_clinica_resumida.js, alertas.js | acciones_historia_clinica_resumida.py | historia_clinica_resumida |

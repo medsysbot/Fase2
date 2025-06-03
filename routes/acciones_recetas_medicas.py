@@ -25,23 +25,23 @@ router = APIRouter()
 BUCKET_PDFS = "recetas-medicas"
 BUCKET_FIRMAS = "firma-sello-usuarios"
 
-@router.post("/generar_pdf_receta")
-async def generar_receta(
+@router.post("/guardar_receta_medica")
+async def guardar_receta_medica(
     request: Request,
     nombre: str = Form(...),
-    apellido: str = Form(...),
     dni: str = Form(...),
     fecha: str = Form(...),
     diagnostico: str = Form(...),
     medicamentos: str = Form(...),
+    profesional: str = Form(...),
+    institucion_id: str = Form(...),
 ):
     try:
         usuario = request.session.get("usuario")
-        institucion_id = request.session.get("institucion_id")
-        if institucion_id is None or not usuario:
+        if not usuario or not institucion_id:
             return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
 
-        if not all([dni, nombre, apellido, fecha, diagnostico, medicamentos]):
+        if not all([dni, nombre, fecha, diagnostico, medicamentos, profesional, institucion_id]):
             return JSONResponse({"error": "Faltan datos obligatorios"}, status_code=400)
         try:
             datetime.date.fromisoformat(fecha)
@@ -49,7 +49,7 @@ async def generar_receta(
             return JSONResponse({"error": "Fecha inválida"}, status_code=400)
 
         datos = {
-            "nombre_completo": f"{nombre} {apellido}",
+            "nombre_completo": nombre,
             "dni": dni,
             "fecha": fecha,
             "diagnostico": diagnostico,
@@ -93,14 +93,15 @@ async def generar_receta(
             pdf_url = subir_pdf(BUCKET_PDFS, nombre_archivo, f)
 
         supabase.table("recetas_medicas").insert({
-            "dni": dni,
             "nombre": nombre,
-            "apellido": apellido,
+            "dni": dni,
             "fecha": fecha,
             "diagnostico": diagnostico,
             "medicamentos": medicamentos,
-            "pdf_url": pdf_url,
+            "profesional": profesional,
             "institucion_id": institucion_id,
+            "pdf_url": pdf_url,
+            "usuario_id": usuario,
         }).execute()
 
         if firma_path and os.path.exists(firma_path):
@@ -108,7 +109,7 @@ async def generar_receta(
         if sello_path and os.path.exists(sello_path):
             os.remove(sello_path)
 
-        return JSONResponse({"resultado": "ok", "pdf_url": pdf_url})
+        return {"pdf_url": pdf_url}
 
     except Exception as e:
         error_text = str(e)

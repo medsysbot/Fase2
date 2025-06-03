@@ -35,11 +35,12 @@
 <form id="form-receta" enctype="multipart/form-data">
   <label>Nombre:</label>
   <input type="text" name="nombre" id="nombre" />
-  <label>Apellido:</label>
-  <input type="text" name="apellido" id="apellido" />
 
   <label>DNI:</label>
   <input type="text" name="dni" id="dni" />
+
+  <label>Profesional:</label>
+  <input type="text" name="profesional" id="profesional" />
 
   <label>Fecha:</label>
   <input type="date" name="fecha" id="fecha" />
@@ -49,6 +50,8 @@
 
   <label>Medicamentos indicados:</label>
   <textarea name="medicamentos" id="medicamentos"></textarea>
+
+  <input type="hidden" name="institucion_id" id="institucion_id" />
 
 </form>
 
@@ -83,6 +86,15 @@
 </div>
 
 <!-- SCRIPTS -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const inst = sessionStorage.getItem("institucion_id") || "";
+    const inputInst = document.getElementById("institucion_id");
+    if (inputInst) {
+      inputInst.value = inst;
+    }
+  });
+</script>
 <script src="/static/js/alertas.js"></script>
 <script src="/static/js/guardar_recetas_medicas.js"></script>
 <script src="/static/js/voz-a-formulario-recetas_medicas.js"></script>

@@ -14,7 +14,8 @@ from utils.image_utils import (
 )
 from utils.supabase_helper import supabase, subir_pdf
 
-load_dotenv()
+# Utilizamos el .env para definir las variables necesarias
+load_dotenv(override=True)
 router = APIRouter()
 
 BUCKET_PDFS = "historia_clinica_completa"

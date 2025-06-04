@@ -9,7 +9,8 @@ def prepare_consultas_table():
     columnas necesarias. También elimina cualquier restricción de
     unicidad sobre ``dni`` que pueda impedir registrar múltiples
     evoluciones para un mismo paciente."""
-    load_dotenv()
+    # Cargar variables desde .env priorizando sobre el entorno existente
+    load_dotenv(override=True)
 
     try:
         conn = get_db_connection()

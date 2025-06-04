@@ -6,7 +6,8 @@ from datetime import datetime
 from dotenv import load_dotenv
 from utils.supabase_helper import supabase, subir_pdf
 
-load_dotenv()
+# Prioriza las variables del archivo .env sobre las existentes
+load_dotenv(override=True)
 router = APIRouter()
 
 BUCKET_PDFS = "estudios-medicos"

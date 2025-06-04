@@ -78,6 +78,8 @@ async def generar_pdf_turno_paciente(
         if institucion_id is None or not usuario:
             return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
 
+        institucion_id = int(institucion_id)
+
         datos = {
             "nombre": f"{nombre} {apellido}".strip(),
             "dni": dni,

@@ -127,7 +127,8 @@ async def generar_pdf_consulta_diaria_route(
         try:
             pdf_path = generar_pdf_consulta_diaria(datos, firma_path, sello_path)
         except Exception as e:
-            print(e)
+            import traceback
+            traceback.print_exc()
             return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)
 
         nombre_pdf = os.path.basename(pdf_path)
@@ -135,7 +136,8 @@ async def generar_pdf_consulta_diaria_route(
             with open(pdf_path, "rb") as f:
                 pdf_url = subir_pdf(BUCKET_PDFS, nombre_pdf, f)
         except Exception as e:
-            print(e)
+            import traceback
+            traceback.print_exc()
             return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)
 
         if firma_path and os.path.exists(firma_path):
@@ -158,7 +160,8 @@ async def generar_pdf_consulta_diaria_route(
 
         return {"pdf_url": pdf_url}
     except Exception as e:
-        print(e)
+        import traceback
+        traceback.print_exc()
         logging.error(f"Error al generar PDF de consulta diaria: {e}")
         return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)
 

@@ -101,7 +101,7 @@ async def generar_pdf_historia_clinica_resumida(
         if contenido_sello:
             sello_path = guardar_imagen_temporal(contenido_sello, nombre_sello)
 
-        pdf_path = generar_pdf_historia_clinica_resumida(datos, firma_path, sello_path)
+        pdf_path = await generar_pdf_historia_clinica_resumida(datos, firma_path, sello_path)
         nombre_pdf = os.path.basename(pdf_path)
         with open(pdf_path, "rb") as f:
             pdf_url = subir_pdf(BUCKET_PDFS, nombre_pdf, f)

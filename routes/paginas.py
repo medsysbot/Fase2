@@ -112,3 +112,9 @@ async def ver_turno_publico(request: Request):
         "solicitar-turno-publico.html",
         {"request": request},
     )
+
+@router.get("/turnos-pacientes")
+def turnos_pacientes(request: Request):
+    if not _session_activa(request):
+        return RedirectResponse(url="/login", status_code=303)
+    return templates.TemplateResponse("turnos-pacientes.html", {"request": request})

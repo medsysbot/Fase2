@@ -6,6 +6,7 @@ from .acciones_indicaciones_medicas import router as indicaciones_medicas_router
 from .acciones_consulta_diaria import router as consulta_diaria_router
 from .acciones_enfermeria import router as enfermeria_router
 from .acciones_busqueda import router as busqueda_router
+from .acciones_registro_pacientes import router as registro_pacientes_router
 from .acciones_estudios import router as estudios_router
 from .acciones_admin import router as admin_router
 from .paginas import router as paginas_router
@@ -21,6 +22,7 @@ __all__ = [
     "consulta_diaria_router",
     "enfermeria_router",
     "busqueda_router",
+    "registro_pacientes_router",
     "estudios_router",
     "admin_router",
     "paginas_router",

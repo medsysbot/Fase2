@@ -375,6 +375,34 @@ def generar_pdf_enfermeria(datos, firma_path=None, sello_path=None):
     return output_path
 
 
+def generar_pdf_registro_paciente(datos):
+    """Genera un PDF simple con los datos del registro."""
+    pdf = FPDF()
+    pdf.add_page()
+    _agregar_encabezado(pdf, "Registro de Paciente")
+
+    campos = [
+        ("Nombre", datos.get("nombre_completo", "")),
+        ("DNI", datos.get("dni", "")),
+        ("Fecha de Nacimiento", datos.get("fecha_nacimiento", "")),
+        ("Teléfono", datos.get("telefono", "")),
+        ("Email", datos.get("email", "")),
+        ("Domicilio", datos.get("domicilio", "")),
+        ("Obra Social", datos.get("obra_social", "")),
+        ("Número Afiliado", datos.get("numero_afiliado", "")),
+        ("Contacto Emergencia", datos.get("contacto_emergencia", "")),
+    ]
+
+    for label, value in campos:
+        if value:
+            pdf.cell(0, 10, f"{label}: {value}", ln=True)
+
+    filename = f"{datos.get('dni','paciente')}_registro_paciente.pdf"
+    output_path = os.path.join("/tmp", filename)
+    pdf.output(output_path)
+
+    return output_path
+
 def generar_pdf_turno_paciente(datos, firma_path=None, sello_path=None):
     """Genera el comprobante en PDF para un turno médico."""
     pdf = FPDF()

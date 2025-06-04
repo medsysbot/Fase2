@@ -20,11 +20,11 @@ async def ver_index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request, "rol": rol})
 
 
-@router.get("/registro", response_class=HTMLResponse)
-async def ver_registro(request: Request):
+@router.get("/registro_pacientes", response_class=HTMLResponse)
+async def ver_registro_pacientes(request: Request):
     if not _session_activa(request):
         return RedirectResponse(url="/login", status_code=303)
-    return templates.TemplateResponse("registro.html", {"request": request})
+    return templates.TemplateResponse("registro-pacientes.html", {"request": request})
 
 
 @router.get("/consulta_diaria", response_class=HTMLResponse)

@@ -106,7 +106,7 @@ async def guardar_receta_medica(
             "diagnostico": diagnostico,
             "medicamentos": medicamentos,
             "profesional": profesional,
-            "institucion_id": institucion_id,
+            "institucion_id": int(institucion_id),
             "pdf_url": pdf_url,
             "usuario_id": usuario,
         }).execute()

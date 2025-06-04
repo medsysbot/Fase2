@@ -263,8 +263,6 @@ from routes import (
 from routes.acciones_turnos_pacientes_publico import (
     router as turnos_publicos_router,
 )
-from routes.acciones_turnos import router as turnos_router
-# from routes.acciones_turnos_pacientes import router as turnos_pacientes_v2_router
 from routes.acciones_enfermeria import router as enfermeria_router
 
 from routes.acciones_estudios import iniciar_monitor
@@ -274,8 +272,6 @@ app.include_router(historia_clinica_resumida_router)
 app.include_router(recetas_medicas_router)
 app.include_router(indicaciones_medicas_router)
 app.include_router(consulta_diaria_router)
-app.include_router(turnos_router)
-# app.include_router(turnos_pacientes_v2_router)
 app.include_router(enfermeria_router)
 app.include_router(busqueda_router)
 app.include_router(estudios_router)

@@ -4,8 +4,6 @@ from .acciones_recetas_medicas import router as recetas_medicas_router
 from .acciones_historia_clinica_completa import router as historia_clinica_completa_router
 from .acciones_indicaciones_medicas import router as indicaciones_medicas_router
 from .acciones_consulta_diaria import router as consulta_diaria_router
-from .acciones_turnos import router as turnos_pacientes_router
-# from .acciones_turnos_pacientes import router as turnos_pacientes_v2_router
 from .acciones_enfermeria import router as enfermeria_router
 from .acciones_busqueda import router as busqueda_router
 from .acciones_estudios import router as estudios_router
@@ -21,8 +19,6 @@ __all__ = [
     "historia_clinica_completa_router",
     "indicaciones_medicas_router",
     "consulta_diaria_router",
-    "turnos_pacientes_router",
-    # "turnos_pacientes_v2_router",
     "enfermeria_router",
     "busqueda_router",
     "estudios_router",

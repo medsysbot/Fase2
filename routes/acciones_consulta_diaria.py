@@ -91,6 +91,7 @@ async def generar_pdf_consulta_diaria_route(
             "institucion_id": institucion_id,
             "usuario_id": usuario_id,
         }
+        print("VALORES RECIBIDOS:", campos)
         faltantes = [c for c, v in campos.items() if not str(v).strip()]
         if faltantes:
             return JSONResponse(

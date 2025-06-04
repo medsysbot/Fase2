@@ -128,7 +128,7 @@ async def generar_pdf_consulta_diaria_route(
             )
 
         try:
-            pdf_path = await generar_pdf_consulta_diaria(datos, firma_path, sello_path)
+            pdf_path = generar_pdf_consulta_diaria(datos, firma_path, sello_path)
         except Exception as e:
             import traceback
             traceback.print_exc()

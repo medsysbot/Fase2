@@ -38,14 +38,14 @@ async def guardar_receta_medica(
     diagnostico: str = Form(...),
     medicamentos: str = Form(...),
     profesional: str = Form(...),
-    institucion_id: str = Form(...),
 ):
     try:
         usuario = request.session.get("usuario")
-        if not usuario or not institucion_id:
+        institucion_id = request.session.get("institucion_id")
+        if institucion_id is None or not usuario:
             return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
 
-        if not all([dni, nombre, fecha, diagnostico, medicamentos, profesional, institucion_id]):
+        if not all([dni, nombre, fecha, diagnostico, medicamentos, profesional]):
             return JSONResponse({"error": "Faltan datos obligatorios"}, status_code=400)
         try:
             datetime.date.fromisoformat(fecha)

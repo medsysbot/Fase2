@@ -24,11 +24,14 @@ async def generar_pdf_turno_paciente_route(
     especialidad: str = Form(...),
     fecha: str = Form(...),
     hora: str = Form(...),
-    profesional: str = Form(...),
-    usuario_id: str = Form(...),
-    institucion_id: int = Form(...)
+    profesional: str = Form(...)
 ):
     try:
+        usuario = request.session.get("usuario")
+        institucion_id = request.session.get("institucion_id")
+        if institucion_id is None or not usuario:
+            return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
+
         # Validaciones mínimas
         campos_obligatorios = [nombre, apellido, dni, especialidad, fecha, hora, profesional]
         if not all(campos_obligatorios):
@@ -43,7 +46,7 @@ async def generar_pdf_turno_paciente_route(
             "fecha": fecha,
             "hora": hora,
             "profesional": profesional,
-            "institucion_id": institucion_id
+            "institucion_id": int(institucion_id)
         }
         pdf_path = generar_pdf_turno_paciente(datos)
 
@@ -63,8 +66,8 @@ async def generar_pdf_turno_paciente_route(
             "fecha": fecha,
             "hora": hora,
             "profesional": profesional,
-            "usuario_id": usuario_id,
-            "institucion_id": institucion_id,
+            "usuario_id": usuario,
+            "institucion_id": int(institucion_id),
             "pdf_url": url_pdf
         }]).execute()
 

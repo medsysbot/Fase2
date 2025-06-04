@@ -9,7 +9,8 @@ from utils.supabase_helper import supabase, subir_pdf
 from utils.pdf_generator import generar_pdf_busqueda
 from utils.email_sender import enviar_email_con_pdf
 
-load_dotenv()
+# Sobrescribimos con las variables del archivo .env en caso de existir
+load_dotenv(override=True)
 router = APIRouter()
 BUCKET_PDFS = "busqueda-de-pacientes"
 

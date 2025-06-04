@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
-load_dotenv()
+# Cargamos variables de entorno de .env, priorizando sobre las ya definidas
+load_dotenv(override=True)
 
 # ╔════════════════════════════════════════════════════════════╗
 # ║               ACCIONES BACKEND - RECETAS                  ║

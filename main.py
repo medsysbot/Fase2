@@ -63,7 +63,8 @@ generar_env_automatico()
 import asyncio
 from utils.supabase_helper import supabase, SUPABASE_URL
 from utils.db_setup import prepare_consultas_table
-load_dotenv()
+# Tomamos las variables del archivo .env como fuente principal
+load_dotenv(override=True)
 prepare_consultas_table()
 # ╔════════════════════════════════════╗
 # ║             APP BASE               ║

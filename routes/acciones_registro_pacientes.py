@@ -10,7 +10,8 @@ from utils.pdf_generator import generar_pdf_registro_paciente as generar_pdf_reg
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
+# Preferimos los valores del archivo .env
+load_dotenv(override=True)
 router = APIRouter()
 
 BUCKET_PDFS = "registro-pacientes"

@@ -352,10 +352,15 @@ def generar_pdf_enfermeria(datos, firma_path=None, sello_path=None):
         ("Dolor", datos['dolor']),
         ("Glucemia", datos['glucemia']),
         ("Triaje", datos['triaje']),
+        ("Presión arterial", datos.get('presion_arterial', '')),
     ]
 
     for label, value in campos:
         pdf.cell(0, 10, f"{label}: {value}", ln=True)
+
+    if datos.get('observaciones'):
+        pdf.ln(5)
+        pdf.multi_cell(0, 10, f"Observaciones:\n{datos['observaciones']}\n")
 
     if firma_path and os.path.exists(firma_path):
         pdf.ln(10)

@@ -31,6 +31,8 @@ async def generar_pdf_enfermeria_endpoint(
     dolor: int = Form(...),
     glucemia: float = Form(...),
     triaje: str = Form(...),
+    presion_arterial: str = Form(...),
+    observaciones: str = Form(...),
 ):
     try:
         usuario = request.session.get("usuario")
@@ -40,7 +42,8 @@ async def generar_pdf_enfermeria_endpoint(
 
         campos = [nombre, apellido, dni, profesional, motivo_consulta, hora,
                   temperatura, saturacion, ta, tad, frecuencia_cardiaca,
-                  glasgow, dolor, glucemia, triaje]
+                  glasgow, dolor, glucemia, triaje,
+                  presion_arterial, observaciones]
         if not all(str(c).strip() for c in campos):
             return JSONResponse({"exito": False, "mensaje": "Faltan campos obligatorios."})
 
@@ -67,6 +70,8 @@ async def generar_pdf_enfermeria_endpoint(
             "dolor": dolor,
             "glucemia": glucemia,
             "triaje": triaje,
+            "presion_arterial": presion_arterial,
+            "observaciones": observaciones,
         }
         pdf_path = generar_pdf_enfermeria(datos, firma_path, sello_path)
         nombre_pdf = os.path.basename(pdf_path)
@@ -96,6 +101,8 @@ async def generar_pdf_enfermeria_endpoint(
             "dolor": dolor,
             "glucemia": glucemia,
             "triaje": triaje,
+            "presion_arterial": presion_arterial,
+            "observaciones": observaciones,
             "usuario_id": usuario,
             "institucion_id": int(institucion_id),
             "pdf_url": pdf_url,
@@ -156,7 +163,9 @@ async def guardar_enfermeria(
     dolor: str = Form(...),
     triaje: str = Form(...),
     motivo_consulta: str = Form(...),
-    profesional: str = Form(...)
+    profesional: str = Form(...),
+    presion_arterial: str = Form(...),
+    observaciones: str = Form(...)
 ):
     try:
         usuario_id = request.session.get("usuario")
@@ -183,6 +192,8 @@ async def guardar_enfermeria(
             "triaje": triaje,
             "motivo_consulta": motivo_consulta,
             "profesional": profesional,
+            "presion_arterial": presion_arterial,
+            "observaciones": observaciones,
             "usuario_id": usuario_id,
             "institucion_id": int(institucion_id)
         }

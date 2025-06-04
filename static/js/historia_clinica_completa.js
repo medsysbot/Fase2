@@ -1,109 +1,110 @@
 // ╔════════════════════════════════════╗
-// ║      guardar_historia_completa.js      ║
+// ║  historia_clinica_completa.js      ║
 // ╚════════════════════════════════════╝
-/*──────────────────────────────*/
-/*      ALERTAS PERSONALIZADAS  */
-/*──────────────────────────────*/
+
 function closeAlert() {
   document.getElementById("alert-manager").style.display = "none";
 }
 
-// Permite cerrar la alerta desde el botón "No"
 document.getElementById("btn-no").onclick = closeAlert;
-// En este formulario no hay acción de borrado, se usa para cerrar
 document.getElementById("btn-borrar").onclick = closeAlert;
 
 /*──────────────────────────────────────────────*/
-/*    GUARDAR HISTORIA CLÍNICA COMPLETA         */
+/*      GUARDAR Y GENERAR PDF                   */
 /*──────────────────────────────────────────────*/
-
-async function guardarPDF() {
+async function guardarFormulario() {
   const form = document.getElementById("form-historia");
-  const formData = new FormData(form);
+  const datosFormulario = new FormData(form);
   try {
     showAlert("guardado", "Guardando Historia Clínica…", false, 3000);
-    await new Promise(resolve => setTimeout(resolve, 3200));
+    await new Promise((r) => setTimeout(r, 3200));
 
-    const response = await fetch('/generar_pdf_historia_completa', {     
+    let res = await fetch('/guardar_historia_clinica_completa', {
       method: 'POST',
-      body: formData
+      body: datosFormulario
     });
+    const guardado = await res.json();
 
-    const resultado = await response.json();
-
-      if (resultado.exito && resultado.pdf_url) {
-        showAlert("suceso", "Historia Clínica Guardada", false, 3000);
-        sessionStorage.setItem('pdfURL_historia', resultado.pdf_url);
-    } else if (resultado.mensaje && resultado.mensaje.toLowerCase().includes("registrada")) {
-      showAlert("pacienteCargado", "La Historia Clínica Ya Está Registrada", false, 3000);
-    } else {
-      showAlert("error", resultado.mensaje || "Error Al Guardar Historia Clínica", false, 4000);
+    if (!res.ok) {
+      throw new Error(guardado.error || 'Error al guardar datos');
     }
 
-  } catch (error) {
-    console.error('Error al guardar:', error);
-    showAlert("error", "Error Al Guardar Historia Clínica", false, 4000);
+    const datosPdf = new FormData();
+    datosPdf.append('nombre', form.querySelector('#nombre').value.trim());
+    datosPdf.append('apellido', form.querySelector('#apellido').value.trim());
+    datosPdf.append('dni', form.querySelector('#dni').value.trim());
+
+    res = await fetch('/generar_pdf_historia_clinica_completa', {
+      method: 'POST',
+      body: datosPdf
+    });
+    const resultado = await res.json();
+
+    if (resultado.exito && resultado.pdf_url) {
+      sessionStorage.setItem('pdfURL_historia', resultado.pdf_url);
+      showAlert('suceso', 'Historia Clínica Guardada', false, 3000);
+    } else {
+      throw new Error(resultado.mensaje || 'Error al generar PDF');
+    }
+  } catch (e) {
+    console.error('Error al guardar:', e);
+    showAlert('error', e.message || 'Error Al Guardar', false, 4000);
   }
 }
 
 /*──────────────────────────────────────────────*/
-/*         ENVIAR HISTORIA POR CORREO           */
+/*        ENVIAR HISTORIA POR CORREO            */
 /*──────────────────────────────────────────────*/
-
 async function enviarPorCorreo() {
   const form = document.getElementById("form-historia");
-
   const nombre = `${form.querySelector('#nombre')?.value.trim() || ''} ${form.querySelector('#apellido')?.value.trim() || ''}`.trim();
-  const dni = form.querySelector('[name="dni"]')?.value.trim() || "";
+  const dni = form.querySelector('#dni')?.value.trim() || '';
   const email = await obtenerEmailPorDni(dni);
   const pdfURL = sessionStorage.getItem('pdfURL_historia');
 
   if (!pdfURL) {
-    showAlert("pdf", "Genera y guarda la historia clínica antes de enviarla.", false, 3000);
+    showAlert('pdf', 'Genera y guarda la historia clínica antes de enviarla.', false, 3000);
     return;
   }
 
   if (!email) {
-    showAlert("error", "No se encontró un e-mail para este DNI.", false, 3000);
+    showAlert('error', 'No se encontró un e-mail para este DNI.', false, 3000);
     return;
   }
 
   try {
-    showAlert("email", "Enviando e-mail…", false, 3000);
-    await new Promise(resolve => setTimeout(resolve, 3200));
+    showAlert('email', 'Enviando e-mail…', false, 3000);
+    await new Promise(r => setTimeout(r, 3200));
 
     const formData = new FormData();
-    formData.append("email", email);
-    formData.append("nombre", nombre);
-    formData.append("pdf_url", pdfURL);
+    formData.append('nombre', nombre);
+    formData.append('dni', dni);
+    formData.append('pdf_url', pdfURL);
 
-    const response = await fetch('/enviar_pdf_historia_completa', {
+    const res = await fetch('/enviar_pdf_historia_clinica_completa', {
       method: 'POST',
       body: formData
     });
+    const json = await res.json();
 
-    const resultado = await response.json();
-
-    if (resultado.exito) {
-      showAlert("suceso", "E-mail enviado con éxito", false, 3000);
+    if (json.exito) {
+      showAlert('suceso', 'E-mail enviado con éxito', false, 3000);
     } else {
-      showAlert("error", "Error al enviar el e-mail", false, 3000);
+      throw new Error(json.mensaje || 'Error al enviar el e-mail');
     }
-  } catch (error) {
-    console.error('Error al enviar:', error);
-    showAlert("error", "Error al enviar el e-mail", false, 3000);
+  } catch (e) {
+    console.error('Error al enviar:', e);
+    showAlert('error', e.message || 'Error al enviar el e-mail', false, 3000);
   }
 }
 
 /*──────────────────────────────────────────────*/
-/*             ABRIR PDF GUARDADO               */
+/*              ABRIR PDF GUARDADO              */
 /*──────────────────────────────────────────────*/
-
 function abrirPDF() {
   const url = sessionStorage.getItem('pdfURL_historia');
   if (url) {
-    showAlert("cargaPDF", "Cargando PDF…", false, 3000);
-
+    showAlert('cargaPDF', 'Cargando PDF…', false, 3000);
     const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
     setTimeout(() => {
       if (isIOS) {
@@ -113,7 +114,7 @@ function abrirPDF() {
       }
     }, 1000);
   } else {
-    showAlert("pdf", "Error Al Cargar El PDF", false, 3000);
+    showAlert('pdf', 'Error Al Cargar El PDF', false, 3000);
   }
 }
 
@@ -132,3 +133,12 @@ async function obtenerEmailPorDni(dni) {
     return null;
   }
 }
+
+window.addEventListener('DOMContentLoaded', () => {
+  const btnVer = document.querySelector("button[title='Ver PDF']");
+  if (sessionStorage.getItem('pdfURL_historia')) {
+    btnVer.style.display = 'inline-block';
+  } else {
+    btnVer.style.display = 'none';
+  }
+});

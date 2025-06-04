@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <!-- ╔════════════════════════════════════╗ -->
+  <!-- ║      CABECERA DEL FORMULARIO      ║ -->
+  <!-- ╚════════════════════════════════════╝ -->
+  <meta charset="UTF-8" />
+  <title>Registro de Paciente</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/styles.css" />
+  <link rel="preload" href="/static/icons/alerta/alerta-alerta.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-borrado.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-busqueda.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-error.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-guardado.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-suceso.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-pdf.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-email.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-carga-pdf.png" as="image">
+</head>
+<body>
+<header>
+  <img src="/static/icons/icono-registro.png" alt="Logo Registro" class="logo-grande" />
+  <h2>Registro de Paciente</h2>
+</header>
+<form id="form-registro-paciente">
+  <label>Nombres:</label>
+  <input type="text" name="nombres" id="nombres" />
+
+  <label>Apellido:</label>
+  <input type="text" name="apellido" id="apellido" />
+
+  <label>DNI:</label>
+  <input type="text" name="dni" id="dni" />
+
+  <label>Fecha de Nacimiento:</label>
+  <input type="date" name="fecha_nacimiento" id="fecha_nacimiento" />
+
+  <label>Teléfono:</label>
+  <input type="text" name="telefono" id="telefono" />
+
+  <label>Email:</label>
+  <input type="email" name="email" id="email" />
+
+  <label>Domicilio:</label>
+  <input type="text" name="domicilio" id="domicilio" />
+
+  <label>Obra Social:</label>
+  <input type="text" name="obra_social" id="obra_social" />
+
+  <label>Número de Afiliado:</label>
+  <input type="text" name="numero_afiliado" id="numero_afiliado" />
+
+  <label>Contacto de Emergencia:</label>
+  <input type="text" name="contacto_emergencia" id="contacto_emergencia" />
+</form>
+<div class="botones-flotantes">
+  <button type="button" onclick="guardarDatos()" title="Guardar">
+    <img src="/static/icons/guardar.png" alt="Guardar" />
+  </button>
+  <button type="button" onclick="enviarPDF()" title="Enviar">
+    <img src="/static/icons/enviar.png" alt="Enviar" />
+  </button>
+  <button type="button" id="btn-ver-pdf" onclick="abrirPDF()" title="Ver PDF" style="display:none;">
+    <img src="/static/icons/icono-ver-pdf.png" alt="Ver PDF" />
+  </button>
+</div>
+<div id="alert-manager" class="alert-container" style="display:none;">
+  <div class="alert-box">
+    <img id="alert-icon" src="" alt="icono-alerta" class="alert-icon" />
+    <span id="alert-text" class="alert-message">Texto de alerta</span>
+  </div>
+</div>
+<script src="/static/js/alertas.js"></script>
+<script src="/static/js/registro_pacientes.js"></script>
+</body>
+</html>

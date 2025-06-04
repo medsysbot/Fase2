@@ -10,5 +10,7 @@ CREATE TABLE IF NOT EXISTS registro_pacientes (
     obra_social text,
     numero_afiliado text,
     contacto_emergencia text,
-    institucion_id text
+    usuario_id text,
+    institucion_id int4,
+    pdf_url text
 );

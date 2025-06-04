@@ -4,7 +4,7 @@ Esta tabla resume qué archivos HTML usan cada JavaScript, qué rutas del backen
 
 | Formulario HTML | JavaScript asociado | Ruta Python | Tabla Supabase |
 |-----------------|--------------------|-------------|---------------|
-| registro.html | alertas.js, registro_formulario.js, registro_voz.js | **(ruta no encontrada en este repo)** | registro_pacientes |
+| registro-pacientes.html | alertas.js, registro_pacientes.js | acciones_registro_pacientes.py | registro_pacientes |
 | busqueda_pacientes.html | guardar_busqueda.js, voz-a-formulario-busqueda.js, alertas.js | acciones_busqueda.py | busqueda_pacientes |
 | consulta-diaria.html | consulta_diaria.js, voz-a-formulario-consulta-diaria.js, alertas.js | acciones_consulta_diaria.py | consulta_diaria |
 | recetas-medicas.html | recetas_medicas.js, voz-a-formulario-recetas_medicas.js, alertas.js | acciones_recetas_medicas.py | recetas_medicas |
@@ -18,4 +18,3 @@ Esta tabla resume qué archivos HTML usan cada JavaScript, qué rutas del backen
 
 Notas:
 - Algunos formularios usan archivos de voz (`voz-a-formulario-*.js`) para dictado por voz.
-- En el caso de `registro.html` no se encontró en este repositorio la ruta `/guardar_paciente` ni las relacionadas para enviar o eliminar. El formulario parece esperar esas rutas, por lo que quizá estén pendientes de implementación.

@@ -256,6 +256,7 @@ from routes import (
     indicaciones_medicas_router,
     consulta_diaria_router,
     busqueda_router,
+    registro_pacientes_router,
     estudios_router,
     admin_router,
     paginas_router,
@@ -274,6 +275,7 @@ app.include_router(indicaciones_medicas_router)
 app.include_router(consulta_diaria_router)
 app.include_router(enfermeria_router)
 app.include_router(busqueda_router)
+app.include_router(registro_pacientes_router)
 app.include_router(estudios_router)
 app.include_router(admin_router)
 app.include_router(paginas_router)

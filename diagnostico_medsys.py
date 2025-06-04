@@ -22,14 +22,14 @@ modulos = [
 # FUNCIONES
 # ══════════════════════════════════════════════════════════
 def test_tabla(tabla):
-    print(f"\n\ud83d\udd0d Verificando tabla: {tabla}")
+    print(f"\n\U0001F50D Verificando tabla: {tabla}")
     try:
         res = supabase.table(tabla).select("*").limit(1).execute()
         if res.data:
             print("\u2705 Conexi\xf3n OK.")
             row = res.data[0]
             campos = row.keys()
-            print(f"\ud83d\udd11 Campos detectados: {list(campos)}")
+            print(f"\U0001F511 Campos detectados: {list(campos)}")
 
             if "usuario_id" in campos:
                 print("\u2714 campo 'usuario_id' OK")
@@ -46,7 +46,7 @@ def test_tabla(tabla):
         print(f"\u274c ERROR al acceder a {tabla}: {e}")
 
 def test_bucket(bucket):
-    print(f"\ud83e\udea3 Verificando bucket: {bucket}")
+    print(f"\U0001FAA3 Verificando bucket: {bucket}")
     try:
         archivos = supabase.storage.from_(bucket).list()
         print(f"\u2705 Bucket activo. Archivos: {len(archivos)}")
@@ -58,7 +58,7 @@ def test_bucket(bucket):
 # EJECUCIÓN
 # ══════════════════════════════════════════════════════════
 if __name__ == "__main__":
-    print("\ud83d\udce6 INICIANDO DIAGN\xd3STICO COMPLETO DE MEDSYS")
+    print("\U0001F4E6 INICIANDO DIAGN\xD3STICO COMPLETO DE MEDSYS")
 
     for tabla, bucket in modulos:
         test_tabla(tabla)

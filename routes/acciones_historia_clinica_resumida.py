@@ -4,7 +4,9 @@
 
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import JSONResponse
-from utils.pdf_generator import generar_pdf_historia_clinica_resumida
+from utils.pdf_generator import (
+    generar_pdf_historia_clinica_resumida as generar_pdf_historia_clinica_resumida_pdf,
+)
 from utils.email_sender import enviar_email_con_pdf
 from dotenv import load_dotenv
 import os
@@ -64,7 +66,7 @@ async def guardar_historia_clinica_resumida(
 # ║     GENERAR Y GUARDAR PDF HISTORIA RESUMIDA     ║
 # ╚═════════════════════════════════════════════════╝
 @router.post("/generar_pdf_historia_clinica_resumida")
-async def generar_pdf_historia_clinica_resumida(
+async def generar_pdf_historia_clinica_resumida_endpoint(
     request: Request,
     nombre: str = Form(...),
     apellido: str = Form(...),
@@ -102,7 +104,11 @@ async def generar_pdf_historia_clinica_resumida(
         if contenido_sello:
             sello_path = guardar_imagen_temporal(contenido_sello, nombre_sello)
 
-        pdf_path = await generar_pdf_historia_clinica_resumida(datos, firma_path, sello_path)
+        pdf_path = await generar_pdf_historia_clinica_resumida_pdf(
+            datos,
+            firma_path,
+            sello_path,
+        )
         nombre_pdf = os.path.basename(pdf_path)
         with open(pdf_path, "rb") as f:
             pdf_url = subir_pdf(BUCKET_PDFS, nombre_pdf, f)

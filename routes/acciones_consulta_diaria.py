@@ -53,6 +53,7 @@ async def guardar_consulta_diaria(
 # ╔════════════════════════════════════════════╗
 # ║     GENERAR Y SUBIR PDF DE LA CONSULTA     ║
 # ╚════════════════════════════════════════════╝
+
 @router.post("/generar_pdf_consulta_diaria")
 async def generar_pdf_consulta_diaria_route(
     request: Request,
@@ -69,11 +70,29 @@ async def generar_pdf_consulta_diaria_route(
     try:
         usuario = request.session.get("usuario")
         institucion_session = request.session.get("institucion_id")
-        if institucion_session is None or not usuario:
-            return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
+        if not usuario or institucion_session is None:
+            return JSONResponse({"error": "Falta sesión de usuario."}, status_code=403)
 
         usuario_id = str(usuario)
         institucion_id = str(institucion_session)
+
+        campos = {
+            "nombre": nombre,
+            "apellido": apellido,
+            "dni": dni,
+            "fecha": fecha,
+            "diagnostico": diagnostico,
+            "evolucion": evolucion,
+            "indicaciones": indicaciones,
+            "institucion_id": institucion_id,
+            "usuario_id": usuario_id,
+        }
+        faltantes = [c for c, v in campos.items() if not str(v).strip()]
+        if faltantes:
+            return JSONResponse(
+                status_code=422,
+                content={"error": f"Faltan campos obligatorios: {', '.join(faltantes)}"},
+            )
 
         datos = {
             "paciente": f"{nombre} {apellido}".strip(),

@@ -132,3 +132,63 @@ async def enviar_pdf_enfermeria(paciente: str = Form(...), dni: str = Form(...))
         return {"exito": True}
     except Exception as e:
         return JSONResponse({"exito": False, "mensaje": str(e)})
+
+# ╔════════════════════════════════════╗
+# ║        GUARDAR FORMULARIO         ║
+# ╚════════════════════════════════════╝
+@router.post("/guardar_enfermeria")
+async def guardar_enfermeria(
+    request: Request,
+    nombre: str = Form(...),
+    apellido: str = Form(...),
+    dni: str = Form(...),
+    edad: str = Form(...),
+    altura: str = Form(...),
+    peso: str = Form(...),
+    hora: str = Form(...),
+    temperatura: str = Form(...),
+    glucemia: str = Form(...),
+    glasgow: str = Form(...),
+    saturacion: str = Form(...),
+    frecuencia_cardiaca: str = Form(...),
+    ta: str = Form(...),
+    tad: str = Form(...),
+    dolor: str = Form(...),
+    triaje: str = Form(...),
+    motivo_consulta: str = Form(...),
+    profesional: str = Form(...)
+):
+    try:
+        usuario_id = request.session.get("usuario")
+        institucion_id = request.session.get("institucion_id")
+        if institucion_id is None or not usuario_id:
+            return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
+
+        data = {
+            "nombre": nombre,
+            "apellido": apellido,
+            "dni": dni,
+            "edad": edad,
+            "altura": altura,
+            "peso": peso,
+            "hora": hora,
+            "temperatura": temperatura,
+            "glucemia": glucemia,
+            "glasgow": glasgow,
+            "saturacion": saturacion,
+            "frecuencia_cardiaca": frecuencia_cardiaca,
+            "ta": ta,
+            "tad": tad,
+            "dolor": dolor,
+            "triaje": triaje,
+            "motivo_consulta": motivo_consulta,
+            "profesional": profesional,
+            "usuario_id": usuario_id,
+            "institucion_id": int(institucion_id)
+        }
+
+        supabase.table("enfermeria").insert(data).execute()
+        return {"message": "Guardado exitosamente"}
+
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})

@@ -21,7 +21,7 @@ from utils.supabase_helper import supabase, subir_pdf
 load_dotenv(override=True)
 router = APIRouter()
 
-BUCKET_PDFS = "historia_clinica_completa"
+BUCKET_PDFS = "historia-clinica-completa"
 BUCKET_FIRMAS = "firma-sello-usuarios"
 
 # ╔════════════════════════════════════╗

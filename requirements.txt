@@ -8,7 +8,7 @@ itsdangerous
 supabase==1.0.3
 python-dotenv
 requests
+httpx
+asyncpg
 psycopg2-binary
 fastapi-mail==1.4.1
-asyncpg
-httpx

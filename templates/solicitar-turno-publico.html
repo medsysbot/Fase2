@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <!-- ╔════════════════════════════════════╗ -->
+  <!-- ║      CABECERA DEL FORMULARIO      ║ -->
+  <!-- ╚════════════════════════════════════╝ -->
   <meta charset="UTF-8" />
-  <title>Solicitar Turno Médico</title>
+  <title>Turno Médico (Público)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/static/styles.css" />
@@ -50,9 +53,8 @@
     <label>Observaciones:</label>
     <textarea name="observaciones" id="observaciones" rows="3"></textarea>
 
-    <!-- Campos ocultos -->
-    <input type="hidden" name="institucion_id" id="institucion_id" />
-    <input type="hidden" name="usuario_id" id="usuario_id" />
+    <!-- Campo oculto con el nombre de la institución -->
+    <input type="hidden" name="institucion_nombre" id="institucion_nombre" />
   </form>
 
   <div class="botones-flotantes">
@@ -101,15 +103,8 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      const inst = sessionStorage.getItem("institucion_id") || "";
-      document.getElementById("institucion_id").value = inst;
-
-      let usuario = sessionStorage.getItem("usuario_id");
-      if (!usuario) {
-        usuario = "bot_publico";
-        sessionStorage.setItem("usuario_id", usuario);
-      }
-      document.getElementById("usuario_id").value = usuario;
+      const inst = sessionStorage.getItem("institucion_nombre") || "";
+      document.getElementById("institucion_nombre").value = inst;
     });
   </script>
 

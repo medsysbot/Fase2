@@ -5,7 +5,7 @@ async function guardarPDF() {
   const form = document.getElementById('form-turnos');
   const formData = new FormData(form);
 
-  const campos = ['nombre', 'apellido', 'dni', 'profesional', 'especialidad', 'fecha', 'hora'];
+  const campos = ['nombre', 'apellido', 'dni', 'especialidad', 'profesional', 'fecha', 'hora'];
   for (const campo of campos) {
     const valor = form.querySelector(`[name="${campo}"]`).value.trim();
     if (!valor) {
@@ -14,32 +14,33 @@ async function guardarPDF() {
     }
   }
 
-  // Si no hay usuario_id en público, asignamos uno genérico
-  let usuario_id = sessionStorage.getItem('usuario_id');
-  if (!usuario_id) {
-    usuario_id = 'bot_publico';
-  }
-  formData.set('usuario_id', usuario_id);
-  formData.set('institucion_id', sessionStorage.getItem('institucion_id') || '');
-
   try {
     showAlert('guardado', 'Guardando turno…', false, 3000);
-    await new Promise(r => setTimeout(r, 3000));
-
-    const response = await fetch('/generar_pdf_turno_paciente', {
+    await new Promise(r => setTimeout(r, 1500));
+    // Paso 1: guardar en la base de datos
+    let resp = await fetch('/guardar_turno_publico', {
       method: 'POST',
       body: formData
     });
-    const resultado = await response.json();
-
-    if (resultado.exito && resultado.pdf_url) {
+    let data = await resp.json();
+    if (!resp.ok) {
+      showAlert('error', data.mensaje || 'Error al guardar', false, 4000);
+      return;
+    }
+    // Paso 2: generar el PDF
+    resp = await fetch('/generar_pdf_turno_publico', {
+      method: 'POST',
+      body: formData
+    });
+    data = await resp.json();
+    if (data.exito && data.pdf_url) {
       showAlert('suceso', 'Turno guardado', false, 3000);
-      sessionStorage.setItem('pdfURL_turnos', resultado.pdf_url);
-      sessionStorage.setItem('pdfURL', resultado.pdf_url);
+      sessionStorage.setItem('pdfURL_turnos', data.pdf_url);
+      sessionStorage.setItem('pdfURL', data.pdf_url);
       const btn = document.getElementById('btn-verpdf');
       if (btn) btn.style.display = 'inline-block';
     } else {
-      showAlert('error', resultado.mensaje || 'Error al guardar', false, 4000);
+      showAlert('error', data.mensaje || 'Error al generar PDF', false, 4000);
     }
   } catch (error) {
     console.error('Error al guardar:', error);
@@ -68,10 +69,7 @@ async function obtenerEmailPorDni(dni) {
   try {
     const formData = new FormData();
     formData.append('dni', dni);
-    const res = await fetch('/obtener_email_paciente', {
-      method: 'POST',
-      body: formData
-    });
+    const res = await fetch('/obtener_email_paciente', { method: 'POST', body: formData });
     const data = await res.json();
     return data.email || null;
   } catch (e) {
@@ -83,23 +81,28 @@ async function obtenerEmailPorDni(dni) {
 async function enviarPorCorreo() {
   const nombre = document.querySelector('[name="nombre"]').value.trim();
   const dni = document.querySelector('[name="dni"]').value.trim();
+  const url = sessionStorage.getItem('pdfURL_turnos');
   const email = await obtenerEmailPorDni(dni);
 
   if (!email) {
     showAlert('error', 'No se encontró un e-mail para este DNI.', false, 3000);
     return;
   }
+  if (!url) {
+    showAlert('error', 'Genera primero el PDF del turno.', false, 3000);
+    return;
+  }
 
   try {
     showAlert('email', 'Enviando e-mail…', false, 3000);
-    await new Promise(r => setTimeout(r, 3000));
+    await new Promise(r => setTimeout(r, 1500));
 
     const formData = new FormData();
-    formData.append('email', email);
     formData.append('nombre', nombre);
     formData.append('dni', dni);
+    formData.append('pdf_url', url);
 
-    const response = await fetch('/enviar_pdf_turno_paciente', {
+    const response = await fetch('/enviar_pdf_turno_publico', {
       method: 'POST',
       body: formData
     });
@@ -108,7 +111,7 @@ async function enviarPorCorreo() {
     if (resultado.exito) {
       showAlert('suceso', 'E-mail enviado con éxito', false, 3000);
     } else {
-      showAlert('error', 'Error al enviar el e-mail', false, 3000);
+      showAlert('error', resultado.mensaje || 'Error al enviar el e-mail', false, 3000);
     }
   } catch (error) {
     console.error('Error al enviar:', error);
@@ -117,15 +120,9 @@ async function enviarPorCorreo() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const instInput = document.getElementById('institucion_id');
-  const userInput = document.getElementById('usuario_id');
+  const instInput = document.getElementById('institucion_nombre');
   const btn = document.getElementById('btn-verpdf');
-  if (instInput) instInput.value = sessionStorage.getItem('institucion_id') || '';
-  if (userInput) {
-    const usuario = sessionStorage.getItem('usuario_id') || 'bot_publico';
-    userInput.value = usuario;
-    sessionStorage.setItem('usuario_id', usuario);
-  }
+  if (instInput) instInput.value = sessionStorage.getItem('institucion_nombre') || '';
   if (btn) {
     const url = sessionStorage.getItem('pdfURL');
     btn.style.display = url ? 'inline-block' : 'none';

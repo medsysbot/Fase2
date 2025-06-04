@@ -1,9 +1,8 @@
-from supabase import create_client, Client
-import os
+"""Herramienta de diagnóstico para verificar tablas y buckets en Supabase."""
 
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+from utils.supabase_helper import get_supabase_client
+
+supabase = get_supabase_client()
 
 # ══════════════════════════════════════════════════════════
 # MODULOS A TESTEAR

@@ -31,11 +31,11 @@ async def generar_pdf_enfermeria_endpoint(
     dolor: int = Form(...),
     glucemia: float = Form(...),
     triaje: str = Form(...),
-    institucion_id: int = Form(...),
-    usuario_id: str = Form(...),
 ):
     try:
-        if not institucion_id or not usuario_id:
+        usuario = request.session.get("usuario")
+        institucion_id = request.session.get("institucion_id")
+        if institucion_id is None or not usuario:
             return JSONResponse({"error": "Sesión inválida"}, status_code=403)
 
         campos = [nombre, apellido, dni, profesional, motivo_consulta, hora,
@@ -44,8 +44,8 @@ async def generar_pdf_enfermeria_endpoint(
         if not all(str(c).strip() for c in campos):
             return JSONResponse({"exito": False, "mensaje": "Faltan campos obligatorios."})
 
-        base_firma = f"firma_{usuario_id}_{institucion_id}"
-        base_sello = f"sello_{usuario_id}_{institucion_id}"
+        base_firma = f"firma_{usuario}_{institucion_id}"
+        base_sello = f"sello_{usuario}_{institucion_id}"
         c_firma, n_firma = descargar_imagen(supabase, BUCKET_FIRMAS, base_firma)
         c_sello, n_sello = descargar_imagen(supabase, BUCKET_FIRMAS, base_sello)
         firma_path = guardar_imagen_temporal(c_firma, n_firma) if c_firma else None
@@ -96,8 +96,8 @@ async def generar_pdf_enfermeria_endpoint(
             "dolor": dolor,
             "glucemia": glucemia,
             "triaje": triaje,
-            "usuario_id": usuario_id,
-            "institucion_id": institucion_id,
+            "usuario_id": usuario,
+            "institucion_id": int(institucion_id),
             "pdf_url": pdf_url,
         }).execute()
 

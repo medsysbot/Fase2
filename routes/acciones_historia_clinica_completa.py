@@ -25,6 +25,7 @@ BUCKET_FIRMAS = "firma-sello-usuarios"
 # ╚════════════════════════════════════╝
 @router.post("/guardar_historia_clinica_completa")
 async def guardar_historia_clinica_completa(
+    request: Request,
     nombre: str = Form(...),
     apellido: str = Form(...),
     fecha_nacimiento: str = Form(...),
@@ -44,11 +45,14 @@ async def guardar_historia_clinica_completa(
     medicacion: str = Form(...),
     estudios: str = Form(...),
     historial_tratamientos: str = Form(...),
-    historial_consultas: str = Form(...),
-    institucion_id: str = Form(...),
-    usuario_id: str = Form(...)
+    historial_consultas: str = Form(...)
 ):
     try:
+        usuario = request.session.get("usuario")
+        institucion_id = request.session.get("institucion_id")
+        if institucion_id is None or not usuario:
+            return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
+
         data = {
             "nombre": nombre,
             "apellido": apellido,
@@ -71,7 +75,7 @@ async def guardar_historia_clinica_completa(
             "historial_tratamientos": historial_tratamientos,
             "historial_consultas": historial_consultas,
             "institucion_id": int(institucion_id),
-            "usuario_id": usuario_id
+            "usuario_id": usuario
         }
         supabase.table("historia_clinica_completa").insert(data).execute()
         return {"message": "Guardado exitosamente"}

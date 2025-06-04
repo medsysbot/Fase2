@@ -22,6 +22,7 @@ TABLE_NAME = "consulta_diaria"
 # ╚════════════════════════════════════╝
 @router.post("/guardar_consulta_diaria")
 async def guardar_consulta_diaria(
+    request: Request,
     nombre: str = Form(...),
     apellido: str = Form(...),
     dni: str = Form(...),
@@ -29,10 +30,13 @@ async def guardar_consulta_diaria(
     diagnostico: str = Form(...),
     evolucion: str = Form(...),
     indicaciones: str = Form(...),
-    institucion_id: str = Form(...),
-    usuario_id: str = Form(...),
 ):
     try:
+        usuario = request.session.get("usuario")
+        institucion_id = request.session.get("institucion_id")
+        if institucion_id is None or not usuario:
+            return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
+
         data = {
             "nombre": nombre,
             "apellido": apellido,
@@ -41,8 +45,8 @@ async def guardar_consulta_diaria(
             "diagnostico": diagnostico,
             "evolucion": evolucion,
             "indicaciones": indicaciones,
-            "institucion_id": institucion_id,
-            "usuario_id": usuario_id,
+            "institucion_id": int(institucion_id),
+            "usuario_id": usuario,
         }
         supabase.table(TABLE_NAME).insert(data).execute()
         return {"message": "Guardado exitosamente"}
@@ -64,8 +68,6 @@ async def generar_pdf_consulta_diaria_route(
     diagnostico: str = Form(...),
     evolucion: str = Form(...),
     indicaciones: str = Form(...),
-    institucion_id: str = Form(...),
-    usuario_id: str = Form(...),
 ):
     try:
         usuario = request.session.get("usuario")

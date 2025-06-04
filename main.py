@@ -260,7 +260,9 @@ from routes import (
     admin_router,
     paginas_router,
 )
-from routes.solicitar_turno_publico import router as turnos_publicos_router
+from routes.acciones_turnos_pacientes_publico import (
+    router as turnos_publicos_router,
+)
 from routes.acciones_turnos import router as turnos_router
 # from routes.acciones_turnos_pacientes import router as turnos_pacientes_v2_router
 from routes.acciones_enfermeria import router as enfermeria_router

@@ -14,7 +14,7 @@ Esta tabla resume qué archivos HTML usan cada JavaScript, qué rutas del backen
 | enfermeria.html | enfermeria.js, voz-a-formulario-enfermeria.js, alertas.js | acciones_enfermeria.py | enfermeria |
 | estudios-medicos.html | estudios_medicos.js, alertas.js | acciones_estudios.py | estudios |
 | turnos_pacientes.html | turnos_pacientes.js, alertas.js | acciones_turnos.py | turnos_pacientes |
-| solicitar-turno-publico.html | turno_publico.js, alertas.js | solicitar_turno_publico.py | turnos_pacientes |
+| solicitar-turno-publico.html | turno_publico.js, alertas.js | acciones_turnos_pacientes_publico.py | turnos_pacientes |
 | firma_sello.html | firma_sello.js, subir_firma_sello.js | acciones_recetas_medicas.py | (usa bucket "firma-sello-usuarios") |
 
 Notas:

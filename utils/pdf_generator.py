@@ -460,6 +460,41 @@ def generar_pdf_turno(datos):
     return output_path
 
 
+def generar_pdf_turno_publico(datos):
+    """Genera un comprobante simple de turno médico sin firma."""
+    pdf = FPDF()
+    pdf.add_page()
+    _agregar_encabezado(pdf, "Turno Médico")
+
+    fecha = datos.get("fecha")
+    try:
+        fecha_obj = datetime.datetime.strptime(fecha, "%Y-%m-%d")
+        fecha = fecha_obj.strftime("%d/%m/%Y")
+    except Exception:
+        pass
+
+    campos = [
+        ("Paciente", datos.get("nombre", "")),
+        ("DNI", datos.get("dni", "")),
+        ("Especialidad", datos.get("especialidad", "")),
+        ("Fecha", fecha),
+        ("Hora", datos.get("hora", "")),
+        ("Profesional", datos.get("profesional", "")),
+        ("Institución", datos.get("institucion", "")),
+        ("Observaciones", datos.get("observaciones", "")),
+    ]
+
+    for label, value in campos:
+        if value:
+            pdf.cell(0, 10, f"{label}: {value}", ln=True)
+
+    filename = f"{datos.get('dni', 'turno')}_turno_publico.pdf"
+    output_path = os.path.join("/tmp", filename)
+    pdf.output(output_path)
+
+    return output_path
+
+
 def generar_pdf_busqueda(datos):
     """Genera un PDF consolidado con toda la información del paciente."""
     pdf = FPDF()

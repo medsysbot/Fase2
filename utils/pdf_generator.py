@@ -171,6 +171,41 @@ def generar_pdf_historia_completa(datos, firma_path=None, sello_path=None):
 
     return output_path
 
+
+def generar_pdf_historia_clinica_completa(datos, firma_path=None, sello_path=None):
+    """Genera un PDF resumido de la historia clínica completa."""
+    pdf = FPDF()
+    pdf.add_page()
+    logo_path = "static/icons/logo-medsys-gris.png"
+    if os.path.exists(logo_path):
+        pdf.image(logo_path, x=10, y=4, w=60)
+    pdf.set_font("Arial", "B", 16)
+    pdf.cell(0, 40, "Historia Clínica Completa - MEDSYS", ln=True, align="C")
+    pdf.set_draw_color(150, 150, 150)
+    pdf.set_line_width(1)
+    pdf.line(10, 50, 200, 50)
+    pdf.set_font("Arial", size=12)
+    pdf.ln(15)
+    pdf.cell(0, 10, f"Paciente: {datos.get('nombre', '')}", ln=True)
+    pdf.cell(0, 10, f"DNI: {datos.get('dni', '')}", ln=True)
+
+    if firma_path and os.path.exists(firma_path):
+        pdf.ln(10)
+        pdf.cell(200, 10, txt="Firma del Profesional:", ln=True)
+        pdf.image(firma_path, x=10, y=pdf.get_y(), w=FIRMA_SELLO_ANCHO)
+        pdf.ln(25)
+
+    if sello_path and os.path.exists(sello_path):
+        pdf.cell(200, 10, txt="Sello del Profesional:", ln=True)
+        pdf.image(sello_path, x=60, y=pdf.get_y(), w=FIRMA_SELLO_ANCHO)
+        pdf.ln(25)
+
+    filename = f"historia_clinica_completa_{datos.get('dni','paciente')}.pdf"
+    output_path = os.path.join("/tmp", filename)
+    pdf.output(output_path)
+
+    return output_path
+
 def _img_type_from_name(name: str) -> str:
     """Devuelve el tipo de imagen que espera FPDF a partir de su extensión."""
     ext = os.path.splitext(name.split("?")[0])[1].lower()

@@ -113,7 +113,7 @@ async def ver_historia_clinica_resumida(request: Request):
 async def ver_historia_completa(request: Request):
     if not _session_activa(request):
         return RedirectResponse(url="/login", status_code=303)
-    return templates.TemplateResponse("historia_clinica_completa.html", {"request": request})
+    return templates.TemplateResponse("historia-clinica-completa.html", {"request": request})
 
 
 @router.get("/solicitar-turno", response_class=HTMLResponse)

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<!-- ╔════════════════════════════════════╗ -->
-<!-- ║      CABECERA DEL FORMULARIO      ║ -->
-<!-- ╚════════════════════════════════════╝ -->
+  <!-- ╔════════════════════════════════════╗ -->
+  <!-- ║      CABECERA DEL FORMULARIO      ║ -->
+  <!-- ╚════════════════════════════════════╝ -->
   <meta charset="UTF-8" />
   <title>Historia Clínica Completa</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -62,7 +62,6 @@
   <label>Correo Electrónico:</label>
   <input type="email" name="email" id="email" />
 
-
   <label>Obra Social / Prepaga:</label>
   <input type="text" name="obra_social" id="obra_social" />
 
@@ -111,7 +110,7 @@
   <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
     <img src="/static/icons/microfono.png" alt="Voz" />
   </button>
-  <button type="button" onclick="guardarPDF()" title="Guardar">
+  <button type="button" onclick="guardarFormulario()" title="Guardar">
     <img src="/static/icons/guardar.png" alt="Guardar" />
   </button>
   <button type="button" onclick="enviarPorCorreo()" title="Enviar">
@@ -136,7 +135,7 @@
 
 <!-- SCRIPTS -->
 <script src="/static/js/alertas.js"></script>
-<script src="/static/js/guardar_historia_clinica_completa.js"></script>
+<script src="/static/js/historia_clinica_completa.js"></script>
 <script src="/static/js/voz-a-formulario-historia_clinica_completa.js"></script>
 
 </body>

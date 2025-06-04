@@ -28,10 +28,10 @@ async def guardar_turno_paciente(
     observaciones: str = Form(""),
 ):
     try:
-        usuario = request.session.get("usuario")
+        usuario_id = request.session.get("usuario")
         institucion_id = request.session.get("institucion_id")
-        if institucion_id is None or not usuario:
-            return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
+        if institucion_id is None or not usuario_id:
+            return JSONResponse(status_code=403, content={"error": "Sesión inválida"})
 
         data = {
             "nombre": nombre,
@@ -42,8 +42,8 @@ async def guardar_turno_paciente(
             "fecha": fecha,
             "hora": hora,
             "observaciones": observaciones,
+            "usuario_id": usuario_id,
             "institucion_id": int(institucion_id),
-            "usuario_id": usuario,
         }
         supabase.table(TABLE_NAME).insert(data).execute()
         return {"exito": True}

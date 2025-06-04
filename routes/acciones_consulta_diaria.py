@@ -67,6 +67,14 @@ async def generar_pdf_consulta_diaria_route(
     usuario_id: str = Form(...),
 ):
     try:
+        usuario = request.session.get("usuario")
+        institucion_session = request.session.get("institucion_id")
+        if institucion_session is None or not usuario:
+            return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
+
+        usuario_id = str(usuario)
+        institucion_id = str(institucion_session)
+
         datos = {
             "paciente": f"{nombre} {apellido}".strip(),
             "dni": dni,
@@ -78,8 +86,12 @@ async def generar_pdf_consulta_diaria_route(
 
         base_firma = f"firma_{usuario_id}_{institucion_id}"
         base_sello = f"sello_{usuario_id}_{institucion_id}"
-        contenido_firma, nombre_firma = descargar_imagen(supabase, BUCKET_FIRMAS, base_firma)
-        contenido_sello, nombre_sello = descargar_imagen(supabase, BUCKET_FIRMAS, base_sello)
+        contenido_firma, nombre_firma = descargar_imagen(
+            supabase, BUCKET_FIRMAS, base_firma
+        )
+        contenido_sello, nombre_sello = descargar_imagen(
+            supabase, BUCKET_FIRMAS, base_sello
+        )
 
         firma_path = guardar_imagen_temporal(contenido_firma, nombre_firma) if contenido_firma else None
         sello_path = guardar_imagen_temporal(contenido_sello, nombre_sello) if contenido_sello else None
@@ -87,12 +99,23 @@ async def generar_pdf_consulta_diaria_route(
         if nombre_firma:
             datos["firma_url"] = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_FIRMAS}/{nombre_firma}"
         if nombre_sello:
-            datos["sello_url"] = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_FIRMAS}/{nombre_sello}"
+            datos["sello_url"] = (
+                f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_FIRMAS}/{nombre_sello}"
+            )
 
-        pdf_path = generar_pdf_consulta_diaria(datos, firma_path, sello_path)
+        try:
+            pdf_path = generar_pdf_consulta_diaria(datos, firma_path, sello_path)
+        except Exception as e:
+            print(e)
+            return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)
+
         nombre_pdf = os.path.basename(pdf_path)
-        with open(pdf_path, "rb") as f:
-            pdf_url = subir_pdf(BUCKET_PDFS, nombre_pdf, f)
+        try:
+            with open(pdf_path, "rb") as f:
+                pdf_url = subir_pdf(BUCKET_PDFS, nombre_pdf, f)
+        except Exception as e:
+            print(e)
+            return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)
 
         if firma_path and os.path.exists(firma_path):
             os.remove(firma_path)
@@ -114,8 +137,9 @@ async def generar_pdf_consulta_diaria_route(
 
         return {"pdf_url": pdf_url}
     except Exception as e:
+        print(e)
         logging.error(f"Error al generar PDF de consulta diaria: {e}")
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)
 
 # ╔════════════════════════════════════════════════╗
 # ║     ENVIAR CONSULTA DIARIA POR CORREO EMAIL    ║

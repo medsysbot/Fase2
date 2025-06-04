@@ -51,6 +51,8 @@ async def guardar_consulta_diaria(
         supabase.table(TABLE_NAME).insert(data).execute()
         return {"message": "Guardado exitosamente"}
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         logging.error(f"Error al guardar consulta diaria: {e}")
         return JSONResponse(status_code=500, content={"error": str(e)})
 
@@ -189,5 +191,7 @@ async def enviar_pdf_consulta_diaria(
         return {"message": "Correo enviado correctamente"}
 
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         logging.error(f"Error al enviar correo: {e}")
         return JSONResponse(status_code=500, content={"error": str(e)})

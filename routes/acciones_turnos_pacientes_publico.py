@@ -28,36 +28,6 @@ async def guardar_turno_publico(
     institucion_nombre: str = Form(...)
 ):
     try:
-        inst = (
-            supabase.table("instituciones")
-            .select("id")
-            .eq("nombre", institucion_nombre)
-            .single()
-            .execute()
-        )
-        institucion_id = int(inst.data["id"]) if inst.data else None
-        if institucion_id is None:
-            return JSONResponse(
-                {"exito": False, "mensaje": "Clínica no registrada"},
-                status_code=404,
-            )
-
-        paciente = (
-            supabase.table("pacientes")
-            .select("id")
-            .eq("dni", dni)
-            .eq("institucion_id", institucion_id)
-            .execute()
-        )
-        if not paciente.data:
-            return JSONResponse(
-                {
-                    "exito": False,
-                    "mensaje": "No pudimos generar su turno. Usted no está registrado en esta institución.",
-                },
-                status_code=403,
-            )
-
         conflicto = (
             supabase.table("turnos_pacientes")
             .select("id")
@@ -66,7 +36,7 @@ async def guardar_turno_publico(
                     "fecha": fecha,
                     "hora": hora,
                     "profesional": profesional,
-                    "institucion_id": institucion_id,
+                    "institucion_nombre": institucion_nombre,
                 }
             )
             .execute()
@@ -89,8 +59,7 @@ async def guardar_turno_publico(
             "fecha": fecha,
             "hora": hora,
             "observaciones": observaciones,
-            "institucion_id": int(institucion_id),
-            "usuario_id": "bot_publico",
+            "institucion_nombre": institucion_nombre,
         }
         supabase.table("turnos_pacientes").insert(data).execute()
         return {"message": "Turno registrado correctamente"}

@@ -310,20 +310,30 @@ def generar_pdf_consulta_diaria(datos, firma_path=None, sello_path=None):
     pdf.multi_cell(0, 10, f"Evolución:\n{datos['evolucion']}\n")
     pdf.multi_cell(0, 10, f"Indicaciones:\n{datos['indicaciones']}\n")
 
-    if datos.get("firma_url"):
-        pdf.image(datos["firma_url"], x=160, y=240, w=30)
-    elif firma_path and os.path.exists(firma_path):
+    firma_src = firma_path or datos.get("firma_url")
+    if firma_src and (_es_url(firma_src) or os.path.exists(firma_src)):
         pdf.ln(10)
         pdf.cell(200, 10, txt="Firma del Profesional:", ln=True)
-        pdf.image(firma_path, x=10, y=pdf.get_y(), w=FIRMA_SELLO_ANCHO)
-        pdf.ln(25)
+        pdf.image(
+            firma_src,
+            x=10,
+            y=pdf.get_y(),
+            w=FIRMA_SELLO_ANCHO,
+            type=_img_type_from_name(firma_src),
+        )
+        pdf.ln(FIRMA_SELLO_ANCHO + 5)
 
-    if datos.get("sello_url"):
-        pdf.image(datos["sello_url"], x=20, y=240, w=30)
-    elif sello_path and os.path.exists(sello_path):
+    sello_src = sello_path or datos.get("sello_url")
+    if sello_src and (_es_url(sello_src) or os.path.exists(sello_src)):
         pdf.cell(200, 10, txt="Sello del Profesional:", ln=True)
-        pdf.image(sello_path, x=60, y=pdf.get_y(), w=FIRMA_SELLO_ANCHO)
-        pdf.ln(25)
+        pdf.image(
+            sello_src,
+            x=60,
+            y=pdf.get_y(),
+            w=FIRMA_SELLO_ANCHO,
+            type=_img_type_from_name(sello_src),
+        )
+        pdf.ln(FIRMA_SELLO_ANCHO + 5)
 
     filename = f"{datos['dni']}_consulta_diaria.pdf"
     output_path = os.path.join("/tmp", filename)

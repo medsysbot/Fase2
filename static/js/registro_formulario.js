@@ -1,13 +1,13 @@
 // ╔════════════════════════════════════╗
-// ║   registro_pacientes.js (AG-05)   ║
+// ║   registro_formulario.js (AG-05)  ║
 // ╚════════════════════════════════════╝
 function mostrarBotonPDF(existe) {
-  const btn = document.getElementById('btn-ver-pdf');
+  const btn = document.querySelector('.botones-flotantes button[onclick="abrirPDF()"]');
   if (btn) btn.style.display = existe ? 'inline-block' : 'none';
 }
 
-async function guardarDatos() {
-  const form = document.getElementById('form-registro-paciente');
+async function guardarPDF() {
+  const form = document.getElementById('form-registro');
   const formData = new FormData(form);
   try {
     showAlert('guardado', 'Guardando datos…', false, 3000);
@@ -29,13 +29,8 @@ async function guardarDatos() {
 }
 
 async function generarPDF() {
-  const nombres = document.getElementById('nombres').value.trim();
-  const apellido = document.getElementById('apellido').value.trim();
-  const dni = document.getElementById('dni').value.trim();
-  const fd = new FormData();
-  fd.append('nombres', nombres);
-  fd.append('apellido', apellido);
-  fd.append('dni', dni);
+  const form = document.getElementById('form-registro');
+  const fd = new FormData(form);
   try {
     const resp = await fetch('/generar_pdf_registro_paciente', {
       method: 'POST',
@@ -72,23 +67,18 @@ function abrirPDF() {
   }
 }
 
-async function enviarPDF() {
-  const nombres = document.getElementById('nombres').value.trim();
-  const apellido = document.getElementById('apellido').value.trim();
-  const dni = document.getElementById('dni').value.trim();
+async function enviarPorCorreo() {
+  const form = document.getElementById('form-registro');
+  const fd = new FormData(form);
   const pdfURL = sessionStorage.getItem('pdfURL_registro_paciente');
   if (!pdfURL) {
     showAlert('pdf', 'Genera y guarda el registro antes de enviarlo.', false, 3000);
     return;
   }
+  fd.append('pdf_url', pdfURL);
   try {
     showAlert('email', 'Enviando e-mail…', false, 3000);
     await new Promise(r => setTimeout(r, 3200));
-    const fd = new FormData();
-    fd.append('nombres', nombres);
-    fd.append('apellido', apellido);
-    fd.append('dni', dni);
-    fd.append('pdf_url', pdfURL);
     const resp = await fetch('/enviar_pdf_registro_paciente', {
       method: 'POST',
       body: fd

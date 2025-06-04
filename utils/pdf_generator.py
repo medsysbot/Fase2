@@ -381,8 +381,14 @@ def generar_pdf_registro_paciente(datos):
     pdf.add_page()
     _agregar_encabezado(pdf, "Registro de Paciente")
 
+    nombre_completo = datos.get("nombre_completo")
+    if not nombre_completo:
+        nombre = datos.get("nombres", "")
+        apellido = datos.get("apellido", "")
+        nombre_completo = f"{nombre} {apellido}".strip()
+
     campos = [
-        ("Nombre", datos.get("nombre_completo", "")),
+        ("Nombre", nombre_completo),
         ("DNI", datos.get("dni", "")),
         ("Fecha de Nacimiento", datos.get("fecha_nacimiento", "")),
         ("Teléfono", datos.get("telefono", "")),

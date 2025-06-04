@@ -28,17 +28,23 @@ BUCKET_FIRMAS = "firma-sello-usuarios"
 # ╚════════════════════════════════════╝
 @router.post("/guardar_indicacion_medica")
 async def guardar_indicacion_medica(
+    request: Request,
     dni: str = Form(...),
     profesional: str = Form(...),
-    institucion_id: str = Form(...),
-    usuario_id: str = Form(...),
     indicacion: str = Form(...),
 ):
     try:
+        usuario = request.session.get("usuario")
+        institucion_id = request.session.get("institucion_id")
+        if institucion_id is None or not usuario:
+            return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
+        institucion_id = int(institucion_id)
+        usuario_id = str(usuario)
+
         data = {
             "dni": dni,
             "profesional": profesional,
-            "institucion_id": int(institucion_id),
+            "institucion_id": institucion_id,
             "usuario_id": usuario_id,
             "indicaciones": indicacion,
             "fecha_creacion": datetime.now().isoformat(),
@@ -66,6 +72,8 @@ async def generar_pdf_indicacion_medica(
         institucion_id = request.session.get("institucion_id")
         if institucion_id is None or not usuario:
             return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
+        institucion_id = int(institucion_id)
+        usuario_id = str(usuario)
         datos = {
             "nombre": f"{nombre} {apellido}".strip(),
             "dni": dni,
@@ -109,6 +117,7 @@ async def generar_pdf_indicacion_medica(
             "indicaciones": indicaciones,
             "pdf_url": pdf_url,
             "institucion_id": institucion_id,
+            "usuario_id": usuario_id,
         }).execute()
 
         return JSONResponse({"exito": True, "pdf_url": pdf_url})

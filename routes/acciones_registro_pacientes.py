@@ -6,7 +6,9 @@ from fastapi import APIRouter, Form, Request
 from fastapi.responses import JSONResponse
 from utils.supabase_helper import supabase, subir_pdf
 from utils.email_sender import enviar_email_con_pdf
-from utils.pdf_generator import generar_pdf_registro_paciente
+# Importamos la función de utilidades con un alias para evitar
+# colisiones con el nombre del endpoint local.
+from utils.pdf_generator import generar_pdf_registro_paciente as generar_pdf_registro_util
 from dotenv import load_dotenv
 import os
 
@@ -74,7 +76,8 @@ async def generar_pdf_registro_paciente(
             "dni": dni
         }
 
-        pdf_path = generar_pdf_registro_paciente(datos)
+        # Usamos la función de utilidades para crear el PDF.
+        pdf_path = generar_pdf_registro_util(datos)
         nombre_pdf = f"{dni}_registro_paciente.pdf"
 
         with open(pdf_path, "rb") as f:

@@ -39,6 +39,7 @@ async def guardar_turno_paciente(
     usuario_id: str = Form(...)
 ):
     try:
+        institucion_id = int(institucion_id)
         data = {
             "nombre": nombre,
             "apellido": apellido,
@@ -48,7 +49,7 @@ async def guardar_turno_paciente(
             "fecha": fecha,
             "hora": hora,
             "observaciones": observaciones,
-            "institucion_id": institucion_id,
+            "institucion_id": int(institucion_id),
             "usuario_id": usuario_id
         }
         supabase.table("turnos_pacientes").insert(data).execute()

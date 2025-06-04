@@ -38,7 +38,7 @@ async def guardar_indicacion_medica(
         data = {
             "dni": dni,
             "profesional": profesional,
-            "institucion_id": institucion_id,
+            "institucion_id": int(institucion_id),
             "usuario_id": usuario_id,
             "indicaciones": indicacion,
             "fecha_creacion": datetime.now().isoformat(),

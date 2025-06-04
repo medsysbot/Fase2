@@ -1,5 +1,5 @@
 // ╔════════════════════════════════════╗
-// ║   registro_formulario.js (AG-05)  ║
+// ║   registro_pacientes.js (AG-05)  ║
 // ╚════════════════════════════════════╝
 function mostrarBotonPDF(existe) {
   const btn = document.querySelector('.botones-flotantes button[onclick="abrirPDF()"]');

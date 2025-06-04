@@ -4,7 +4,7 @@ Esta tabla resume qué archivos HTML usan cada JavaScript, qué rutas del backen
 
 | Formulario HTML | JavaScript asociado | Ruta Python | Tabla Supabase |
 |-----------------|--------------------|-------------|---------------|
-| registro-pacientes.html | alertas.js, registro_formulario.js, registro_voz.js | acciones_registro_pacientes.py | registro_pacientes |
+| registro-pacientes.html | alertas.js, registro_pacientes.js, registro_voz.js | acciones_registro_pacientes.py | registro_pacientes |
 | busqueda_pacientes.html | guardar_busqueda.js, voz-a-formulario-busqueda.js, alertas.js | acciones_busqueda.py | busqueda_pacientes |
 | consulta-diaria.html | consulta_diaria.js, voz-a-formulario-consulta-diaria.js, alertas.js | acciones_consulta_diaria.py | consulta_diaria |
 | recetas-medicas.html | recetas_medicas.js, voz-a-formulario-recetas_medicas.js, alertas.js | acciones_recetas_medicas.py | recetas_medicas |

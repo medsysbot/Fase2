@@ -31,25 +31,25 @@
 <!-- ╚════════════════════════════════════╝ -->
 <form id="form-registro">
   <label>Nombres:</label>
-  <input type="text" id="nombres" required />
+  <input type="text" id="nombres" name="nombres" required />
   <label>Apellido:</label>
-  <input type="text" id="apellido" required />
+  <input type="text" id="apellido" name="apellido" required />
   <label>DNI:</label>
-  <input type="text" id="dni" required />
+  <input type="text" id="dni" name="dni" required />
   <label>Fecha de Nacimiento:</label>
-  <input type="date" id="fecha_nacimiento" required />
+  <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required />
   <label>Teléfono:</label>
-  <input type="text" id="telefono" />
+  <input type="text" id="telefono" name="telefono" />
   <label>Correo Electrónico:</label>
-  <input type="email" id="email" />
+  <input type="email" id="email" name="email" />
   <label>Domicilio:</label>
-  <input type="text" id="domicilio" />
+  <input type="text" id="domicilio" name="domicilio" />
   <label>Obra Social / Prepaga:</label>
-  <input type="text" id="obra_social" />
+  <input type="text" id="obra_social" name="obra_social" />
   <label>Número de Afiliado:</label>
-  <input type="text" id="numero_afiliado" />
+  <input type="text" id="numero_afiliado" name="numero_afiliado" />
   <label>Contacto de Emergencia:</label>
-  <input type="text" id="contacto_emergencia" />
+  <input type="text" id="contacto_emergencia" name="contacto_emergencia" />
 </form>
 <div class="botones-flotantes">
   <button type="button" ondblclick="marcarCamposVoz()" title="Reconocimiento por voz">
@@ -87,7 +87,7 @@
 </div>
 <!-- Carga de scripts en orden correcto -->
 <script src="/static/js/alertas.js"></script>
-<script src="/static/js/registro_formulario.js"></script>
+<script src="/static/js/registro_pacientes.js"></script>
 <script src="/static/js/registro_voz.js"></script>
 </body>
 </html>

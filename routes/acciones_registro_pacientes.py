@@ -6,7 +6,7 @@ from fastapi import APIRouter, Form, Request
 from fastapi.responses import JSONResponse
 from utils.supabase_helper import supabase, subir_pdf
 from utils.email_sender import enviar_email_con_pdf
-from utils.pdf_generator import generar_pdf_registro_paciente
+from utils.pdf_generator import generar_pdf_registro_paciente as generar_pdf_registro
 from dotenv import load_dotenv
 import os
 
@@ -89,7 +89,7 @@ async def generar_pdf_registro_paciente(
             "contacto_emergencia": contacto_emergencia
         }
 
-        pdf_path = generar_pdf_registro_paciente(datos)
+        pdf_path = generar_pdf_registro(datos)
         nombre_pdf = f"{dni}_registro_paciente.pdf"
 
         with open(pdf_path, "rb") as f:

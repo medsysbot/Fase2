@@ -12,3 +12,8 @@ httpx
 asyncpg
 psycopg2-binary
 fastapi-mail==1.4.1
+jinja2 
+python-multipart
+itsdangerous
+python-dotenv
+asyncpg

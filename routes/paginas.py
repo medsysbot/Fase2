@@ -55,17 +55,6 @@ async def ver_indicaciones_medicas(request: Request):
     return templates.TemplateResponse("indicaciones-medicas.html", {"request": request})
 
 
-@router.get("/turnos_pacientes", response_class=HTMLResponse)
-async def ver_turnos_pacientes(request: Request):
-    if not _session_activa(request):
-        return RedirectResponse(url="/login", status_code=303)
-    return templates.TemplateResponse("turnos_pacientes.html", {"request": request})
-
-@router.get("/turnos-pacientes", response_class=HTMLResponse)
-async def ver_turnos_pacientes_alt(request: Request):
-    if not _session_activa(request):
-        return RedirectResponse(url="/login", status_code=303)
-    return templates.TemplateResponse("turnos-pacientes.html", {"request": request})
 
 
 @router.get("/enfermeria", response_class=HTMLResponse)

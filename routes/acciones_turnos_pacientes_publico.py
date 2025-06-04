@@ -35,7 +35,7 @@ async def guardar_turno_publico(
             .single()
             .execute()
         )
-        institucion_id = inst.data["id"] if inst.data else None
+        institucion_id = int(inst.data["id"]) if inst.data else None
         if institucion_id is None:
             return JSONResponse(
                 {"exito": False, "mensaje": "Clínica no registrada"},

@@ -114,7 +114,9 @@ async def generar_pdf_historia_clinica_resumida(
         supabase.table("historia_clinica_resumida").update({"pdf_url": pdf_url}).eq("dni", dni).execute()
         return JSONResponse({"exito": True, "pdf_url": pdf_url})
     except Exception as e:
-        return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)
+        import traceback
+        traceback.print_exc()
+        return JSONResponse(status_code=500, content={"error": str(e)})
 
 # ╔════════════════════════════════════════════════════╗
 # ║     ENVIAR HISTORIA CLÍNICA RESUMIDA POR CORREO    ║

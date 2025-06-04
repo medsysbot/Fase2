@@ -1,6 +1,7 @@
 from fpdf import FPDF
 import os
 import datetime
+import asyncio
 
 # Ancho en milímetros para las imágenes de firma y sello
 FIRMA_SELLO_ANCHO = 25
@@ -53,7 +54,7 @@ def generar_pdf_resumen(datos, firma_path=None, sello_path=None):
     return output_path
 
 
-def generar_pdf_historia_clinica_resumida(datos, firma_path=None, sello_path=None):
+async def generar_pdf_historia_clinica_resumida(datos, firma_path=None, sello_path=None):
     """Genera el PDF para la historia clínica resumida."""
     pdf = FPDF()
     pdf.add_page()
@@ -82,7 +83,7 @@ def generar_pdf_historia_clinica_resumida(datos, firma_path=None, sello_path=Non
 
     filename = f"{datos['dni']}_historia_resumida.pdf"
     output_path = os.path.join("/tmp", filename)
-    pdf.output(output_path)
+    await asyncio.to_thread(pdf.output, output_path)
 
     return output_path
 

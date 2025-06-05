@@ -3,7 +3,6 @@
 Este archivo documenta los agentes automatizados, asistentes y scripts inteligentes que intervienen en el ecosistema MedSys. Sigue un enfoque Agile, permitiendo que cada agente tenga una función clara, modular y evolutiva.
 
 ---
----
 
 ## 🧩 Estructura de Agentes
 
@@ -19,8 +18,6 @@ Este archivo documenta los agentes automatizados, asistentes y scripts inteligen
 | `AG-08`   | **Bucket File Manager**               | Backend (`supabase.storage`) | Gestiona firma, sello e imágenes en los buckets correctos.    |
 | `AG-09`   | **SessionState Preloader**            | JS (`sessionStorage`)     | Precarga datos como `usuario_id`, `institucion_id`, `pdfURL`.     |
 | `AG-10`   | **Error Fallback Logger**             | Global                    | Detecta errores y muestra alertas amigables en pantalla.          |
-| `AG-11`   | **Video Background Handler**          | Frontend (`splash_screen.html`, `login.html`)
-| Gestiona videos de fondo con reproducción y overlay para las pantallas de bienvenida y login. |
 
 ---
 

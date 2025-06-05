@@ -8,14 +8,14 @@
   <title>MEDSYS - Bienvenido</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/styles.css">
   <style>
     body {
       margin: 0;
       padding: 0;
       height: 100vh;
       font-family: 'Poppins', sans-serif;
-      background: none;
+      background: url('/static/splash-fondo.png') no-repeat center center;
+      background-size: cover;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -23,35 +23,9 @@
       color: #595959;
       overflow: hidden;
       text-align: center;
-      opacity: 0;
-      visibility: hidden;
-      position: relative;
-      z-index: 1;
-      transition: opacity 0.5s;
+      animation: fadeout 1s ease-in-out forwards;
+      animation-delay: 5s;
     }
-
-    body.ready {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    body.fade-out {
-      animation: fadeout 0.5s forwards;
-    }
-
-    /* Se removió la clase 'fondo-splash' ya que
-       el video ahora lleva estilos en línea */
-
-    .overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.4);
-      z-index: -1;
-    }
-
 
     .logo {
       width: 440px;
@@ -86,84 +60,16 @@
         opacity: 0;
       }
     }
-
-    /* Estilos de la sección de login */
-    .logo-medsys {
-      width: 350px;
-      margin-bottom: 110px;
-    }
-
-    .formulario {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 15px;
-      width: 320px;
-    }
-
-    .campo {
-      display: flex;
-      align-items: center;
-      width: 100%;
-      background: rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(8px);
-      border-radius: 12px;
-      padding: 10px 15px;
-    }
-
-    .campo img {
-      width: 28px;
-      height: 28px;
-      margin-right: 12px;
-    }
-
-    .campo input,
-    .campo select {
-      flex: 1;
-      background: none;
-      border: none;
-      outline: none;
-      font-size: 16px;
-      color: #ffffff;
-    }
-
-    .submit-button {
-      margin-top: 15px;
-      width: 70px;
-      height: 70px;
-      border: none;
-      border-radius: 50%;
-      background-color: #1ab0e1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    .submit-button:hover {
-      background-color: #1488b0;
-    }
-
-    .submit-button img {
-      width: 56px;
-      height: 56px;
-    }
   </style>
 
-  <script src="/static/js/splash_login_transition.js"></script>
+  <script>
+    setTimeout(() => {
+      window.location.href = "/login";
+    }, 5000);
+  </script>
 </head>
 <body>
-  <div id="splash-container">
-    <video id="splash-video"
-      src="/static/Videos/bienvenida-login.mp4"
-      autoplay
-      playsinline
-      style="object-fit:cover;width:100vw;height:100vh;position:fixed;top:0;left:0;z-index:-1;background:black;"></video>
-    <div class="overlay"></div>
-    <img src="/static/icons/logo-medsys-gris.png" alt="Logo Medsys" id="splash-logo" class="logo">
-    <div id="splash-text" class="eslogan">Salud Inteligente para un Mundo Real</div>
-  </div>
-  {% include 'partials/login_container.html' %}
+  <img src="/static/icons/logo-medsys-gris.png" alt="Logo Medsys" class="logo">
+  <div class="eslogan">Salud Inteligente para un Mundo Real</div>
 </body>
 </html>

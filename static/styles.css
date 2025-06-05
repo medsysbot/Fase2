@@ -457,3 +457,47 @@ footer {
     height: 24px;
   }
 }
+
+/* ╔══════════════════════════════╗ */
+/* ║  RESULTADOS DE BÚSQUEDA      ║ */
+/* ╚══════════════════════════════╝ */
+#resultados-busqueda {
+  margin: 32px auto 0 auto;
+  max-width: 440px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.05);
+  padding: 24px 32px 18px 32px;
+  font-size: 1.18em;
+  text-align: left;
+}
+
+#resultados-busqueda h3 {
+  font-size: 1.22em;
+  font-weight: 600;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+#resultados-busqueda .modulo-resultado {
+  margin: 12px 0 8px 0;
+}
+
+#resultados-busqueda li,
+#resultados-busqueda strong,
+#resultados-busqueda span {
+  font-size: 1.16em;
+  line-height: 1.35;
+}
+
+#resultados-busqueda span {
+  font-size: 1.35em;
+  margin-left: 8px;
+}
+
+@media (max-width: 480px) {
+  #resultados-busqueda {
+    max-width: 95%;
+    padding: 20px;
+  }
+}

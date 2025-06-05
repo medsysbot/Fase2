@@ -34,7 +34,7 @@ README - MedSys | Sistema Médico Modular
    `pip install -r requirements.txt`
 Variables de Entorno principales
 - SUPABASE_URL (pública)
-- SUPABASE_KEY o SUPABASE_SERVICE_ROLE_KEY (privada)
+- SUPABASE_SERVICE_ROLE_KEY o SUPABASE_KEY (privada). Si defines una, la otra no es necesaria.
 - DATABASE_URL
 - EMAIL_ORIGEN (pública)
 - EMAIL_PASSWORD (privada)
@@ -44,11 +44,16 @@ Variables de Entorno principales
 - EMAIL_IMAP_USER (opcional)
 - EMAIL_IMAP_PASSWORD (opcional)
 
-Ejemplo rápido de configuración:
+Ejemplo rápido de configuración (dos variantes posibles):
 
 ```bash
+# Variante A: usar SUPABASE_SERVICE_ROLE_KEY
 SUPABASE_URL=https://wolcdduoroiobtadbcup.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=YF5SV7qX5Fa6OIw1
+
+# Variante B: usar SUPABASE_KEY
+# SUPABASE_KEY=YF5SV7qX5Fa6OIw1
+
 DATABASE_URL=postgresql://postgres:YF5SV7qX5Fa6OIw1@db.wolcdduoroiobtadbcup.supabase.co:5432/postgres
 ```
 Test de Funcionamiento

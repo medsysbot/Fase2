@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solicitar Turno</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/styles.css" />
+  <!-- Precarga de iconos de alerta -->
+  <link rel="preload" href="/static/icons/alerta/alerta-alerta.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-borrado.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-busqueda.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-error.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-guardado.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-suceso.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-paciente-cargado.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-pdf.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-email.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-carga-pdf.png" as="image">
+</head>
+<body>
+  <header>
+    <img src="/static/icons/icono-turnos.png" alt="Turnos" class="logo-grande" />
+    <h2 style="text-align:center;">Solicitud de Turno</h2>
+  </header>
+
+  <form class="formulario" id="form-turnos">
+    <input type="hidden" name="institucion_nombre" id="institucion_nombre" />
+    <label>Nombre:</label>
+    <input type="text" name="nombre" required />
+
+    <label>Apellido:</label>
+    <input type="text" name="apellido" required />
+
+    <label>DNI:</label>
+    <input type="text" name="dni" required />
+
+    <label>Especialidad:</label>
+    <input type="text" name="especialidad" required />
+
+    <label>Profesional:</label>
+    <input type="text" name="profesional" required />
+
+    <label>Fecha del Turno:</label>
+    <input type="date" name="fecha" required />
+
+    <label>Horario:</label>
+    <input type="time" name="hora" required />
+
+    <label>Observaciones:</label>
+    <textarea name="observaciones" rows="3"></textarea>
+  </form>
+
+  <div class="botones-flotantes">
+    <button type="button" onclick="guardarPDF()" title="Guardar">
+      <img src="/static/icons/guardar.png" alt="Guardar" />
+    </button>
+    <button type="button" onclick="enviarPorCorreo()" title="Enviar">
+      <img src="/static/icons/enviar.png" alt="Enviar" />
+    </button>
+    <button type="button" id="btn-verpdf" onclick="abrirPDF()" title="Ver PDF" style="display:none;">
+      <img src="/static/icons/icono-ver-pdf.png" alt="Ver PDF" />
+    </button>
+  </div>
+
+  <div id="alert-manager" class="alert-container" style="display:none;">
+    <div class="alert-box">
+      <img id="alert-icon" src="" alt="icono-alerta" class="alert-icon" />
+      <span id="alert-text" class="alert-message">Texto de alerta</span>
+      <div id="alert-buttons" class="alert-buttons" style="display:none;">
+        <img src="/static/icons/alerta/alerta-boton-borrar.png" id="btn-borrar" class="alert-btn" />
+        <img src="/static/icons/alerta/alerta-boton-no.png" id="btn-no" class="alert-btn" />
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/alertas.js"></script>
+  <script src="/static/js/turno_publico.js"></script>
+</body>
+</html>

@@ -3,6 +3,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 templates = Jinja2Templates(directory="templates")
+public_templates = Jinja2Templates(directory="app_publico/templates")
 
 router = APIRouter()
 
@@ -108,7 +109,7 @@ async def ver_historia_completa(request: Request):
 @router.get("/solicitar-turno", response_class=HTMLResponse)
 async def ver_turno_publico(request: Request):
     """Formulario público para solicitar turnos."""
-    return templates.TemplateResponse(
+    return public_templates.TemplateResponse(
         "solicitar-turno-publico.html",
         {"request": request},
     )

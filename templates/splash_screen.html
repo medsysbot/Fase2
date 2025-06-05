@@ -25,6 +25,41 @@
       text-align: center;
       animation: fadeout 1s ease-in-out forwards;
       animation-delay: 5s;
+      position: relative;
+      z-index: 1;
+    }
+
+    video.fondo-splash {
+      position: fixed;
+      top: 0;
+      left: 0;
+      min-width: 100vw;
+      min-height: 100vh;
+      object-fit: cover;
+      z-index: -2;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: -1;
+    }
+
+    .boton-audio {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      z-index: 2;
     }
 
     .logo {
@@ -66,10 +101,26 @@
     setTimeout(() => {
       window.location.href = "/login";
     }, 5000);
-  </script>
+</script>
 </head>
 <body>
+  <video class="fondo-splash" autoplay loop src="/static/Videos/bienvenidos-a-medsys.mp4"></video>
+  <div class="overlay"></div>
+  <button id="btn-audio" class="boton-audio" style="display:none;">Activar audio</button>
   <img src="/static/icons/logo-medsys-gris.png" alt="Logo Medsys" class="logo">
   <div class="eslogan">Salud Inteligente para un Mundo Real</div>
+
+  <script>
+    const video = document.querySelector('.fondo-splash');
+    const btnAudio = document.getElementById('btn-audio');
+    video.play().catch(() => {
+      btnAudio.style.display = 'block';
+    });
+    btnAudio.addEventListener('click', () => {
+      video.muted = false;
+      video.play();
+      btnAudio.style.display = 'none';
+    });
+  </script>
 </body>
 </html>

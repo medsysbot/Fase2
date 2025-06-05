@@ -10,48 +10,33 @@ router = APIRouter()
 
 BUCKET = "busqueda-pacientes"
 
+def tiene_datos(res):
+    # Devuelve True si la consulta devuelve una lista con al menos un registro, False si no o si falla
+    try:
+        return bool(res.data and len(res.data) > 0)
+    except Exception:
+        return False
 
 @router.post("/api/buscar_paciente")
 async def buscar_paciente(request: Request):
     body = await request.json()
     dni = body.get("dni")
 
-    hc_completa = (
-        supabase.table("historia_clinica_completa")
-        .select("*")
-        .eq("dni", dni)
-        .execute()
-    )
-    hc_resumida = (
-        supabase.table("historia_clinica_resumida")
-        .select("*")
-        .eq("dni", dni)
-        .execute()
-    )
-    consulta_diaria = (
-        supabase.table("consulta_diaria").select("*").eq("dni", dni).execute()
-    )
+    hc_completa = supabase.table("historia_clinica_completa").select("*").eq("dni", dni).execute()
+    hc_resumida = supabase.table("historia_clinica_resumida").select("*").eq("dni", dni).execute()
+    consulta_diaria = supabase.table("consulta_diaria").select("*").eq("dni", dni).execute()
     recetas = supabase.table("recetas").select("*").eq("dni", dni).execute()
-    turnos = (
-        supabase.table("turnos_pacientes").select("*").eq("dni", dni).execute()
-    )
-    estudios = (
-        supabase.table("estudios_medicos").select("*").eq("dni", dni).execute()
-    )
-    busqueda = (
-        supabase.table("busqueda_pacientes")
-        .select("pdf_url")
-        .eq("dni", dni)
-        .execute()
-    )
+    turnos = supabase.table("turnos_pacientes").select("*").eq("dni", dni).execute()
+    estudios = supabase.table("estudios_medicos").select("*").eq("dni", dni).execute()
+    busqueda = supabase.table("busqueda_pacientes").select("pdf_url").eq("dni", dni).execute()
 
     result = {
-        "historia_clinica_completa": bool(hc_completa.data),
-        "historia_clinica_resumida": bool(hc_resumida.data),
-        "consulta_diaria": bool(consulta_diaria.data),
-        "recetas": bool(recetas.data),
-        "turnos": bool(turnos.data),
-        "estudios": bool(estudios.data),
+        "historia_clinica_completa": tiene_datos(hc_completa),
+        "historia_clinica_resumida": tiene_datos(hc_resumida),
+        "consulta_diaria": tiene_datos(consulta_diaria),
+        "recetas": tiene_datos(recetas),
+        "turnos": tiene_datos(turnos),
+        "estudios": tiene_datos(estudios),
         "pdf_url": busqueda.data[0]["pdf_url"] if busqueda.data else None,
     }
     return JSONResponse(result)

@@ -25,20 +25,18 @@ async def guardar_turno_publico(
     fecha: str = Form(...),
     hora: str = Form(...),
     observaciones: str = Form(...),
-    institucion_nombre: str = Form(...)
+    institucion: int = Form(...)
 ):
     try:
         conflicto = (
             supabase.table("turnos_pacientes")
             .select("id")
-            .match(
-                {
-                    "fecha": fecha,
-                    "hora": hora,
-                    "profesional": profesional,
-                    "institucion_nombre": institucion_nombre,
-                }
-            )
+            .match({
+                "fecha": fecha,
+                "hora": hora,
+                "profesional": profesional,
+                "institucion": institucion,
+            })
             .execute()
         )
         if conflicto.data:
@@ -59,10 +57,12 @@ async def guardar_turno_publico(
             "fecha": fecha,
             "hora": hora,
             "observaciones": observaciones,
-            "institucion_nombre": institucion_nombre,
+            "institucion": institucion
         }
+
         supabase.table("turnos_pacientes").insert(data).execute()
         return {"message": "Turno registrado correctamente"}
+
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
 

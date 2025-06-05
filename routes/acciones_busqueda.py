@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Form
 from fastapi.responses import JSONResponse
 from datetime import datetime
 from utils.supabase_helper import supabase, subir_pdf
 from utils.pdf_generator import generar_pdf_busqueda
+from utils.email_sender import enviar_email_con_pdf
 import os
 import tempfile
 
@@ -108,6 +109,38 @@ async def guardar_paciente(request: Request):
         return JSONResponse({"ok": True, "pdf_url": pdf_url})
     except Exception as e:
         return JSONResponse({"ok": False, "error": str(e)})
+
+
+@router.post("/enviar_pdf_busqueda")
+async def enviar_pdf_busqueda(
+    dni: str = Form(...),
+    email: str = Form(...),
+    pdf_url: str = Form("")
+):
+    try:
+        if not pdf_url:
+            res = (
+                supabase.table("busqueda_pacientes")
+                .select("pdf_url")
+                .eq("dni", dni)
+                .order("id", desc=True)
+                .limit(1)
+                .execute()
+            )
+            pdf_url = res.data[0]["pdf_url"] if res.data else None
+
+        if not pdf_url:
+            return JSONResponse({"exito": False, "mensaje": "No se encontró el PDF."}, status_code=404)
+
+        enviar_email_con_pdf(
+            email_destino=email,
+            asunto="Información de Paciente",
+            cuerpo="Adjuntamos el PDF solicitado.",
+            url_pdf=pdf_url,
+        )
+        return {"exito": True}
+    except Exception as e:
+        return JSONResponse({"exito": False, "mensaje": str(e)}, status_code=500)
 
 
 @router.post("/api/borrar_paciente")

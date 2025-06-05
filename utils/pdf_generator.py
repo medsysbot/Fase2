@@ -472,8 +472,9 @@ def generar_pdf_turno_paciente(datos, firma_path=None, sello_path=None):
         pdf.ln(25)
 
     hora_archivo = datos.get("hora", "").replace(":", "-")
-    fecha_archivo = datos.get("fecha", "")
-    filename = f"{datos['dni']}_{fecha_archivo}_{hora_archivo}_turno_medico.pdf"
+    fecha_archivo = datos.get("fecha", "") or "fecha"
+    dni_archivo = datos.get("dni", "paciente")
+    filename = f"{dni_archivo}_{fecha_archivo}_{hora_archivo}_turno_medico.pdf"
     output_path = os.path.abspath(os.path.join("/tmp", filename))
     pdf.output(output_path)
 

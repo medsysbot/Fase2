@@ -2,6 +2,36 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('form-buscar-estudios');
   const listaFechas = document.getElementById('lista-fechas');
   const mensaje = document.getElementById('mensaje');
+  const datalist = document.getElementById('pacientes-list');
+  const inputPaciente = form.paciente_id;
+  const selectEstudio = form.tipo_estudio;
+
+  const TIPOS_ESTUDIOS = ['Radiografía', 'Ecografía', 'Resonancia', 'Laboratorio'];
+  selectEstudio.innerHTML = '<option value="">Seleccione un tipo</option>';
+  TIPOS_ESTUDIOS.forEach(t => {
+    const op = document.createElement('option');
+    op.value = t;
+    op.textContent = t;
+    selectEstudio.appendChild(op);
+  });
+
+  inputPaciente.addEventListener('input', async () => {
+    const q = inputPaciente.value.trim();
+    if (q.length < 2) return;
+    try {
+      const resp = await fetch(`/api/sugerencias_pacientes?q=${encodeURIComponent(q)}`);
+      const data = await resp.json();
+      datalist.innerHTML = '';
+      (data.pacientes || []).forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.dni;
+        opt.label = `${p.nombres} ${p.apellido}`;
+        datalist.appendChild(opt);
+      });
+    } catch (_) {
+      datalist.innerHTML = '';
+    }
+  });
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -13,10 +43,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!paciente_id || !tipo_estudio) {
       showAlert({
-        mensaje: "Debe completar el DNI y seleccionar tipo de estudio.",
+        mensaje: "Debe completar el paciente y seleccionar tipo de estudio.",
         tipo: "info"
       });
-      mensaje.textContent = "Debe completar el DNI y seleccionar tipo de estudio.";
+      mensaje.textContent = "Debe completar el paciente y seleccionar tipo de estudio.";
       return;
     }
 
@@ -69,6 +99,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Limpia resultados si resetean el form
   form.addEventListener('reset', () => {
     listaFechas.innerHTML = '';
-    mensaje.textContent = "Complete el DNI y seleccione tipo de estudio para ver los resultados disponibles.";
+    mensaje.textContent = "Complete el paciente y seleccione tipo de estudio para ver los resultados disponibles.";
   });
 });

@@ -87,30 +87,18 @@
   <div class="contenedor-estudios">
     <h2>Consultar Estudios Médicos</h2>
     <form class="busqueda-form" id="form-buscar-estudios" autocomplete="off">
-      <label for="paciente_id">DNI:</label>
-      <input type="text" name="paciente_id" id="paciente_id" required />
-
-      <label for="nombre">Nombre:</label>
-      <input type="text" name="nombre" id="nombre" />
-
-      <label for="apellido">Apellido:</label>
-      <input type="text" name="apellido" id="apellido" />
+      <label for="paciente_id">Paciente (DNI o nombre):</label>
+      <input type="text" name="paciente_id" id="paciente_id" list="pacientes-list" required />
+      <datalist id="pacientes-list"></datalist>
 
       <label for="tipo_estudio">Tipo de Estudio:</label>
-      <select name="tipo_estudio" id="tipo_estudio" required>
-        <option value="">Seleccione un tipo</option>
-        <option value="Radiografía">Radiografía</option>
-        <option value="Tomografía">Tomografía</option>
-        <option value="Laboratorio">Laboratorio</option>
-        <option value="Resonancia">Resonancia</option>
-        <!-- Agrega más según tu base -->
-      </select>
+      <select name="tipo_estudio" id="tipo_estudio" required></select>
       <div class="botones-estudios">
         <button type="submit" id="buscar-btn">Buscar Estudios</button>
         <button type="reset" id="limpiar-btn">Limpiar</button>
       </div>
     </form>
-    <div id="mensaje" class="mensaje-inicial">Complete el DNI y seleccione tipo de estudio para ver los resultados disponibles.</div>
+    <div id="mensaje" class="mensaje-inicial">Complete el paciente y seleccione tipo de estudio para ver los resultados disponibles.</div>
     <ul id="lista-fechas" class="lista-fechas"></ul>
   </div>
 

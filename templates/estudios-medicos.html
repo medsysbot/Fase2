@@ -4,101 +4,140 @@
   <meta charset="UTF-8" />
   <title>Estudios Médicos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/static/styles.css" />
+  <!-- Preload íconos de alerta -->
+  <link rel="preload" href="/static/icons/alerta/alerta-alerta.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-borrado.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-busqueda.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-error.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-guardado.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-suceso.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-paciente-cargado.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-pdf.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-email.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-carga-pdf.png" as="image">
   <style>
     .contenedor-estudios {
-      max-width: 510px;
-      margin: 32px auto;
+      max-width: 540px;
+      margin: 36px auto;
       background: #fff;
       border-radius: 16px;
-      box-shadow: 0 2px 12px #0001;
-      padding: 30px 25px 22px 25px;
+      box-shadow: 0 2px 16px #0002;
+      padding: 34px 35px 24px 35px;
     }
-    h2 { color: #16a085; text-align: center; }
-    .busqueda-form {
-      display: flex;
-      flex-direction: column;
-      gap: 13px;
+    header {
+      text-align: center;
       margin-bottom: 18px;
     }
-    .busqueda-form label {
+    .logo-grande {
+      width: 72px; margin-bottom: 7px;
+    }
+    h2 {
+      font-size: 1.35em;
+      color: #16a085;
+      font-weight: 700;
+      margin-bottom: 6px;
+      font-style: italic;
+    }
+    .form-estudios label {
       font-weight: 600;
+      margin-top: 11px;
+      margin-bottom: 2px;
+      display: block;
+    }
+    .form-estudios input, .form-estudios select {
+      font-family: inherit;
+      font-size: 16px;
+      padding: 8px 10px;
+      border: 1px solid #bbb;
+      border-radius: 7px;
+      outline: none;
+      width: 100%;
       margin-bottom: 3px;
+      background: #fafbfc;
     }
-    .busqueda-form input, .busqueda-form select {
-      font-family: inherit; font-size: 16px; padding: 8px 10px;
-      border: 1px solid #bbb; border-radius: 7px; outline: none;
-    }
-    .botones-estudios {
+    .botones-flotantes {
       display: flex;
-      gap: 10px;
-      margin-top: 7px;
-      margin-bottom: 4px;
+      gap: 15px;
+      margin-top: 18px;
       justify-content: flex-end;
     }
-    .botones-estudios button {
+    .botones-flotantes button {
       background: #16a085;
       color: #fff;
       border: none;
       border-radius: 7px;
       font-weight: 600;
-      padding: 8px 16px;
+      padding: 8px 17px;
       font-size: 15px;
       cursor: pointer;
-      transition: background 0.15s;
+      transition: background 0.13s;
+      display: flex; align-items: center; gap: 5px;
     }
-    .botones-estudios button#limpiar-btn {
+    .botones-flotantes button#limpiar-btn {
       background: #e67e22;
     }
-    .botones-estudios button:hover { filter: brightness(1.09);}
-    .lista-fechas {
-      list-style: none; padding: 0; margin: 15px 0 0 0;
-      display: flex; flex-direction: column; gap: 8px;
+    .botones-flotantes button:hover { filter: brightness(1.09);}
+    #lista-fechas {
+      list-style: none; padding: 0; margin: 24px 0 0 0;
+      display: flex; flex-direction: column; gap: 9px;
     }
     .fecha-link {
       color: #16a085;
       text-decoration: underline;
       cursor: pointer;
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 600;
       border: none;
       background: none;
       padding: 0;
       text-align: left;
-      transition: color 0.15s;
+      transition: color 0.13s;
       display: inline-block;
     }
     .fecha-link:hover, .fecha-link.active {
       color: #e67e22;
     }
     .mensaje-inicial {
-      color: #666;
-      font-size: 14px;
-      margin-top: 14px;
+      color: #888;
+      font-size: 15px;
+      margin-top: 12px;
       text-align: center;
     }
     @media (max-width: 700px) {
-      .contenedor-estudios { padding: 10vw 2vw; }
+      .contenedor-estudios { padding: 8vw 3vw; }
+      .logo-grande { width: 56px; }
     }
   </style>
 </head>
 <body>
   <div class="contenedor-estudios">
-    <h2>Consultar Estudios Médicos</h2>
-    <form class="busqueda-form" id="form-buscar-estudios" autocomplete="off">
-      <label for="paciente_id">Paciente (DNI o nombre):</label>
-      <input type="text" name="paciente_id" id="paciente_id" list="pacientes-list" required />
-      <datalist id="pacientes-list"></datalist>
+    <header>
+      <img src="/static/icons/estudios.png" alt="Estudios Médicos" class="logo-grande" />
+      <h2>Estudios Médicos</h2>
+    </header>
+    <form class="form-estudios" id="form-buscar-estudios" autocomplete="off">
+      <label for="dni">DNI del paciente:</label>
+      <input type="text" name="dni" id="dni" maxlength="10" required />
+
+      <label for="nombre">Nombre del paciente:</label>
+      <input type="text" name="nombre" id="nombre" required />
 
       <label for="tipo_estudio">Tipo de Estudio:</label>
-      <select name="tipo_estudio" id="tipo_estudio" required></select>
-      <div class="botones-estudios">
-        <button type="submit" id="buscar-btn">Buscar Estudios</button>
-        <button type="reset" id="limpiar-btn">Limpiar</button>
+      <select name="tipo_estudio" id="tipo_estudio" required>
+        <!-- Opciones cargadas por JS -->
+      </select>
+      <div class="botones-flotantes">
+        <button type="button" id="buscar-btn" onclick="buscarEstudios()">
+          <img src="/static/icons/busquedas.png" alt="Buscar" /> Buscar
+        </button>
+        <button type="reset" id="limpiar-btn">
+          <img src="/static/icons/alerta/alerta-boton-no.png" alt="Limpiar" /> Limpiar
+        </button>
       </div>
     </form>
-    <div id="mensaje" class="mensaje-inicial">Complete el paciente y seleccione tipo de estudio para ver los resultados disponibles.</div>
+    <div id="mensaje" class="mensaje-inicial">Ingrese DNI, nombre y seleccione un estudio para ver los resultados.</div>
     <ul id="lista-fechas" class="lista-fechas"></ul>
   </div>
 

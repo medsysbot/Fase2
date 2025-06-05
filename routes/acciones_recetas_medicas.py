@@ -207,7 +207,7 @@ async def enviar_pdf_receta_medica(
     pdf_url: str = Form(...),
 ):
     try:
-        resultado = supabase.table("pacientes").select("email").eq("dni", dni).single().execute()
+        resultado = supabase.table("registro_pacientes").select("email").eq("dni", dni).single().execute()
         email = resultado.data.get("email") if resultado.data else None
 
         if not email:
@@ -233,7 +233,7 @@ async def enviar_pdf_receta_medica(
 async def obtener_email_receta(dni: str = Form(...)):
     """Devuelve el email del paciente a partir de su DNI."""
     try:
-        resultado = supabase.table("pacientes").select("email").eq("dni", dni).single().execute()
+        resultado = supabase.table("registro_pacientes").select("email").eq("dni", dni).single().execute()
         email = resultado.data.get("email") if resultado.data else None
         return {"email": email}
     except Exception as e:

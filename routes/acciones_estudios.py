@@ -132,7 +132,7 @@ async def enviar_pdf_estudio(dni: str = Form(...), estudio_id: int = Form(...)):
     """Envía por correo el PDF de un estudio al email del paciente."""
     try:
         paciente = (
-            supabase.table("pacientes")
+            supabase.table("registro_pacientes")
             .select("nombres, apellido, email")
             .eq("dni", dni)
             .single()

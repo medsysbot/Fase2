@@ -127,7 +127,7 @@ async def enviar_pdf_turno_publico(
 ):
     try:
         resultado = (
-            supabase.table("pacientes")
+            supabase.table("registro_pacientes")
             .select("email")
             .eq("dni", dni)
             .single()

@@ -144,7 +144,7 @@ async def enviar_pdf_turno_paciente(
             return JSONResponse({"exito": False, "mensaje": "No se encontró el PDF."}, status_code=404)
 
         paciente = (
-            supabase.table("pacientes")
+            supabase.table("registro_pacientes")
             .select("email")
             .eq("dni", dni)
             .single()

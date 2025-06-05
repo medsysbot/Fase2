@@ -135,7 +135,7 @@ async def enviar_pdf_historia_clinica_resumida(
     pdf_url: str = Form(...)
 ):
     try:
-        resultado = supabase.table("pacientes").select("email").eq("dni", dni).single().execute()
+        resultado = supabase.table("registro_pacientes").select("email").eq("dni", dni).single().execute()
         email = resultado.data.get("email") if resultado.data else None
 
         if not email:

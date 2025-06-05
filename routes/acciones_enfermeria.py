@@ -116,7 +116,7 @@ async def generar_pdf_enfermeria_endpoint(
 @router.post("/enviar_pdf_enfermeria")
 async def enviar_pdf_enfermeria(paciente: str = Form(...), dni: str = Form(...)):
     try:
-        res = supabase.table("pacientes").select("email").eq("dni", dni).single().execute()
+        res = supabase.table("registro_pacientes").select("email").eq("dni", dni).single().execute()
         email = res.data.get("email") if res.data else None
         if not email:
             return JSONResponse({"exito": False, "mensaje": "No se encontró un e-mail para este DNI."}, status_code=404)

@@ -52,7 +52,7 @@ async def pacientes_institucion(request: Request):
         return JSONResponse({"error": "No autorizado"}, status_code=403)
     inst_id = request.session.get("institucion_id")
     res = (
-        supabase.table("pacientes")
+        supabase.table("registro_pacientes")
         .select("dni,nombres,apellido")
         .eq("institucion_id", inst_id)
         .execute()
@@ -67,7 +67,7 @@ async def descargar_paciente(request: Request, dni: str):
 
     inst_id = request.session.get("institucion_id")
     pac = (
-        supabase.table("pacientes")
+        supabase.table("registro_pacientes")
         .select("*")
         .eq("dni", dni)
         .eq("institucion_id", inst_id)

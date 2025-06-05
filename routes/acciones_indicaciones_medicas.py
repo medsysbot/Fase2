@@ -134,7 +134,7 @@ async def enviar_pdf_indicacion_medica(
     pdf_url: str = Form(...)
 ):
     try:
-        resultado = supabase.table("pacientes").select("email").eq("dni", dni).single().execute()
+        resultado = supabase.table("registro_pacientes").select("email").eq("dni", dni).single().execute()
         email = resultado.data.get("email") if resultado.data else None
 
         if not email:

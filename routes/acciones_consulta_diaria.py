@@ -178,7 +178,7 @@ async def enviar_pdf_consulta_diaria(
     nombre: str = Form(None)
 ):
     try:
-        paciente = supabase.table("pacientes").select("email").eq("dni", dni).single().execute()
+        paciente = supabase.table("registro_pacientes").select("email").eq("dni", dni).single().execute()
         email = paciente.data.get("email") if paciente.data else None
 
         if not email:

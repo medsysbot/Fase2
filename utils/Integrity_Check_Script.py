@@ -32,12 +32,12 @@ def revisar_campos(tabla, campos):
 tablas_a_verificar = {
     "historia_clinica_completa": ["pdf_url", "firma_url", "sello_url"],
     "historia_clinica_resumida": ["pdf_url", "firma_url", "sello_url"],
-    "indicaciones": ["pdf_url", "firma_url", "sello_url"],
-    "recetas": ["pdf_url", "firma_url", "sello_url"],
+    "indicaciones_medicas": ["pdf_url", "firma_url", "sello_url"],
+    "recetas_medicas": ["pdf_url", "firma_url", "sello_url"],
     "consulta_diaria": ["pdf_url", "firma_url", "sello_url"],
     "busqueda_pacientes": ["pdf_url"],
     "turnos_pacientes": [],  # no genera PDF ni firma/sello
-    "pacientes": [],         # solo registro, sin PDF
+    "registro_pacientes": [],         # solo registro, sin PDF
 }
 
 for tabla, campos in tablas_a_verificar.items():

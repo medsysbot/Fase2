@@ -25,9 +25,9 @@ async def buscar_paciente(request: Request):
     hc_completa = supabase.table("historia_clinica_completa").select("*").eq("dni", dni).execute()
     hc_resumida = supabase.table("historia_clinica_resumida").select("*").eq("dni", dni).execute()
     consulta_diaria = supabase.table("consulta_diaria").select("*").eq("dni", dni).execute()
-    recetas = supabase.table("recetas").select("*").eq("dni", dni).execute()
+    recetas = supabase.table("recetas_medicas").select("*").eq("dni", dni).execute()
     turnos = supabase.table("turnos_pacientes").select("*").eq("dni", dni).execute()
-    estudios = supabase.table("estudios_medicos").select("*").eq("dni", dni).execute()
+    estudios = supabase.table("estudios").select("*").eq("dni", dni).execute()
     busqueda = supabase.table("busqueda_pacientes").select("pdf_url").eq("dni", dni).execute()
 
     result = {
@@ -48,7 +48,7 @@ async def guardar_paciente(request: Request):
     dni = body.get("dni")
     try:
         datos = {
-            "paciente": supabase.table("pacientes")
+            "paciente": supabase.table("registro_pacientes")
             .select("*")
             .eq("dni", dni)
             .single()
@@ -73,7 +73,7 @@ async def guardar_paciente(request: Request):
             .eq("dni", dni)
             .execute()
             .data,
-            "recetas": supabase.table("recetas")
+            "recetas": supabase.table("recetas_medicas")
             .select("*")
             .eq("dni", dni)
             .execute()
@@ -83,7 +83,7 @@ async def guardar_paciente(request: Request):
             .eq("dni", dni)
             .execute()
             .data,
-            "estudios": supabase.table("estudios_medicos")
+            "estudios": supabase.table("estudios")
             .select("*")
             .eq("dni", dni)
             .execute()
@@ -119,9 +119,9 @@ async def borrar_paciente(request: Request):
             "historia_clinica_completa",
             "historia_clinica_resumida",
             "consulta_diaria",
-            "recetas",
+            "recetas_medicas",
             "turnos_pacientes",
-            "estudios_medicos",
+            "estudios",
             "busqueda_pacientes",
         ]
         for tabla in tablas:

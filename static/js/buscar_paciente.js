@@ -1,123 +1,109 @@
-// buscar_paciente.js
+// ╔════════════════════════════════════╗
+// ║   buscar_paciente.js (AG-07)      ║
+// ╚════════════════════════════════════╝
 
-document.addEventListener('DOMContentLoaded', function() {
-  const form = document.getElementById('form-busqueda-paciente');
-  const resultados = document.getElementById('resultados-busqueda');
-  const acciones = document.getElementById('acciones-busqueda');
-  const emailEnvio = document.getElementById('email-envio-container');
-  const verPdfBtn = document.getElementById('ver-pdf');
-  const enviarPdfBtn = document.getElementById('enviar-pdf');
-  const confirmarEnvioBtn = document.getElementById('confirmar-envio');
-  const borrarBtn = document.getElementById('borrar-paciente');
-  let resultadoActual = null;
+let pdfURL = null;
 
-  function iconoEstado(ok) {
-    return ok ? '✅' : '❌';
+function iconoEstado(ok) {
+  if (ok === null) return '⏳';
+  return ok ? '✅' : '❌';
+}
+
+function iniciarReconocimientoVoz() {
+  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  recognition.lang = 'es-AR';
+  recognition.interimResults = false;
+  recognition.continuous = false;
+  recognition.onresult = (event) => {
+    const texto = event.results[0][0].transcript.replace(/\D/g, '');
+    document.getElementById('dni-paciente').value = texto;
+  };
+  recognition.onerror = () => showAlert('error', 'No se pudo reconocer la voz', false, 3000);
+  recognition.start();
+}
+
+async function buscarPaciente(dni) {
+  showAlert('busqueda', 'Buscando…', false, 2000);
+  const resp = await fetch('/api/buscar_paciente', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ dni })
+  });
+  const data = await resp.json();
+  pdfURL = data.pdf_url || null;
+  document.getElementById('btn-verpdf').style.display = pdfURL ? 'inline-block' : 'none';
+  document.getElementById('hc-completa-icon').textContent = iconoEstado(data.historia_clinica_completa);
+  document.getElementById('hc-resumida-icon').textContent = iconoEstado(data.historia_clinica_resumida);
+  document.getElementById('hc-diaria-icon').textContent = iconoEstado(data.consulta_diaria);
+  document.getElementById('recetas-icon').textContent = iconoEstado(data.recetas);
+  document.getElementById('turnos-icon').textContent = iconoEstado(data.turnos);
+  document.getElementById('estudios-icon').textContent = iconoEstado(data.estudios);
+  document.getElementById('resultados-busqueda').style.display = 'block';
+}
+
+async function guardarPaciente() {
+  const dni = document.getElementById('dni-paciente').value;
+  if (!dni) { showAlert('alerta', 'Ingrese un DNI válido', false, 3000); return; }
+  showAlert('guardado', 'Generando PDF…', false, 3000);
+  const resp = await fetch('/api/guardar_paciente', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ dni })
+  });
+  const data = await resp.json();
+  if (data.ok) {
+    pdfURL = data.pdf_url || null;
+    document.getElementById('btn-verpdf').style.display = pdfURL ? 'inline-block' : 'none';
+    showAlert('suceso', 'Paciente guardado', false, 3000);
+  } else {
+    showAlert('error', data.error || 'No se pudo guardar', false, 4000);
   }
+}
 
-  form.addEventListener('submit', async function(e) {
+function verPDF() {
+  if (pdfURL) {
+    window.open(pdfURL, '_blank');
+  } else {
+    showAlert('pdf', 'No hay PDF para mostrar', false, 3000);
+  }
+}
+
+function prepararBorradoPaciente() {
+  document.getElementById('confirmacion-borrado').style.display = 'block';
+}
+
+function cancelarBorradoPaciente() {
+  document.getElementById('confirmacion-borrado').style.display = 'none';
+}
+
+async function confirmarBorradoPaciente() {
+  const dni = document.getElementById('dni-paciente').value;
+  cancelarBorradoPaciente();
+  if (!dni) { showAlert('alerta', 'Ingrese un DNI', false, 3000); return; }
+  showAlert('borrado', 'Borrando paciente…', false, 3000);
+  const resp = await fetch('/api/borrar_paciente', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ dni })
+  });
+  const data = await resp.json();
+  if (data.ok) {
+    showAlert('suceso', 'Paciente borrado', false, 3000);
+    document.getElementById('resultados-busqueda').style.display = 'none';
+    document.getElementById('btn-verpdf').style.display = 'none';
+  } else {
+    showAlert('error', data.error || 'No se pudo borrar', false, 4000);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('form-busqueda-paciente');
+  form.addEventListener('submit', (e) => {
     e.preventDefault();
-    resultados.style.display = 'none';
-    acciones.style.display = 'none';
-    emailEnvio.style.display = 'none';
-    document.getElementById('hc-completa-icon').textContent = '⏳';
-    document.getElementById('hc-resumida-icon').textContent = '⏳';
-    document.getElementById('hc-diaria-icon').textContent = '⏳';
-    document.getElementById('recetas-icon').textContent = '⏳';
-    document.getElementById('turnos-icon').textContent = '⏳';
-    document.getElementById('estudios-icon').textContent = '⏳';
     const dni = document.getElementById('dni-paciente').value;
-    try {
-      const res = await fetch('/api/buscar_paciente', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({dni})
-      });
-      const data = await res.json();
-      resultadoActual = data;
-      document.getElementById('hc-completa-icon').textContent = iconoEstado(data.historia_clinica_completa);
-      document.getElementById('hc-resumida-icon').textContent = iconoEstado(data.historia_clinica_resumida);
-      document.getElementById('hc-diaria-icon').textContent = iconoEstado(data.consulta_diaria);
-      document.getElementById('recetas-icon').textContent = iconoEstado(data.recetas);
-      document.getElementById('turnos-icon').textContent = iconoEstado(data.turnos);
-      document.getElementById('estudios-icon').textContent = iconoEstado(data.estudios);
-      resultados.style.display = 'block';
-      if (
-        data.historia_clinica_completa || data.historia_clinica_resumida ||
-        data.consulta_diaria || data.recetas ||
-        data.turnos || data.estudios
-      ) {
-        acciones.style.display = 'block';
-      } else {
-        acciones.style.display = 'none';
-      }
-    } catch (err) {
-      alert('Error en la búsqueda. Reintente.');
-    }
+    if (!dni) { showAlert('alerta', 'Ingrese un DNI válido', false, 3000); return; }
+    buscarPaciente(dni);
   });
-
-  verPdfBtn.addEventListener('click', function() {
-    if (resultadoActual && resultadoActual.pdf_url) {
-      window.open(resultadoActual.pdf_url, '_blank');
-    } else {
-      alert('No se pudo generar el PDF.');
-    }
-  });
-
-  enviarPdfBtn.addEventListener('click', function() {
-    emailEnvio.style.display = 'block';
-  });
-
-  confirmarEnvioBtn.addEventListener('click', async function() {
-    const email = document.getElementById('email-destino').value;
-    if (!email) {
-      alert('Ingresá un email válido.');
-      return;
-    }
-    try {
-      const res = await fetch('/api/enviar_pdf_paciente', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({dni: document.getElementById('dni-paciente').value, email})
-      });
-      const data = await res.json();
-      if (data.ok) {
-        alert('Correo enviado correctamente.');
-        emailEnvio.style.display = 'none';
-      } else {
-        alert('No se pudo enviar el correo.');
-      }
-    } catch (err) {
-      alert('Error al enviar el correo.');
-    }
-  });
-
-  borrarBtn.addEventListener('click', async function() {
-    if (!confirm('¿Estás seguro de que querés borrar COMPLETAMENTE este paciente? Se hará un backup automático antes de eliminarlo.')) {
-      return;
-    }
-    const dni = document.getElementById('dni-paciente').value;
-    borrarBtn.disabled = true;
-    borrarBtn.textContent = 'Borrando...';
-    try {
-      const res = await fetch('/api/borrar_paciente', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({dni})
-      });
-      const data = await res.json();
-      if (data.ok) {
-        alert('Paciente borrado y backup realizado con éxito.');
-        location.reload();
-      } else {
-        alert('No se pudo borrar el paciente. Contactar a soporte.');
-        borrarBtn.disabled = false;
-        borrarBtn.textContent = 'Borrar paciente';
-      }
-    } catch (err) {
-      alert('Error al intentar borrar el paciente.');
-      borrarBtn.disabled = false;
-      borrarBtn.textContent = 'Borrar paciente';
-    }
-  });
+  document.getElementById('btn-no').onclick = cancelarBorradoPaciente;
+  document.getElementById('btn-borrar').onclick = confirmarBorradoPaciente;
 });

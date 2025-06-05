@@ -1,0 +1,40 @@
+<div id="login-container" style="display:none;">
+  <video id="login-video" class="fondo-splash" autoplay loop playsinline preload="auto" src="/static/Videos/login-medsys.mp4"></video>
+  <div class="overlay"></div>
+  <button id="start-login" class="boton-audio" style="display:none;">Iniciar experiencia</button>
+
+  <img src="/static/icons/logo-medsys-gris.png" alt="Logo MedSys" class="logo-medsys">
+
+  <form class="formulario" action="/login" method="POST">
+    <div class="campo">
+      <img src="/static/icons/icon-user.png" alt="icono usuario">
+      <input type="text" name="usuario" id="usuario" placeholder="Usuario" required />
+    </div>
+    <div class="campo">
+      <img src="/static/icons/icon-password.png" alt="icono contraseña">
+      <input type="password" name="contrasena" id="contrasena" placeholder="Contraseña" required />
+    </div>
+    <div class="campo">
+      <img src="/static/icons/icon-role.png" alt="icono rol">
+      <select name="rol" id="rol" required>
+        <option value="medico">Médico</option>
+        <option value="admin">Admin</option>
+        <option value="director">Director</option>
+      </select>
+    </div>
+    <button type="submit" class="submit-button">
+      <img src="/static/icons/Icon-submit.png" alt="Enviar" />
+    </button>
+  </form>
+
+  <div id="alert-manager" class="alert-container" style="display: none;">
+    <div class="alert-box">
+      <img id="alert-icon" src="" alt="icono-alerta" class="alert-icon" />
+      <span id="alert-text" class="alert-message">Texto de alerta</span>
+      <div id="alert-buttons" class="alert-buttons" style="display: none;">
+        <img src="/static/icons/alerta/alerta-boton-borrar.png" id="btn-borrar" class="alert-btn" />
+        <img src="/static/icons/alerta/alerta-boton-no.png" id="btn-no" class="alert-btn" />
+      </div>
+    </div>
+  </div>
+</div>

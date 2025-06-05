@@ -8,6 +8,7 @@
   <title>MEDSYS - Bienvenido</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
   <style>
     body {
       margin: 0;
@@ -118,27 +119,83 @@
         opacity: 0;
       }
     }
+
+    /* Estilos de la sección de login */
+    .logo-medsys {
+      width: 350px;
+      margin-bottom: 110px;
+    }
+
+    .formulario {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      width: 320px;
+    }
+
+    .campo {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(8px);
+      border-radius: 12px;
+      padding: 10px 15px;
+    }
+
+    .campo img {
+      width: 28px;
+      height: 28px;
+      margin-right: 12px;
+    }
+
+    .campo input,
+    .campo select {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      font-size: 16px;
+      color: #ffffff;
+    }
+
+    .submit-button {
+      margin-top: 15px;
+      width: 70px;
+      height: 70px;
+      border: none;
+      border-radius: 50%;
+      background-color: #1ab0e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .submit-button:hover {
+      background-color: #1488b0;
+    }
+
+    .submit-button img {
+      width: 56px;
+      height: 56px;
+    }
   </style>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const video = document.getElementById('background-video');
-      video.addEventListener('ended', function() {
-        document.body.classList.add('fade-out');
-        setTimeout(function() {
-          window.location.href = '/login';
-        }, 500);
-      });
-    });
-  </script>
+  <script src="/static/js/splash_login_transition.js"></script>
 </head>
 <body>
   <div id="preloader">Cargando...</div>
-  <video id="background-video" class="fondo-splash" autoplay playsinline src="/static/Videos/bienvenidos-a-medsys.mp4"></video>
-  <div class="overlay"></div>
-  <button id="start-experience" class="boton-audio" style="display:none;">Iniciar experiencia</button>
-  <img src="/static/icons/logo-medsys-gris.png" alt="Logo Medsys" class="logo">
-  <div class="eslogan">Salud Inteligente para un Mundo Real</div>
+  <div id="splash-container">
+    <video id="background-video" class="fondo-splash" autoplay playsinline src="/static/Videos/bienvenidos-a-medsys.mp4"></video>
+    <div class="overlay"></div>
+    <button id="start-experience" class="boton-audio" style="display:none;">Iniciar experiencia</button>
+    <img src="/static/icons/logo-medsys-gris.png" alt="Logo Medsys" class="logo">
+    <div class="eslogan">Salud Inteligente para un Mundo Real</div>
+  </div>
+  {% include 'partials/login_container.html' %}
   <script src="/static/js/video_background.js"></script>
 </body>
 </html>

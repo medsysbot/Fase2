@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
-from supabase_py import create_client, Client
+from supabase import create_client, Client
 import os, json
 from datetime import datetime
 

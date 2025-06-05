@@ -19,6 +19,12 @@ EMAIL_IMAP_PASSWORD = os.getenv("EMAIL_IMAP_PASSWORD")
 # ╔══════════════════════════════════════════════╗
 # ║   PROCESAR CORREOS Y GUARDAR EN SUPABASE     ║
 # ╚══════════════════════════════════════════════╝
+async def revisar_bandeja_email():
+    """Revisar bandeja institucional y procesar adjuntos."""
+    # TODO: extraer DNI y nombre del paciente de cada correo y
+    # agregar el estudio de manera automática.
+    pass
+
 async def procesar_correos():
     if not (EMAIL_IMAP_USER and EMAIL_IMAP_PASSWORD):
         print("Credenciales IMAP no configuradas")
@@ -63,16 +69,39 @@ async def procesar_correos():
 
 async def monitor_correos():
     while True:
-        await procesar_correos()
-        await asyncio.sleep(300)
+        await revisar_bandeja_email()
+        await asyncio.sleep(3600)
 
 # ╔══════════════════════════════════════════════╗
 # ║              ENDPOINTS API                   ║
 # ╚══════════════════════════════════════════════╝
 @router.get("/consultar_estudios/{dni}")
 async def consultar_estudios(dni: str):
-    res = supabase.table("estudios").select("id, tipo_estudio, fecha_estudio").eq("dni", dni).execute()
+    campos = "id, tipo_estudio, fecha_estudio, descripcion, url_pdf"
+    res = (
+        supabase.table("estudios")
+        .select(campos)
+        .eq("dni", dni)
+        .execute()
+    )
     return {"estudios": res.data}
+
+
+@router.get("/api/sugerencias_pacientes")
+async def sugerencias_pacientes(q: str = ""):
+    """Devuelve pacientes coincidentes para autocompletar."""
+    if not q:
+        return {"pacientes": []}
+    try:
+        consulta = supabase.table("registro_pacientes").select("dni, nombres, apellido")
+        if q.isdigit():
+            consulta = consulta.ilike("dni", f"{q}%")
+        else:
+            consulta = consulta.ilike("nombres", f"%{q}%")
+        res = consulta.limit(10).execute()
+        return {"pacientes": res.data}
+    except Exception:
+        return {"pacientes": []}
 
 @router.get("/obtener_estudio/{estudio_id}")
 async def obtener_estudio(estudio_id: int):

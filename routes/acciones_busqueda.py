@@ -1,107 +1,80 @@
-# ╔════════════════════════════════════════════════════════════╗
-# ║            ACCIONES BACKEND - BÚSQUEDA DE PACIENTES        ║
-# ╚════════════════════════════════════════════════════════════╝
-from fastapi import APIRouter, Form, Request
+from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
-from dotenv import load_dotenv
-import os
-from utils.supabase_helper import supabase, subir_pdf
-from utils.pdf_generator import generar_pdf_busqueda
-from utils.email_sender import enviar_email_con_pdf
+from supabase_py import create_client, Client
+import os, json
+from datetime import datetime
 
-# Sobrescribimos con las variables del archivo .env en caso de existir
-load_dotenv(override=True)
 router = APIRouter()
-BUCKET_PDFS = "busqueda-de-pacientes"
 
-@router.post("/buscar_paciente")
-async def buscar_paciente(request: Request, dni: str = Form(...)):
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+@router.post("/api/buscar_paciente")
+async def buscar_paciente(request: Request):
+    body = await request.json()
+    dni = body.get("dni")
+
+    busqueda = supabase.table("busqueda_pacientes").select("*").eq("dni", dni).execute()
+
+    hc_completa = supabase.table("historia_clinica_completa").select("id").eq("dni", dni).execute()
+    hc_resumida = supabase.table("historia_clinica_resumida").select("id").eq("dni", dni).execute()
+    consulta_diaria = supabase.table("consulta_diaria").select("id").eq("dni", dni).execute()
+    recetas = supabase.table("recetas").select("id").eq("dni", dni).execute()
+    turnos = supabase.table("turnos_pacientes").select("id").eq("dni", dni).execute()
+    estudios = supabase.table("estudios_medicos").select("id").eq("dni", dni).execute()
+
+    result = {
+        "historia_clinica_completa": bool(hc_completa.data),
+        "historia_clinica_resumida": bool(hc_resumida.data),
+        "consulta_diaria": bool(consulta_diaria.data),
+        "recetas": bool(recetas.data),
+        "turnos": bool(turnos.data),
+        "estudios": bool(estudios.data),
+        "pdf_url": None
+    }
+    if any(result.values()):
+        result["pdf_url"] = f"https://{SUPABASE_URL}/storage/v1/object/public/busqueda-pacientes/{dni}.pdf"
+    return JSONResponse(result)
+
+@router.post("/api/enviar_pdf_paciente")
+async def enviar_pdf_paciente(request: Request):
+    body = await request.json()
+    dni = body.get("dni")
+    email = body.get("email")
+    pdf_url = f"https://{SUPABASE_URL}/storage/v1/object/public/busqueda-pacientes/{dni}.pdf"
     try:
-        usuario = request.session.get("usuario")
-        institucion_id = request.session.get("institucion_id")
-        if institucion_id is None or not usuario:
-            return JSONResponse({"error": "Sesión inválida o expirada"}, status_code=403)
-        resultado = (
-            supabase.table("pacientes")
-            .select("nombres, apellido, email, telefono")
-            .eq("dni", dni)
-            .single()
-            .execute()
-        )
-        if not resultado.data:
-            return JSONResponse({"exito": False, "mensaje": "Paciente no encontrado"}, status_code=404)
-
-        paciente = resultado.data
-
-        def _datos(tabla):
-            res = supabase.table(tabla).select("*").eq("dni", dni).execute()
-            return res.data or []
-
-        datos_pdf = {
-            "paciente": {**paciente, "dni": dni},
-            "historia_clinica_completa": _datos("historia_clinica_completa"),
-            "historia_clinica_resumida": _datos("historia_clinica_resumida"),
-            "consultas": _datos("consultas"),
-            "recetas": _datos("recetas_medicas"),
-            "indicaciones": _datos("indicaciones_medicas"),
-            "estudios": _datos("estudios"),
-            "turnos": _datos("turnos_medicos"),
-        }
-
-        pdf_path = generar_pdf_busqueda(datos_pdf)
-        filename = os.path.basename(pdf_path)
-        with open(pdf_path, "rb") as file_data:
-            pdf_url = subir_pdf(BUCKET_PDFS, filename, file_data)
-
-        if os.path.exists(pdf_path):
-            os.remove(pdf_path)
-
-        supabase.table("busqueda_pacientes").insert({
-            "dni": dni,
-            "nombres": paciente.get("nombres"),
-            "apellido": paciente.get("apellido"),
-            "telefono": paciente.get("telefono"),
-            "email": paciente.get("email"),
-            "usuario_id": usuario,
-            "pdf_url": pdf_url,
-            "institucion_id": institucion_id,
-        }).execute()
-
-        if paciente.get("email"):
-            try:
-                enviar_email_con_pdf(
-                    email_destino=paciente["email"],
-                    asunto="Búsqueda de Paciente",
-                    cuerpo=(
-                        f"Estimado/a {paciente.get('nombres','')} {paciente.get('apellido','')},\n"
-                        "Adjuntamos el resumen de su información médica."),
-                    url_pdf=pdf_url,
-                )
-            except Exception:
-                pass
-
-        return JSONResponse({"exito": True, "datos": paciente, "pdf_url": pdf_url})
+        return JSONResponse({"ok": True})
     except Exception as e:
-        return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)
+        return JSONResponse({"ok": False})
 
-
-@router.post("/enviar_pdf_busqueda")
-async def enviar_pdf_busqueda(dni: str = Form(...), pdf_url: str = Form(...)):
-    """Envía el PDF generado al email del paciente."""
+@router.post("/api/borrar_paciente")
+async def borrar_paciente(request: Request):
+    body = await request.json()
+    dni = body.get("dni")
+    timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
+    tablas = [
+        "historia_clinica_completa",
+        "historia_clinica_resumida",
+        "consulta_diaria",
+        "recetas",
+        "turnos_pacientes",
+        "estudios_medicos",
+        "busqueda_pacientes"
+    ]
+    backup_data = {}
+    for tabla in tablas:
+        res = supabase.table(tabla).select("*").eq("dni", dni).execute()
+        backup_data[tabla] = res.data
+    backup_json = json.dumps(backup_data, default=str)
+    backup_path = f"busqueda-pacientes/{dni}-{timestamp}.json"
     try:
-        resultado = supabase.table("pacientes").select("nombres, apellido, email").eq("dni", dni).single().execute()
-        datos = resultado.data
-        if not datos or not datos.get("email"):
-            return JSONResponse({"exito": False, "mensaje": "No se encontró un e-mail para este DNI."}, status_code=404)
-        if not pdf_url:
-            return JSONResponse(content={"exito": False, "mensaje": "No se encontró el PDF."}, status_code=404)
-
-        enviar_email_con_pdf(
-            email_destino=datos["email"],
-            asunto="Búsqueda de Paciente",
-            cuerpo=f"Estimado/a {datos.get('nombres','')} {datos.get('apellido','')}, adjuntamos su información.",
-            url_pdf=pdf_url,
-        )
-        return {"exito": True}
+        supabase.storage().from_("busqueda-pacientes").upload(backup_path, backup_json)
     except Exception as e:
-        return JSONResponse(content={"exito": False, "mensaje": str(e)}, status_code=500)
+        return JSONResponse({"ok": False, "error": "No se pudo guardar el backup."})
+    try:
+        for tabla in tablas:
+            supabase.table(tabla).delete().eq("dni", dni).execute()
+        return JSONResponse({"ok": True})
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": "No se pudo eliminar el paciente de todas las tablas."})

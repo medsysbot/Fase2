@@ -137,3 +137,52 @@ document.addEventListener('DOMContentLoaded', () => {
     mensaje.textContent = "Ingrese DNI, nombre y seleccione un estudio para ver los resultados.";
   });
 });
+// --- INICIO BLOQUE ENVÍO POR EMAIL ---
+
+let estudioSeleccionado = null;
+
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('fecha-link')) {
+    e.preventDefault();
+    estudioSeleccionado = {
+      url: e.target.getAttribute('href'),
+      descripcion: e.target.textContent
+    };
+    document.getElementById('envio-email-container').style.display = 'block';
+    document.getElementById('email-estudio').focus();
+  }
+});
+
+document.getElementById('enviar-estudio-btn').addEventListener('click', async function() {
+  const email = document.getElementById('email-estudio').value.trim();
+  if (!email || !estudioSeleccionado) {
+    showAlert({ mensaje: "Seleccione un estudio y complete el email.", tipo: "info" });
+    return;
+  }
+  showAlert({ mensaje: "Enviando estudio...", tipo: "email" });
+
+  try {
+    const body = {
+      email,
+      url: estudioSeleccionado.url,
+      descripcion: estudioSeleccionado.descripcion
+    };
+    const resp = await fetch('/api/enviar_estudio_email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await resp.json();
+    if (data.ok) {
+      showAlert({ mensaje: "Estudio enviado correctamente.", tipo: "success" });
+      document.getElementById('envio-email-container').style.display = 'none';
+      document.getElementById('email-estudio').value = '';
+    } else {
+      showAlert({ mensaje: data.error || "No se pudo enviar el estudio.", tipo: "error" });
+    }
+  } catch (err) {
+    showAlert({ mensaje: "Error al enviar. Intente de nuevo.", tipo: "error" });
+  }
+});
+
+// --- FIN BLOQUE ENVÍO POR EMAIL ---

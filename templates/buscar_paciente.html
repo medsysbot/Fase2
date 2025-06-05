@@ -30,17 +30,20 @@
   </form>
 
   <div class="botones-flotantes">
+    <button type="button" onclick="iniciarReconocimientoVoz()" title="Reconocimiento de voz">
+      <img src="/static/icons/voz.png" alt="Voz" />
+    </button>
     <button type="submit" form="form-busqueda-paciente" title="Buscar">
       <img src="/static/icons/busquedas.png" alt="Buscar" />
     </button>
-    <button type="button" onclick="verPDF()" title="Ver PDF">
-      <img src="/static/icons/icono-ver-pdf.png" alt="Ver PDF" />
-    </button>
-    <button type="button" onclick="enviarPorCorreo()" title="Enviar">
-      <img src="/static/icons/enviar.png" alt="Enviar" />
+    <button type="button" onclick="guardarPaciente()" title="Guardar">
+      <img src="/static/icons/guardar.png" alt="Guardar" />
     </button>
     <button type="button" ondblclick="prepararBorradoPaciente()" title="Borrar paciente">
       <img src="/static/icons/borrar.png" alt="Borrar" />
+    </button>
+    <button type="button" id="btn-verpdf" onclick="verPDF()" title="Ver PDF" style="display:none">
+      <img src="/static/icons/icono-ver-pdf.png" alt="Ver PDF" />
     </button>
   </div>
 

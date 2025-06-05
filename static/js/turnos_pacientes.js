@@ -111,3 +111,53 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.style.display = url ? 'inline-block' : 'none';
   }
 });
+
+function iniciarReconocimientoVozTurnos() {
+  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  recognition.lang = 'es-AR';
+  recognition.interimResults = false;
+  recognition.continuous = false;
+
+  recognition.onresult = (event) => {
+    const texto = event.results[0][0].transcript.toLowerCase();
+    const campos = {
+      'nombre': 'nombre',
+      'apellido': 'apellido',
+      'dni': 'dni',
+      'especialidad': 'especialidad',
+      'profesional': 'profesional',
+      'fecha': 'fecha',
+      'horario': 'hora',
+      'hora': 'hora',
+      'observaciones': 'observaciones'
+    };
+
+    for (const clave in campos) {
+      if (texto.includes(clave)) {
+        const idCampo = campos[clave];
+        let valor = texto.replace(clave, '').replace('dos puntos', ':').trim();
+        if (idCampo === 'fecha') {
+          valor = convertirFecha(valor.replace(/ de /g, '-'));
+        }
+        const campo = document.getElementById(idCampo);
+        if (campo) campo.value = valor;
+        break;
+      }
+    }
+  };
+
+  recognition.onerror = (e) => console.error('Error de voz:', e.error);
+  recognition.start();
+}
+
+function convertirFecha(texto) {
+  try {
+    if (texto.includes('-')) {
+      const partes = texto.split('-');
+      return `${partes[2]}-${partes[1].padStart(2, '0')}-${partes[0].padStart(2, '0')}`;
+    }
+    return texto;
+  } catch (e) {
+    return '';
+  }
+}

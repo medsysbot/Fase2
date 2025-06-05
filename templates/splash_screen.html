@@ -39,15 +39,8 @@
       animation: fadeout 0.5s forwards;
     }
 
-    video.fondo-splash {
-      position: fixed;
-      top: 0;
-      left: 0;
-      min-width: 100vw;
-      min-height: 100vh;
-      object-fit: cover;
-      z-index: -2;
-    }
+    /* Se removió la clase 'fondo-splash' ya que
+       el video ahora lleva estilos en línea */
 
     .overlay {
       position: fixed;
@@ -162,7 +155,11 @@
 </head>
 <body>
   <div id="splash-container">
-    <video id="splash-video" class="fondo-splash" autoplay playsinline src="/static/Videos/bienvenida-login.mp4"></video>
+    <video id="splash-video"
+      src="/static/Videos/bienvenida-login.mp4"
+      autoplay
+      playsinline
+      style="object-fit:cover;width:100vw;height:100vh;position:fixed;top:0;left:0;z-index:-1;background:black;"></video>
     <div class="overlay"></div>
     <img src="/static/icons/logo-medsys-gris.png" alt="Logo Medsys" id="splash-logo" class="logo">
     <div id="splash-text" class="eslogan">Salud Inteligente para un Mundo Real</div>

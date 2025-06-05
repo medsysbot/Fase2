@@ -14,7 +14,8 @@
       margin: 0;
       padding: 0;
       height: 100vh;
-      background: none;
+      background: url('/static/login-fondo.png') no-repeat center center;
+      background-size: cover;
       font-family: 'Poppins', sans-serif;
       display: flex;
       flex-direction: column;
@@ -22,46 +23,6 @@
       justify-content: center;
       text-align: center;
       color: #d3d3d3;
-      position: relative;
-      z-index: 1;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.5s;
-    }
-
-    body.ready {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    /* Se eliminó la clase 'fondo-splash' y el overlay
-       porque esta página no muestra el video de inicio */
-
-    .boton-audio {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      padding: 10px 20px;
-      background: rgba(0, 0, 0, 0.6);
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      z-index: 2;
-    }
-
-    #preloader {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: #000;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 3;
     }
 
     .logo-medsys {
@@ -128,14 +89,56 @@
   </style>
 </head>
 <body>
-  {% include 'partials/login_container.html' %}
-  <script src="/static/js/alertas.js"></script>
-  {% if error %}
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      showAlert('error', '{{ error }}', false, 3000);
-    });
-  </script>
-  {% endif %}
+  
+
+
+  <img src="/static/icons/logo-medsys-gris.png" alt="Logo MedSys" class="logo-medsys">
+
+  <!-- ╔════════════════════════════════════╗ -->
+<!-- ║        DATOS DEL PACIENTE        ║ -->
+<!-- ╚════════════════════════════════════╝ -->
+<form class="formulario" action="/login" method="POST">
+  <div class="campo">
+    <img src="/static/icons/icon-user.png" alt="icono usuario">
+    <input type="text" name="usuario" id="usuario" placeholder="Usuario" required />
+  </div>
+  <div class="campo">
+    <img src="/static/icons/icon-password.png" alt="icono contraseña">
+    <input type="password" name="contrasena" id="contrasena" placeholder="Contraseña" required />
+  </div>
+  <div class="campo">
+    <img src="/static/icons/icon-role.png" alt="icono rol">
+    <select name="rol" id="rol" required>
+      <option value="medico">Médico</option>
+      <option value="admin">Admin</option>
+      <option value="director">Director</option>
+    </select>
+  </div>
+  <button type="submit" class="submit-button">
+    <img src="/static/icons/Icon-submit.png" alt="Enviar" />
+  </button>
+</form>
+
+<!-- ALERT MANAGER -->
+<div id="alert-manager" class="alert-container" style="display: none;">
+  <div class="alert-box">
+    <img id="alert-icon" src="" alt="icono-alerta" class="alert-icon" />
+    <span id="alert-text" class="alert-message">Texto de alerta</span>
+    <div id="alert-buttons" class="alert-buttons" style="display: none;">
+      <img src="/static/icons/alerta/alerta-boton-borrar.png" id="btn-borrar" class="alert-btn" />
+      <img src="/static/icons/alerta/alerta-boton-no.png" id="btn-no" class="alert-btn" />
+    </div>
+  </div>
+</div>
+
+<script src="/static/js/alertas.js"></script>
+{% if error %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    showAlert('error', '{{ error }}', false, 3000);
+  });
+</script>
+{% endif %}
+
 </body>
 </html>

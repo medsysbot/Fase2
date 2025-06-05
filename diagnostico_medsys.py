@@ -14,7 +14,7 @@ modulos = [
     ("consulta_diaria", "consulta-diaria"),
     ("indicaciones_medicas", "indicaciones-medicas"),
     ("recetas_medicas", "recetas-medicas"),
-    ("turnos_pacientes", "turnos-pacientes")
+    ("turnos_pacientes", "turnos_pacientes")
 ]
 
 # ══════════════════════════════════════════════════════════

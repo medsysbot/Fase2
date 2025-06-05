@@ -113,9 +113,9 @@ async def ver_turno_publico(request: Request):
         {"request": request},
     )
 
-@router.get("/turnos-pacientes")
+@router.get("/turnos_pacientes")
 def ver_turnos_pacientes(request: Request):
     """Muestra el formulario de turnos para pacientes."""
     return templates.TemplateResponse(
-        "turnos-pacientes.html", {"request": request}
+        "turnos_pacientes.html", {"request": request}
     )

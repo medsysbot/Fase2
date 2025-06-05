@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>MEDSYS - Bienvenido</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      font-family: 'Poppins', sans-serif;
+      background: url('/static/splash-sacar-turno.png') no-repeat center center;
+      background-size: cover;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #595959;
+      overflow: hidden;
+      text-align: center;
+      animation: fadeout 1s ease-in-out forwards;
+      animation-delay: 6.5s; /* Duración total + fade */
+    }
+    .logo {
+      width: 440px;
+      max-width: 85vw;
+      opacity: 0;
+      animation: aparecer 1.5s forwards;
+      animation-delay: 0.5s;
+    }
+    .eslogan {
+      margin-top: 5px;
+      font-size: 28px;
+      font-weight: 600;
+      color: #595959;
+      opacity: 0;
+      animation: aparecer 1.5s forwards;
+      animation-delay: 1.5s;
+    }
+    @keyframes aparecer {
+      from {
+        opacity: 0;
+        transform: translateY(0);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @keyframes fadeout {
+      to { opacity: 0; }
+    }
+    @media (max-width: 600px) {
+      .logo {
+        width: 72vw;
+        min-width: 110px;
+      }
+      .eslogan {
+        font-size: 17px;
+      }
+    }
+  </style>
+  <script>
+    setTimeout(() => {
+      window.location.href = "/solicitar-turno";
+    }, 6500); // 6.5 segundos (5s de splash + 1.5s fade)
+  </script>
+</head>
+<body>
+  <img src="/static/icons/logo-medsys-gris.png" alt="Logo Medsys" class="logo">
+  <div class="eslogan">Salud Inteligente para un Mundo Real</div>
+</body>
+</html>

@@ -1,0 +1,39 @@
+ORDEN PARA CODEX — Adaptación Email y Envío en Estudios Médicos
+En el formulario de Estudios Médicos, agregar el bloque para enviar por email:
+
+Debajo de la lista de fechas (<ul id="lista-fechas" ...>), agregá:
+
+html
+Copy
+Edit
+<div id="envio-email-container" style="display:none; margin-top:18px;">
+  <label for="email-estudio">Enviar estudio a email:</label>
+  <input type="email" id="email-estudio" placeholder="email@destino.com" style="width:100%;margin-bottom:7px;" />
+  <button type="button" id="enviar-estudio-btn" style="background:#16a085;color:#fff;padding:7px 18px;border:none;border-radius:7px;font-weight:600;">
+    <img src="/static/icons/enviar.png" alt="Enviar" style="vertical-align:middle;width:22px;margin-right:5px;" />Enviar
+  </button>
+</div>
+El bloque debe estar fuera del <form> principal y después de la lista de fechas, para ser visible solo cuando corresponde.
+
+Integrar la lógica JS de selección y envío:
+
+Al hacer clic en cualquier fecha (clase .fecha-link), mostrar el campo email y el botón de enviar.
+
+Guardar internamente la URL y descripción del estudio seleccionado.
+
+Al hacer click en el botón "Enviar", enviar por fetch los datos (email, url, descripcion) al endpoint backend /api/enviar_estudio_email o el que corresponda.
+
+Mostrar feedback con showAlert() según éxito o error.
+
+Verificar:
+
+El email y el botón solo aparecen al seleccionar un estudio.
+
+El formulario y el botón de enviar respetan el estilo MedSys.
+
+Al enviar, limpiar el campo email y ocultar el bloque si el envío fue exitoso.
+
+Revisar que el archivo JS esté bien cargado en el HTML y que el bloque se encuentre después del último listener para asegurar ejecución.
+
+Notificar cuando la integración esté completa y funcionando.
+

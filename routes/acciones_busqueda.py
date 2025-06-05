@@ -1,14 +1,11 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
-from supabase_py import create_client, Client
-import os, json
+from utils.supabase_helper import supabase, SUPABASE_URL
+from utils.email_sender import enviar_email_con_pdf
+import json
 from datetime import datetime
 
 router = APIRouter()
-
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 @router.post("/api/buscar_paciente")
 async def buscar_paciente(request: Request):
@@ -44,6 +41,12 @@ async def enviar_pdf_paciente(request: Request):
     email = body.get("email")
     pdf_url = f"https://{SUPABASE_URL}/storage/v1/object/public/busqueda-pacientes/{dni}.pdf"
     try:
+        enviar_email_con_pdf(
+            email_destino=email,
+            asunto="Información solicitada",
+            cuerpo="Adjuntamos el PDF generado.",
+            url_pdf=pdf_url,
+        )
         return JSONResponse({"ok": True})
     except Exception as e:
         return JSONResponse({"ok": False})

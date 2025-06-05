@@ -56,8 +56,7 @@ async def generar_pdf_turno_paciente_route(
         print("BUCKET_PDFS:", bucket)
         print("Buckets visibles desde backend:", supabase.storage().list_buckets())
         with open(pdf_path, "rb") as f:
-            contenido_pdf = f.read()
-        url_pdf = subir_pdf(bucket, nombre_archivo, contenido_pdf)
+            url_pdf = subir_pdf(bucket, nombre_archivo, f)
 
         # Guardar registro en la tabla
         supabase.table("turnos_pacientes").insert([{

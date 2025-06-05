@@ -1,4 +1,4 @@
--- Tabla busqueda_pacientes vinculada al bucket 'busqueda-de-pacientes'
+-- Tabla busqueda_pacientes vinculada al bucket 'busqueda-pacientes'
 CREATE TABLE IF NOT EXISTS busqueda_pacientes (
     id serial PRIMARY KEY,
     dni text,

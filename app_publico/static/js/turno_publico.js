@@ -1,11 +1,12 @@
 // ╔═══════════════════════════════════╗
 // ║   turno_publico.js (Público)      ║
 // ╚═══════════════════════════════════╝
+
 async function guardarPDF() {
   const form = document.getElementById('form-turnos');
   const formData = new FormData(form);
 
-  const campos = ['nombre', 'apellido', 'dni', 'especialidad', 'profesional', 'fecha', 'hora'];
+  const campos = ['nombre', 'apellido', 'dni', 'especialidad', 'profesional', 'fecha', 'hora', 'institucion'];
   for (const campo of campos) {
     const valor = form.querySelector(`[name="${campo}"]`).value.trim();
     if (!valor) {
@@ -119,12 +120,29 @@ async function enviarPorCorreo() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const instInput = document.getElementById('institucion_nombre');
   const btn = document.getElementById('btn-verpdf');
   if (instInput) instInput.value = sessionStorage.getItem('institucion_nombre') || '';
   if (btn) {
     const url = sessionStorage.getItem('pdfURL');
     btn.style.display = url ? 'inline-block' : 'none';
+  }
+
+  // AGREGADO: Llenar select de instituciones dinámicamente
+  const selectInst = document.getElementById('institucion');
+  if (selectInst) {
+    try {
+      const resp = await fetch('/api/listar_instituciones');
+      const data = await resp.json();
+      (data.instituciones || []).forEach(inst => {
+        const opt = document.createElement('option');
+        opt.value = inst.id;
+        opt.textContent = inst.nombre;
+        selectInst.appendChild(opt);
+      });
+    } catch (err) {
+      showAlert && showAlert('error', 'No se pudieron cargar las instituciones.', false, 4000);
+    }
   }
 });

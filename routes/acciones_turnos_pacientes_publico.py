@@ -10,7 +10,7 @@ from utils.pdf_generator import generar_pdf_turno_publico
 
 router = APIRouter()
 
-BUCKET_PDFS = "turnos_pacientes"
+BUCKET_PDFS = "turnos-pacientes"
 
 # ╔════════════════════════════════════╗
 # ║        GUARDAR FORMULARIO         ║
@@ -95,6 +95,11 @@ async def generar_pdf_turno_publico(
 
         pdf_path = generar_pdf_turno_publico(datos)
         nombre_pdf = f"{dni}_turno_publico.pdf"
+        print("BUCKET_PDFS:", BUCKET_PDFS)
+        print(
+            "Buckets visibles desde backend:",
+            supabase.storage().list_buckets(),
+        )
         with open(pdf_path, "rb") as f:
             pdf_url = subir_pdf(BUCKET_PDFS, nombre_pdf, f)
 

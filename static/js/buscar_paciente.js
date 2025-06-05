@@ -4,6 +4,44 @@
 
 let pdfURL = null;
 
+function mostrarCampoEmail() {
+  document.getElementById('email-envio-container').style.display = 'block';
+}
+
+async function enviarPorCorreo() {
+  const email = document.getElementById('email-destino').value.trim();
+  const dni = document.getElementById('dni-paciente').value.trim();
+
+  if (!email) {
+    showAlert('alerta', 'Ingrese un email', false, 3000);
+    return;
+  }
+  if (!pdfURL) {
+    showAlert('pdf', 'Genere y guarde antes de enviar.', false, 3000);
+    return;
+  }
+
+  try {
+    showAlert('email', 'Enviando e-mail…', false, 3000);
+    await new Promise(r => setTimeout(r, 1500));
+    const fd = new FormData();
+    fd.append('dni', dni);
+    fd.append('email', email);
+    fd.append('pdf_url', pdfURL);
+    const resp = await fetch('/enviar_pdf_busqueda', { method: 'POST', body: fd });
+    const data = await resp.json();
+    if (data.exito) {
+      showAlert('suceso', 'E-mail enviado con éxito', false, 3000);
+      document.getElementById('email-envio-container').style.display = 'none';
+    } else {
+      showAlert('error', data.mensaje || 'Error al enviar el e-mail', false, 3000);
+    }
+  } catch (error) {
+    console.error('Error al enviar:', error);
+    showAlert('error', 'Error al enviar el e-mail', false, 3000);
+  }
+}
+
 function iconoEstado(ok) {
   if (ok === null) return '⏳';
   return ok ? '✅' : '❌';

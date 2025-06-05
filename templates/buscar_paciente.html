@@ -54,7 +54,7 @@
     <div id="email-envio-container" style="display:none; margin-top:10px;">
       <label for="email-destino">Email de destino:</label>
       <input type="email" id="email-destino" name="email" />
-      <button id="confirmar-envio" type="button">Confirmar envío</button>
+      <button id="confirmar-envio" type="button" onclick="enviarPorCorreo()">Confirmar envío</button>
     </div>
   </div>
 
@@ -67,6 +67,9 @@
     </button>
     <button type="button" onclick="guardarPaciente()" title="Guardar">
       <img src="/static/icons/guardar.png" alt="Guardar" />
+    </button>
+    <button type="button" onclick="mostrarCampoEmail()" title="Enviar">
+      <img src="/static/icons/enviar.png" alt="Enviar" />
     </button>
     <button type="button" ondblclick="prepararBorradoPaciente()" title="Borrar paciente">
       <img src="/static/icons/borrar.png" alt="Borrar" />

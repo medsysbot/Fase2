@@ -114,6 +114,15 @@ async def ver_turno_publico(request: Request):
         {"request": request},
     )
 
+
+@router.get("/splash-turno-publico", response_class=HTMLResponse)
+async def splash_turno_publico(request: Request):
+    """Pantalla de bienvenida previa al formulario público de turnos."""
+    return public_templates.TemplateResponse(
+        "splash_turnos_publico.html",
+        {"request": request},
+    )
+
 @router.get("/turnos_pacientes")
 def ver_turnos_pacientes(request: Request):
     """Muestra el formulario de turnos para pacientes."""

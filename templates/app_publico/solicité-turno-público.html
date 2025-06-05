@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <!-- ╔════════════════════════════════════╗ -->
+  <!-- ║      CABECERA DEL FORMULARIO      ║ -->
+  <!-- ╚════════════════════════════════════╝ -->
+  <meta charset="UTF-8" />
+  <title>Turno Médico (Público)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/styles.css" />
+
+  <!-- Preload de íconos de alerta -->
+  <link rel="preload" href="/static/icons/alerta/alerta-alerta.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-borrado.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-busqueda.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-error.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-guardado.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-suceso.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-paciente-cargado.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-pdf.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-email.png" as="image">
+  <link rel="preload" href="/static/icons/alerta/alerta-carga-pdf.png" as="image">
+</head>
+<body>
+  <header>
+    <img src="/static/icons/icono-turnos.png" alt="Logo Turnos" class="logo-grande" />
+    <h2 style="text-align: center;">Turno Médico (Público)</h2>
+  </header>
+
+  <form class="formulario" id="form-turnos">
+    <label>Nombre:</label>
+    <input type="text" name="nombre" id="nombre" required />
+
+    <label>Apellido:</label>
+    <input type="text" name="apellido" id="apellido" required />
+
+    <label>DNI:</label>
+    <input type="text" name="dni" id="dni" required />
+
+    <label>Especialidad:</label>
+    <input type="text" name="especialidad" id="especialidad" required />
+
+    <label>Profesional:</label>
+    <input type="text" name="profesional" id="profesional" required />
+
+    <label>Fecha del Turno:</label>
+    <input type="date" name="fecha" id="fecha" required />
+
+    <label>Horario:</label>
+    <input type="time" name="hora" id="hora" required />
+
+    <label>Observaciones:</label>
+    <textarea name="observaciones" id="observaciones" rows="3"></textarea>
+
+    <!-- Campo oculto con el nombre de la institución -->
+    <input type="hidden" name="institucion_nombre" id="institucion_nombre" />
+  </form>
+
+  <div class="botones-flotantes">
+    <button type="button" ondblclick="activarVoz()" title="Reconocimiento por voz">
+      <img src="/static/icons/microfono.png" alt="Voz" />
+    </button>
+    <button type="button" onclick="guardarPDF()" title="Guardar">
+      <img src="/static/icons/guardar.png" alt="Guardar" />
+    </button>
+    <button type="button" onclick="enviarPorCorreo()" title="Enviar">
+      <img src="/static/icons/enviar.png" alt="Enviar" />
+    </button>
+    <button type="button" id="btn-verpdf" onclick="abrirPDF()" title="Ver PDF" style="display:none">
+      <img src="/static/icons/icono-ver-pdf.png" alt="Ver PDF" />
+    </button>
+  </div>
+
+  <!-- ALERTAS -->
+  <div id="alert-manager" class="alert-container" style="display: none;">
+    <div class="alert-box">
+      <img id="alert-icon" src="" alt="icono-alerta" class="alert-icon" />
+      <span id="alert-text" class="alert-message">Texto de alerta</span>
+      <div id="alert-buttons" class="alert-buttons" style="display: none;">
+        <img src="/static/icons/alerta/alerta-boton-borrar.png" id="btn-borrar" class="alert-btn" />
+        <img src="/static/icons/alerta/alerta-boton-no.png" id="btn-no" class="alert-btn" />
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function activarVoz() {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = "es-ES";
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.onresult = function (event) {
+        const texto = event.results[0][0].transcript;
+        const campo = document.activeElement;
+        if (campo && (campo.tagName === "INPUT" || campo.tagName === "TEXTAREA")) {
+          campo.value += (campo.value ? " " : "") + texto;
+        }
+      };
+      recognition.start();
+    }
+  </script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const inst = sessionStorage.getItem("institucion_nombre") || "";
+      document.getElementById("institucion_nombre").value = inst;
+    });
+  </script>
+
+  <script src="/static/js/alertas.js"></script>
+  <script src="/static/js/turno_publico.js"></script>
+</body>
+</html>

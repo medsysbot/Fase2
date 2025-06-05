@@ -261,6 +261,7 @@ from routes import (
     estudios_router,
     admin_router,
     paginas_router,
+    turnos_pacientes_router,
 )
 from routes.acciones_turnos_pacientes_publico import (
     router as turnos_publicos_router,
@@ -280,6 +281,7 @@ app.include_router(registro_pacientes_router)
 app.include_router(estudios_router)
 app.include_router(admin_router)
 app.include_router(paginas_router)
+app.include_router(turnos_pacientes_router)
 app.include_router(turnos_publicos_router)
 
 

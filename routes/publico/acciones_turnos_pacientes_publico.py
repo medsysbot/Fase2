@@ -155,3 +155,15 @@ async def enviar_pdf_turno_publico(
         return {"exito": True}
     except Exception as e:
         return JSONResponse(status_code=500, content={"exito": False, "mensaje": str(e)})
+
+# ╔════════════════════════════════════════════════════════════╗
+# ║   ENDPOINT: LISTAR INSTITUCIONES PARA EL SELECT           ║
+# ╚════════════════════════════════════════════════════════════╝
+@router.get("/api/listar_instituciones")
+async def listar_instituciones():
+    try:
+        resp = supabase.table("instituciones").select("id, nombre").execute()
+        lista = resp.data if resp.data else []
+        return {"instituciones": lista}
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"instituciones": [], "error": str(e)})

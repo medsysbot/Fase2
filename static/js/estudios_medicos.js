@@ -1,10 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('form-buscar-estudios');
+  const form = document.getElementById('form-estudios');
   const listaFechas = document.getElementById('lista-fechas');
   const mensaje = document.getElementById('mensaje');
   const selectEstudio = document.getElementById('tipo_estudio');
   const inputDNI = document.getElementById('dni');
   const inputNombre = document.getElementById('nombre');
+
+  window.buscarEstudios = () => form.requestSubmit();
+  window.limpiarEstudios = () => form.reset();
 
   // Lista ampliable de estudios (agregá los que quieras)
   const TIPOS_ESTUDIOS = [
@@ -162,15 +165,13 @@ document.getElementById('enviar-estudio-btn').addEventListener('click', async fu
   showAlert({ mensaje: "Enviando estudio...", tipo: "email" });
 
   try {
-    const body = {
-      email,
-      url: estudioSeleccionado.url,
-      descripcion: estudioSeleccionado.descripcion
-    };
+    const fd = new FormData();
+    fd.append('email', email);
+    fd.append('url', estudioSeleccionado.url);
+    fd.append('descripcion', estudioSeleccionado.descripcion);
     const resp = await fetch('/api/enviar_estudio_email', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      body: fd
     });
     const data = await resp.json();
     if (data.ok) {

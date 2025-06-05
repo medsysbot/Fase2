@@ -202,6 +202,25 @@ async def enviar_pdf_estudio(dni: str = Form(...), estudio_id: int = Form(...)):
     except Exception as e:
         return JSONResponse({"exito": False, "mensaje": str(e)}, status_code=500)
 
+
+@router.post("/api/enviar_estudio_email")
+async def enviar_estudio_email(
+    email: str = Form(...), url: str = Form(...), descripcion: str = Form("")
+):
+    """Envía el PDF de un estudio al email proporcionado."""
+    try:
+        asunto = "Estudio Médico"
+        cuerpo = f"Adjuntamos el estudio: {descripcion}" if descripcion else "Adjuntamos el estudio solicitado."
+        enviar_email_con_pdf(
+            email_destino=email,
+            asunto=asunto,
+            cuerpo=cuerpo,
+            url_pdf=url,
+        )
+        return {"ok": True}
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
 # Función para iniciar el monitor desde main
 async def iniciar_monitor():
     asyncio.create_task(monitor_correos())

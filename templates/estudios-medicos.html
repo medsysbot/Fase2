@@ -17,143 +17,59 @@
   <link rel="preload" href="/static/icons/alerta/alerta-pdf.png" as="image">
   <link rel="preload" href="/static/icons/alerta/alerta-email.png" as="image">
   <link rel="preload" href="/static/icons/alerta/alerta-carga-pdf.png" as="image">
-  <style>
-    .contenedor-estudios {
-      max-width: 540px;
-      margin: 36px auto;
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 2px 16px #0002;
-      padding: 34px 35px 24px 35px;
-    }
-    header {
-      text-align: center;
-      margin-bottom: 18px;
-    }
-    .logo-grande {
-      width: 72px; margin-bottom: 7px;
-    }
-    h2 {
-      font-size: 1.35em;
-      color: #16a085;
-      font-weight: 700;
-      margin-bottom: 6px;
-      font-style: italic;
-    }
-    .form-estudios label {
-      font-weight: 600;
-      margin-top: 11px;
-      margin-bottom: 2px;
-      display: block;
-    }
-    .form-estudios input, .form-estudios select {
-      font-family: inherit;
-      font-size: 16px;
-      padding: 8px 10px;
-      border: 1px solid #bbb;
-      border-radius: 7px;
-      outline: none;
-      width: 100%;
-      margin-bottom: 3px;
-      background: #fafbfc;
-    }
-    .botones-flotantes {
-      display: flex;
-      gap: 15px;
-      margin-top: 18px;
-      justify-content: flex-end;
-    }
-    .botones-flotantes button {
-      background: #16a085;
-      color: #fff;
-      border: none;
-      border-radius: 7px;
-      font-weight: 600;
-      padding: 8px 17px;
-      font-size: 15px;
-      cursor: pointer;
-      transition: background 0.13s;
-      display: flex; align-items: center; gap: 5px;
-    }
-    .botones-flotantes button#limpiar-btn {
-      background: #e67e22;
-    }
-    .botones-flotantes button:hover { filter: brightness(1.09);}
-    #lista-fechas {
-      list-style: none; padding: 0; margin: 24px 0 0 0;
-      display: flex; flex-direction: column; gap: 9px;
-    }
-    .fecha-link {
-      color: #16a085;
-      text-decoration: underline;
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: 600;
-      border: none;
-      background: none;
-      padding: 0;
-      text-align: left;
-      transition: color 0.13s;
-      display: inline-block;
-    }
-    .fecha-link:hover, .fecha-link.active {
-      color: #e67e22;
-    }
-    .mensaje-inicial {
-      color: #888;
-      font-size: 15px;
-      margin-top: 12px;
-      text-align: center;
-    }
-    @media (max-width: 700px) {
-      .contenedor-estudios { padding: 8vw 3vw; }
-      .logo-grande { width: 56px; }
-    }
-  </style>
 </head>
 <body>
-  <div class="contenedor-estudios">
-    <header>
-      <img src="/static/icons/estudios.png" alt="Estudios Médicos" class="logo-grande" />
-      <h2>Estudios Médicos</h2>
-    </header>
-    <form class="form-estudios" id="form-buscar-estudios" autocomplete="off">
-      <label for="dni">DNI del paciente:</label>
-      <input type="text" name="dni" id="dni" maxlength="10" required />
 
-      <label for="nombre">Nombre del paciente:</label>
-      <input type="text" name="nombre" id="nombre" required />
+<header>
+  <img src="/static/icons/estudios.png" alt="Estudios Médicos" class="logo-grande" />
+  <h2>Estudios Médicos</h2>
+</header>
 
-      <label for="tipo_estudio">Tipo de Estudio:</label>
-      <select name="tipo_estudio" id="tipo_estudio" required>
-        <!-- Opciones cargadas por JS -->
-      </select>
-      <div class="botones-flotantes">
-        <button type="button" id="buscar-btn" onclick="buscarEstudios()">
-          <img src="/static/icons/busquedas.png" alt="Buscar" /> Buscar
-        </button>
-        <button type="reset" id="limpiar-btn">
-          <img src="/static/icons/alerta/alerta-boton-no.png" alt="Limpiar" /> Limpiar
-        </button>
-      </div>
-    </form>
-    <div id="mensaje" class="mensaje-inicial">Ingrese DNI, nombre y seleccione un estudio para ver los resultados.</div>
-    <ul id="lista-fechas" class="lista-fechas"></ul>
-  </div>
+<form id="form-estudios" autocomplete="off">
+  <label>DNI:</label>
+  <input type="text" name="dni" id="dni" maxlength="10" required />
 
-  <!-- ALERTAS VISUALES MEDSYS -->
-  <div id="alert-manager" class="alert-container" style="display: none;">
-    <div class="alert-box">
-      <img id="alert-icon" src="" alt="icono-alerta" class="alert-icon" />
-      <span id="alert-text" class="alert-message">Texto de alerta</span>
-      <div id="alert-buttons" class="alert-buttons" style="display: none;">
-        <img src="/static/icons/alerta/alerta-boton-borrar.png" id="btn-borrar" class="alert-btn" />
-        <img src="/static/icons/alerta/alerta-boton-no.png" id="btn-no" class="alert-btn" />
-      </div>
+  <label>Nombre:</label>
+  <input type="text" name="nombre" id="nombre" required />
+
+  <label>Tipo de Estudio:</label>
+  <select name="tipo_estudio" id="tipo_estudio" required>
+    <!-- Opciones llenadas por JS -->
+  </select>
+</form>
+
+<!-- BOTONES DE ACCIÓN (igual que otros módulos) -->
+<div class="botones-flotantes">
+  <button type="button" ondblclick="iniciarReconocimiento()" title="Reconocimiento por voz">
+    <img src="/static/icons/microfono.png" alt="Voz" />
+  </button>
+  <button type="button" onclick="buscarEstudios()" title="Buscar">
+    <img src="/static/icons/busquedas.png" alt="Buscar" />
+  </button>
+  <button type="reset" onclick="limpiarEstudios()" title="Limpiar">
+    <img src="/static/icons/alerta/alerta-boton-no.png" alt="Limpiar" />
+  </button>
+</div>
+
+<!-- MENSAJE Y LISTA DE RESULTADOS -->
+<div id="mensaje" class="mensaje-inicial" style="margin-top:16px;">
+  Ingrese DNI, nombre y seleccione un estudio para ver los resultados.
+</div>
+<ul id="lista-fechas" class="lista-fechas"></ul>
+
+<!-- ALERTAS VISUALES MEDSYS -->
+<div id="alert-manager" class="alert-container" style="display: none;">
+  <div class="alert-box">
+    <img id="alert-icon" src="" alt="icono-alerta" class="alert-icon" />
+    <span id="alert-text" class="alert-message">Texto de alerta</span>
+    <div id="alert-buttons" class="alert-buttons" style="display: none;">
+      <img src="/static/icons/alerta/alerta-boton-borrar.png" id="btn-borrar" class="alert-btn" />
+      <img src="/static/icons/alerta/alerta-boton-no.png" id="btn-no" class="alert-btn" />
     </div>
   </div>
+</div>
 
-  <script src="/static/js/alertas.js"></script>
-  <script src="/static/js/estudios_medicos.js"></script>
+<script src="/static/js/alertas.js"></script>
+<script src="/static/js/estudios_medicos.js"></script>
 </body>
 </html>

@@ -9,7 +9,7 @@ from utils.pdf_generator import generar_pdf_turno_paciente
 
 router = APIRouter()
 
-BUCKET_PDFS = "turnos_pacientes"
+BUCKET_PDFS = "turnos-pacientes"
 TABLE_NAME = "turnos_pacientes"
 
 # ╔════════════════════════════════════╗

@@ -1,26 +1,20 @@
-/* AG-11 Video Background Handler - transición instantánea de splash a login */
-document.addEventListener('DOMContentLoaded', function () {
-  const splashContainer = document.getElementById('splash-container');
+/* AG-11 Video Background Handler - transición de splash a login */
+window.addEventListener('DOMContentLoaded', () => {
+  const video = document.getElementById('splash-video');
   const loginContainer = document.getElementById('login-container');
-  const videoSplash = document.getElementById('background-video');
-  const loginVideo = document.getElementById('login-video');
+  const splashLogo = document.getElementById('splash-logo');
+  const splashText = document.getElementById('splash-text');
+  let loginMostrado = false;
 
-  if (!videoSplash || !loginContainer) return;
+  if (!video || !loginContainer) return;
 
-  // Precarga el video de login
-  if (loginVideo) {
-    loginVideo.load();
-  }
-
-  videoSplash.addEventListener('ended', function () {
-    splashContainer.style.display = 'none';
-    loginContainer.style.display = 'block';
-    if (loginVideo) {
-      loginVideo.currentTime = 0;
-      const playPromise = loginVideo.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => { /* Silencia errores de autoplay */ });
-      }
+  video.ontimeupdate = function () {
+    if (!loginMostrado && (video.duration - video.currentTime <= 1.5)) {
+      loginContainer.style.display = 'block';
+      if (splashLogo) splashLogo.style.display = 'none';
+      if (splashText) splashText.style.display = 'none';
+      video.pause();
+      loginMostrado = true;
     }
-  });
+  };
 });

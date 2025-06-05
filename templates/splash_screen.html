@@ -59,32 +59,6 @@
       z-index: -1;
     }
 
-    .boton-audio {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      padding: 10px 20px;
-      background: rgba(0, 0, 0, 0.6);
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      z-index: 2;
-    }
-
-    #preloader {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: #000;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 3;
-    }
 
     .logo {
       width: 440px;
@@ -187,15 +161,12 @@
   <script src="/static/js/splash_login_transition.js"></script>
 </head>
 <body>
-  <div id="preloader">Cargando...</div>
   <div id="splash-container">
-    <video id="background-video" class="fondo-splash" autoplay playsinline src="/static/Videos/bienvenidos-a-medsys.mp4"></video>
+    <video id="splash-video" class="fondo-splash" autoplay playsinline src="/static/Videos/Bienvenida :log.mp4"></video>
     <div class="overlay"></div>
-    <button id="start-experience" class="boton-audio" style="display:none;">Iniciar experiencia</button>
-    <img src="/static/icons/logo-medsys-gris.png" alt="Logo Medsys" class="logo">
-    <div class="eslogan">Salud Inteligente para un Mundo Real</div>
+    <img src="/static/icons/logo-medsys-gris.png" alt="Logo Medsys" id="splash-logo" class="logo">
+    <div id="splash-text" class="eslogan">Salud Inteligente para un Mundo Real</div>
   </div>
   {% include 'partials/login_container.html' %}
-  <script src="/static/js/video_background.js"></script>
 </body>
 </html>

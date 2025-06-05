@@ -10,7 +10,7 @@ from utils.pdf_generator import generar_pdf_turno_publico
 
 router = APIRouter()
 
-BUCKET_PDFS = "turnos-pacientes"
+BUCKET_PDFS = "turnos_pacientes"
 
 # ╔════════════════════════════════════╗
 # ║        GUARDAR FORMULARIO         ║

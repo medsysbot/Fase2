@@ -14,8 +14,7 @@
       margin: 0;
       padding: 0;
       height: 100vh;
-      background: url('/static/login-fondo.png') no-repeat center center;
-      background-size: cover;
+      background: none;
       font-family: 'Poppins', sans-serif;
       display: flex;
       flex-direction: column;
@@ -25,6 +24,14 @@
       color: #d3d3d3;
       position: relative;
       z-index: 1;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s;
+    }
+
+    body.ready {
+      opacity: 1;
+      visibility: visible;
     }
 
     video.fondo-splash {
@@ -58,6 +65,20 @@
       border-radius: 5px;
       cursor: pointer;
       z-index: 2;
+    }
+
+    #preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
     }
 
     .logo-medsys {
@@ -124,9 +145,10 @@
   </style>
 </head>
 <body>
-  <video class="fondo-splash" autoplay loop src="/static/Videos/login-medsys.mp4"></video>
+  <div id="preloader">Cargando...</div>
+  <video id="background-video" class="fondo-splash" autoplay loop playsinline src="/static/Videos/login-medsys.mp4"></video>
   <div class="overlay"></div>
-  <button id="btn-audio" class="boton-audio" style="display:none;">Activar audio</button>
+  <button id="start-experience" class="boton-audio" style="display:none;">Iniciar experiencia</button>
 
   <img src="/static/icons/logo-medsys-gris.png" alt="Logo MedSys" class="logo-medsys">
 
@@ -175,18 +197,7 @@
   });
 </script>
 {% endif %}
-<script>
-  const video = document.querySelector('.fondo-splash');
-  const btnAudio = document.getElementById('btn-audio');
-  video.play().catch(() => {
-    btnAudio.style.display = 'block';
-  });
-  btnAudio.addEventListener('click', () => {
-    video.muted = false;
-    video.play();
-    btnAudio.style.display = 'none';
-  });
-</script>
+<script src="/static/js/video_background.js"></script>
 
 </body>
 </html>

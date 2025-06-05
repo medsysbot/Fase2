@@ -7,10 +7,15 @@ from fastapi.responses import JSONResponse
 from utils.supabase_helper import supabase, subir_pdf
 from utils.pdf_generator import generar_pdf_turno_paciente
 from utils.email_sender import enviar_email_con_pdf
+from utils.image_utils import descargar_imagen, guardar_imagen_temporal
 import tempfile
 from datetime import datetime
+import os
 
 router = APIRouter()
+
+BUCKET_PDFS = "turnos-pacientes"
+BUCKET_FIRMAS = "firma-sello-usuarios"
 
 # ════════════════════════════════════════════════════════════════════════
 # 📌 ENDPOINT: Generar y guardar PDF de turno médico
@@ -37,7 +42,6 @@ async def generar_pdf_turno_paciente_route(
         if not all(campos_obligatorios):
             return JSONResponse({"exito": False, "mensaje": "Faltan campos obligatorios."}, status_code=400)
 
-        # Generar el PDF en archivo temporal
         datos = {
             "nombre": nombre,
             "apellido": apellido,
@@ -48,15 +52,27 @@ async def generar_pdf_turno_paciente_route(
             "profesional": profesional,
             "institucion_id": int(institucion_id)
         }
-        pdf_path = generar_pdf_turno_paciente(datos)
 
-        # Guardar PDF en Supabase
-        bucket = "turnos-pacientes"
-        nombre_archivo = f"{dni}/{dni}_turno_{fecha}_{hora.replace(':','-')}.pdf"
-        print("BUCKET_PDFS:", bucket)
-        print("Buckets visibles desde backend:", supabase.storage().list_buckets())
+        firma_path = sello_path = None
+        base_firma = f"firma_{usuario}_{institucion_id}"
+        base_sello = f"sello_{usuario}_{institucion_id}"
+        c_firma, n_firma = descargar_imagen(supabase, BUCKET_FIRMAS, base_firma)
+        c_sello, n_sello = descargar_imagen(supabase, BUCKET_FIRMAS, base_sello)
+        if c_firma:
+            firma_path = guardar_imagen_temporal(c_firma, n_firma)
+        if c_sello:
+            sello_path = guardar_imagen_temporal(c_sello, n_sello)
+
+        pdf_path = generar_pdf_turno_paciente(datos, firma_path, sello_path)
+        nombre_archivo = os.path.basename(pdf_path)
+
         with open(pdf_path, "rb") as f:
-            url_pdf = subir_pdf(bucket, nombre_archivo, f)
+            url_pdf = subir_pdf(BUCKET_PDFS, nombre_archivo, f)
+
+        if firma_path and os.path.exists(firma_path):
+            os.remove(firma_path)
+        if sello_path and os.path.exists(sello_path):
+            os.remove(sello_path)
 
         # Guardar registro en la tabla
         supabase.table("turnos_pacientes").insert([{

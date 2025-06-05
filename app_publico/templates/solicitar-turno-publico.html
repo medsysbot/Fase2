@@ -24,32 +24,41 @@
     <h2 style="text-align:center;">Solicitud de Turno</h2>
   </header>
 
-  <form class="formulario" id="form-turnos">
-    <input type="hidden" name="institucion_nombre" id="institucion_nombre" />
-    <label>Nombre:</label>
-    <input type="text" name="nombre" required />
+ <form class="formulario" id="form-turnos">
+  <label>Nombre:</label>
+  <input type="text" name="nombre" required />
 
-    <label>Apellido:</label>
-    <input type="text" name="apellido" required />
+  <label>Apellido:</label>
+  <input type="text" name="apellido" required />
 
-    <label>DNI:</label>
-    <input type="text" name="dni" required />
+  <label>DNI:</label>
+  <input type="text" name="dni" required />
 
-    <label>Especialidad:</label>
-    <input type="text" name="especialidad" required />
+  <label for="institucion">Institución</label>
+  <select name="institucion" id="institucion" required>
+    <option value="" disabled selected>Seleccione una institución</option>
+    <option value="1">Hospital San Martín</option>
+    <option value="2">Clínica del Norte</option>
+    <option value="3">Centro Médico Sur</option>
+    <!-- Agregá más aquí -->
+  </select>
 
-    <label>Profesional:</label>
-    <input type="text" name="profesional" required />
+  <label>Especialidad:</label>
+  <input type="text" name="especialidad" required />
 
-    <label>Fecha del Turno:</label>
-    <input type="date" name="fecha" required />
+  <label>Profesional:</label>
+  <input type="text" name="profesional" required />
 
-    <label>Horario:</label>
-    <input type="time" name="hora" required />
+  <label>Fecha del Turno:</label>
+  <input type="date" name="fecha" required />
 
-    <label>Observaciones:</label>
-    <textarea name="observaciones" rows="3"></textarea>
-  </form>
+  <label>Horario:</label>
+  <input type="time" name="hora" required />
+
+  <label>Observaciones:</label>
+  <textarea name="observaciones" rows="3"></textarea>
+</form>
+   
 
   <div class="botones-flotantes">
     <button type="button" onclick="guardarPDF()" title="Guardar">

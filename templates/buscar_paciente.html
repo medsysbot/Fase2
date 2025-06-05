@@ -29,24 +29,6 @@
     <input type="text" id="dni-paciente" name="dni" required pattern="[0-9]+" maxlength="10" />
   </form>
 
-  <div class="botones-flotantes">
-    <button type="button" onclick="iniciarReconocimientoVoz()" title="Reconocimiento de voz">
-      <img src="/static/icons/microfono.png" alt="Voz" />
-    </button>
-    <button type="submit" form="form-busqueda-paciente" title="Buscar">
-      <img src="/static/icons/busquedas.png" alt="Buscar" />
-    </button>
-    <button type="button" onclick="guardarPaciente()" title="Guardar">
-      <img src="/static/icons/guardar.png" alt="Guardar" />
-    </button>
-    <button type="button" ondblclick="prepararBorradoPaciente()" title="Borrar paciente">
-      <img src="/static/icons/borrar.png" alt="Borrar" />
-    </button>
-    <button type="button" id="btn-verpdf" onclick="verPDF()" title="Ver PDF" style="display:none">
-      <img src="/static/icons/icono-ver-pdf.png" alt="Ver PDF" />
-    </button>
-  </div>
-
   <div id="resultados-busqueda" style="display:none;">
     <h3>Resultados</h3>
     <div class="modulo-resultado">
@@ -74,6 +56,24 @@
       <input type="email" id="email-destino" name="email" />
       <button id="confirmar-envio" type="button">Confirmar envío</button>
     </div>
+  </div>
+
+  <div class="botones-flotantes">
+    <button type="button" onclick="iniciarReconocimientoVoz()" title="Reconocimiento de voz">
+      <img src="/static/icons/microfono.png" alt="Voz" />
+    </button>
+    <button type="submit" form="form-busqueda-paciente" title="Buscar">
+      <img src="/static/icons/busquedas.png" alt="Buscar" />
+    </button>
+    <button type="button" onclick="guardarPaciente()" title="Guardar">
+      <img src="/static/icons/guardar.png" alt="Guardar" />
+    </button>
+    <button type="button" ondblclick="prepararBorradoPaciente()" title="Borrar paciente">
+      <img src="/static/icons/borrar.png" alt="Borrar" />
+    </button>
+    <button type="button" id="btn-verpdf" onclick="verPDF()" title="Ver PDF" style="display:none">
+      <img src="/static/icons/icono-ver-pdf.png" alt="Ver PDF" />
+    </button>
   </div>
 
   <!-- ALERT MANAGER -->

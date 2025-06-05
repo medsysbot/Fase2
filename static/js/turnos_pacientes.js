@@ -107,7 +107,7 @@ async function enviarPorCorreo() {
 document.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('btn-verpdf');
   if (btn) {
-    const url = sessionStorage.getItem('pdfURL');
+    const url = sessionStorage.getItem('pdfURL_turnos');
     btn.style.display = url ? 'inline-block' : 'none';
   }
 });
